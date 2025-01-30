@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+        
+        .export-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .export-btn:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        select {
+            padding: 8px;
+            margin: 10px;
+        }
+        
+        .compare-all-btn {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .compare-all-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <button class="export-btn" onclick="exportToPDF()">Export</button>
+
+    <h1>Product Comparison</h1>
+
+    <label for="productSelect">Select Product:</label>
+    <select id="productSelect" onchange="updateCompetitorOptions()">
+        <option value="Sonel MIC-10">Sonel MIC-10</option>
+        <option value="Sonel MIC-30">Sonel MIC-30</option>
+    </select>
+
+    <label for="competitorSelect">Select Competitor 1:</label>
+    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+
+    <label for="competitorSelect2">Select Competitor 2:</label>
+    <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
+
+    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
+
+    <table id="comparisonTable"></table>
+
+    <script>
+        const productComparisonData = {
+            "Sonel MIC-10": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "1mA", 
+                "Resistance Range": "10.00GΩ", 
+                "PI/DAR": "NA", 
+                "Floors and walls Resistance measurement": "Available", 
+                "Standard": "EN 61557", 
+                "DC and AC voltage measurement Range": "600 V", 
+                "Capacitance measurement": "NA", 
+                "Measurement of leakage current": "NA", 
+                "Measurement category": "CAT IV 600 V (III 1000 V)", 
+                "IP": "IP 67", 
+                "Memory": "NA", 
+                "Data transmission": "NA"
+            },
+            "Sonel MIC-30": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "1mA", 
+                "Resistance Range": "100.00GΩ", 
+                "PI/DAR": "Available", 
+                "Floors and walls Resistance measurement": "Available", 
+                "Standard": "EN 61557", 
+                "DC and AC voltage measurement Range": "600 V", 
+                "Capacitance measurement": "Available", 
+                "Measurement of leakage current": "Available", 
+                "Measurement category": "CAT IV 600 V (III 1000 V)", 
+                "IP": "IP 67", 
+                "Memory": "Available", 
+                "Data transmission": "Bluetooth"
+            },
+            "Megger MIT400/2": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "2 mA", 
+                "Resistance Range": "200 GΩ", 
+                "PI/DAR": "NA", 
+                "Floors and walls Resistance measurement": "NA", 
+                "Standard": "EN 61557", 
+                "DC and AC voltage measurement Range": "600 V", 
+                "Capacitance measurement": "NA", 
+                "Measurement of leakage current": "NA", 
+                "Measurement category": "CAT IV 600 V / CAT III 1000 V", 
+                "IP": "IP54", 
+                "Memory": "NA", 
+                "Data transmission": "NA"
+            },
+            "Megger MIT410/2": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "2 mA", 
+                "Resistance Range": "200 GΩ", 
+                "PI/DAR": "Available", 
+                "Floors and walls Resistance measurement": "NA", 
+                "Standard": "EN 61557", 
+                "DC and AC voltage measurement Range": "600 V", 
+                "Capacitance measurement": "NA", 
+                "Measurement of leakage current": "Available", 
+                "Measurement category": "CAT IV 600 V / CAT III 1000 V", 
+                "IP": "IP54", 
+                "Memory": "NA", 
+                "Data transmission": "NA"
+            },
+            "Megger MIT420/2": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "2 mA", 
+                "Resistance Range": "200 GΩ", 
+                "PI/DAR": "Available", 
+                "Floors and walls Resistance measurement": "NA", 
+                "Standard": "EN 61557", 
+                "DC and AC voltage measurement Range": "600 V", 
+                "Capacitance measurement": "Available", 
+                "Measurement of leakage current": "Available", 
+                "Measurement category": "CAT IV 600 V / CAT III 1000 V", 
+                "IP": "IP54", 
+                "Memory": "Available", 
+                "Data transmission": "NA"
+            },
+            "Megger MIT430/2": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "2 mA", 
+                "Resistance Range": "200 GΩ", 
+                "PI/DAR": "Available", 
+                "Floors and walls Resistance measurement": "NA", 
+                "Standard": "EN 61557", 
+                "DC and AC voltage measurement Range": "600 V", 
+                "Capacitance measurement": "Available", 
+                "Measurement of leakage current": "Available", 
+                "Measurement category": "CAT IV 600 V / CAT III 1000 V", 
+                "IP": "IP54", 
+                "Memory": "Available", 
+                "Data transmission": "Bluetooth"
+            },
+            "Fluke 1507": {
+                "Measuring Voltage": "1000V", 
+                "Short Circuit Current": "1mA", 
+                "Resistance Range": "10.00GΩ", 
+                "PI/DAR": "NA", 
+                "Floors and walls Resistance measurement": "NA", 
+                "Standard": "NA", 
+                "DC and AC voltage measurement Range": "600.0 V", 
+                "Capacitance measurement": "NA", 
+                "Measurement of leakage current": "NA", 
+                "Measurement category": "CAT IV 600 V", 
+                "IP": "IP40", 
+                "Memory": "NA", 
+                "Data transmission": "NA"
+            }
+        };
+
+        function loadComparisonTable() {
+            const selectedProduct = document.getElementById("productSelect").value;
+            const selectedCompetitor = document.getElementById("competitorSelect").value;
+            const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
+
+            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th><th>${selectedCompetitor2}</th></tr>`;
+
+            const featuresOrder = [
+                "Measuring Voltage", 
+                "Short Circuit Current", 
+                "Resistance Range", 
+                "PI/DAR", 
+                "Floors and walls Resistance measurement", 
+                "Standard", 
+                "DC and AC voltage measurement Range", 
+                "Capacitance measurement", 
+                "Measurement of leakage current", 
+                "Measurement category", 
+                "IP", 
+                "Memory", 
+                "Data transmission"
+            ];
+
+            featuresOrder.forEach(feature => {
+                tableContent += `<tr>
+                    <td>${feature}</td>
+                    <td>${productComparisonData[selectedProduct][feature]}</td>
+                    <td>${productComparisonData[selectedCompetitor][feature] || "NA"}</td>
+                    <td>${productComparisonData[selectedCompetitor2][feature] || "NA"}</td>
+                </tr>`;
+            });
+
+            document.getElementById("comparisonTable").innerHTML = tableContent;
+        }
+
+        function updateCompetitorOptions() {
+            const selectedProduct = document.getElementById("productSelect").value;
+            const competitorSelect = document.getElementById("competitorSelect");
+            const competitorSelect2 = document.getElementById("competitorSelect2");
+            const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
+
+            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            competitorSelect2.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+
+            loadComparisonTable();
+        }
+
+        function compareAllProducts() {
+            const allProducts = Object.keys(productComparisonData);
+            let tableContent = `<tr><th>Feature</th>`;
+            allProducts.forEach(product => {
+                tableContent += `<th>${product}</th>`;
+            });
+            tableContent += `</tr>`;
+
+            const firstProduct = allProducts[0];
+            const featuresOrder = [
+                "Measuring Voltage", 
+                "Short Circuit Current", 
+                "Resistance Range", 
+                "PI/DAR", 
+                "Floors and walls Resistance measurement", 
+                "Standard", 
+                "DC and AC voltage measurement Range", 
+                "Capacitance measurement", 
+                "Measurement of leakage current", 
+                "Measurement category", 
+                "IP", 
+                "Memory", 
+                "Data transmission"
+            ];
+
+            featuresOrder.forEach(feature => {
+                tableContent += `<tr><td>${feature}</td>`;
+                allProducts.forEach(product => {
+                    tableContent += `<td>${productComparisonData[product][feature]}</td>`;
+                });
+                tableContent += `</tr>`;
+            });
+
+            document.getElementById("comparisonTable").innerHTML = tableContent;
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+
+            html2canvas(document.getElementById("comparisonTable")).then(canvas => {
+                let pdf = new jsPDF("l", "mm", "a4");
+                let imgData = canvas.toDataURL("image/png");
+
+                let imgWidth = 280;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.text("Product Comparison", 14, 10);
+                pdf.addImage(imgData, "PNG", 10, 15, imgWidth, imgHeight);
+                pdf.save("product-comparison.pdf");
+            });
+        }
+
+        // Initial setup
+        updateCompetitorOptions();
+    </script>
+</body>
+</html>
