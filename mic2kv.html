@@ -9,35 +9,55 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            position: relative;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
         }
         
-        .export-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .export-btn, .compare-all-btn {
             padding: 10px 15px;
-            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
             font-size: 14px;
+            margin: 10px 5px;
         }
-
+        
+        .export-btn {
+            background-color: #007bff;
+        }
+        
         .export-btn:hover {
             background-color: #0056b3;
+        }
+        
+        .compare-all-btn {
+            background-color: #28a745;
+        }
+        
+        .compare-all-btn:hover {
+            background-color: #218838;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-top: 20px;
         }
 
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
         }
 
@@ -48,47 +68,45 @@
         select {
             padding: 8px;
             margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
         
-        .compare-all-btn {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 15px;
-            border-radius: 5px;
-        }
-
-        .compare-all-btn:hover {
-            background-color: #218838;
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            table {
+                font-size: 12px;
+            }
+            select {
+                width: 100%;
+                margin: 5px 0;
+            }
+            .export-btn, .compare-all-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <button class="export-btn" onclick="exportToPDF()">Export</button>
-
-    <h1>Product Comparison</h1>
-
-    <label for="productSelect">Select Product:</label>
-    <select id="productSelect" onchange="updateCompetitorOptions()">
-        <option value="MIC-2501">MIC-2501</option>
-        <option value="MIC-2511">MIC-2511</option>
-        
-    </select>
-
-    <label for="competitorSelect">Select Competitor 1:</label>
-    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
-
-    <label for="competitorSelect2">Select Competitor 2:</label>
-    <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
-
-    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
-
-    <table id="comparisonTable"></table>
-
+    <div class="container">
+        <button class="export-btn" onclick="exportToPDF()">Export</button>
+        <h1>Product Comparison</h1>
+        <label for="productSelect">Select Product:</label>
+        <select id="productSelect" onchange="updateCompetitorOptions()">
+            <option value="MIC-2501">MIC-2501</option>
+            <option value="MIC-2511">MIC-2511</option>
+        </select>
+        <label for="competitorSelect">Select Competitor 1:</label>
+        <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+        <label for="competitorSelect2">Select Competitor 2:</label>
+        <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
+        <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
+        <table id="comparisonTable"></table>
+    </div>
     <script>
+      
         const productComparisonData = {
            
             "MIC-2501": {
@@ -222,6 +240,8 @@
 
         // Initial setup
         updateCompetitorOptions();
+    
+
     </script>
 </body>
 </html>
