@@ -143,7 +143,8 @@
         <div class="buttons">
             <button onclick="compareSelectedProducts()">Compare Selected</button>
             <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportToPDF()">Export to PDF</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
@@ -345,8 +346,37 @@
             resultDiv.innerHTML = tableHTML;
         }
 
-        // Function to export comparison to PDF
-        function exportToPDF() {
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -367,7 +397,7 @@
                 tableWidth: "auto"
             });
 
-            doc.save("Product_Comparison.pdf");
+            doc.save("All_Comparison.pdf");
         }
     </script>
 </body>

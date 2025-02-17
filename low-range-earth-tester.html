@@ -100,14 +100,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>Product Comparison </h1>
+        <h1>Product Comparison Tool</h1>
         <div class="dropdowns">
             <div>
                 <label for="product">Select Product:</label>
                 <select id="product">
                     <option value="Sonel MRU 10">Sonel MRU 10</option>
                     <option value="Sonel MRU-21">Sonel MRU-21</option>
-                                       
+                    <option value="Fluke 1621">Fluke 1621</option>
+                    <option value="Motwane DET 20">Motwane DET 20</option>
+                    <option value="Motwane MET 10">Motwane MET 10</option>
                 </select>
             </div>
             <div>
@@ -136,6 +138,7 @@
             <button onclick="compareSelectedProducts()">Compare Selected</button>
             <button onclick="compareAllProducts()">Compare All</button>
             <button onclick="exportToPDF()">Export to PDF</button>
+            <button onclick="exportAllToPDF()">Export All</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
@@ -164,13 +167,12 @@
                 "Memory": "YES",
                 "Battery": "AA battery (non-rechargeable), Rechargeable (Optional)"
             },
-            
             "Fluke 1621": {
                 "2P,3P,4P Method": "2P, 3P",
                 "3p + clamps Method": "NA",
                 "Ground resistivity measurements": "NA",
                 "Frequency of the measurement current": "128 Hz",
-                "Measurement current": ">50m",
+                "Measurement current": ">50mA",
                 "Measurements of continuity": "Yes",
                 "Memory": "NA",
                 "Battery": "One 9 volt alkaline (LR61)"
@@ -179,8 +181,8 @@
                 "2P,3P,4P Method": "2P, 3P",
                 "3p + clamps Method": "Yes",
                 "Ground resistivity measurements": "Yes",
-                "Frequency of the measurement current": "128 HZ",
-                "Measurement current": "NA",
+                "Frequency of the measurement current": "NA",
+                "Measurement current": "128 Hz",
                 "Measurements of continuity": "NA",
                 "Memory": "NA",
                 "Battery": "Rechargeable Battery"
@@ -189,8 +191,8 @@
                 "2P,3P,4P Method": "2P, 3P",
                 "3p + clamps Method": "Yes",
                 "Ground resistivity measurements": "NA",
-                "Frequency of the measurement current": "128 HZ",
-                "Measurement current": "NA",
+                "Frequency of the measurement current": "NA",
+                "Measurement current": "128 Hz",
                 "Measurements of continuity": "NA",
                 "Memory": "NA",
                 "Battery": "6 X 1.5V AA Alkaline cells"
@@ -260,6 +262,35 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Product_Comparison.pdf");
+        }
+
+        // Function to export all products comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
             // Add table to PDF
             const headers = ["Feature", ...Object.keys(products)];
             const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
@@ -277,7 +308,7 @@
                 tableWidth: "auto"
             });
 
-            doc.save("Product_Comparison.pdf");
+            doc.save("All_Products_Comparison.pdf");
         }
     </script>
 </body>

@@ -107,7 +107,6 @@
                 <select id="product">
                     <option value="Sonel MRU-200">Sonel MRU-200</option>
                     <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                                      
                 </select>
             </div>
             <div>
@@ -141,7 +140,8 @@
         <div class="buttons">
             <button onclick="compareSelectedProducts()">Compare Selected</button>
             <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportToPDF()">Export to PDF</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
@@ -189,7 +189,7 @@
                 "Double Clamp Method": "NA",
                 "Leakage current measurement": "Available",
                 "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "20 mA",
+                "Measurement current": "20mA",
                 "TFR": "Yes",
                 "TFR OUTPUT": "250V &20mA",
                 "impulse method": "NA",
@@ -205,12 +205,12 @@
                 "Double Clamp Method": "Available",
                 "Leakage current measurement": "Available",
                 "Frequency of the measurement current": "25 kHz",
-                "Measurement current": ">220 mA",
+                "Measurement current": "> 220 mA",
                 "TFR": "Yes",
-                "TFR OUTPUT": "40VAC &>220 mA",
+                "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "Available",
                 "Memory": "Available",
-                "Measurement of leakage": "NA",
+                "Measurement of leakage": "49.9 A",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             },
@@ -219,11 +219,11 @@
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
+                "Leakage current measurement": "NA",
                 "Frequency of the measurement current": "15 kHz",
-                "Measurement current": ">220 mA",
+                "Measurement current": "> 220 mA",
                 "TFR": "Yes",
-                "TFR OUTPUT": "40VAC &>220 mA",
+                "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "NA",
                 "Memory": "Available",
                 "Measurement of leakage": "NA",
@@ -242,7 +242,7 @@
                 "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "Available",
                 "Memory": "Available",
-                "Measurement of leakage": "49.9A",
+                "Measurement of leakage": "49.9 A",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             },
@@ -253,9 +253,9 @@
                 "Double Clamp Method": "Available",
                 "Leakage current measurement": "Available",
                 "Frequency of the measurement current": "15 kHz",
-                "Measurement current": " > 220 mA",
+                "Measurement current": "> 220 mA",
                 "TFR": "Yes",
-                "TFR OUTPUT": "250V &20mA",
+                "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "NA",
                 "Memory": "Available",
                 "Measurement of leakage": "NA",
@@ -269,15 +269,15 @@
                 "Double Clamp Method": "NA",
                 "Leakage current measurement": "NA",
                 "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "20mA",
+                "Measurement current": "20 mA",
                 "TFR": "Yes",
                 "TFR OUTPUT": "Yes",
                 "impulse method": "NA",
-                "Memory": "Available",
+                "Memory": "Yes",
                 "Measurement of leakage": "NA",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
-            },
+            }
         };
 
         // Function to compare selected products
@@ -338,8 +338,37 @@
             resultDiv.innerHTML = tableHTML;
         }
 
-        // Function to export comparison to PDF
-        function exportToPDF() {
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -360,7 +389,7 @@
                 tableWidth: "auto"
             });
 
-            doc.save("Product_Comparison.pdf");
+            doc.save("All_Comparison.pdf");
         }
     </script>
 </body>

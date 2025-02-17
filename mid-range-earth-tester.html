@@ -105,43 +105,43 @@
             <div>
                 <label for="product">Select Product:</label>
                 <select id="product">
+                    <option value="Sonel MRU-12">Sonel MRU-12</option>
+                    <option value="Sonel MRU-30">Sonel MRU-30</option>
                     <option value="Sonel MRU-120">Sonel MRU-120</option>
-                    <option value="Sonel-12">Sonel-12</option>
-                    <option value="Sonel-120Hd">Sonel-120Hd</option>
-                    <option value="Megger DET2/3">Megger DET2/3</option>
-                    <option value="Megger DET4TC2">Megger DET4TC2</option>
-                    <option value="Megger DET4TC2R">Megger DET4TC2R</option>
-                    <option value="Megger DET4TD2 & DET4TR2">Megger DET4TD2 & DET4TR2</option>
-                    <option value="Fluke 1623-2">Fluke 1623-2</option>
-                    <option value="Fluke 1625-2">Fluke 1625-2</option>
+                    <option value="Sonel MRU-120HD">Sonel-120HD</option>
+                    
                 </select>
             </div>
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
                 <select id="competitor1">
+                    <option value="Sonel MRU-12">Sonel MRU-12</option>
+                    <option value="Sonel MRU-30">Sonel MRU-30</option>
                     <option value="Sonel MRU-120">Sonel MRU-120</option>
-                    <option value="Sonel-12">Sonel-12</option>
-                    <option value="Sonel-120Hd">Sonel-120Hd</option>
+                    <option value="Sonel MRU-120HD">Sonel-120HD</option>
                     <option value="Megger DET2/3">Megger DET2/3</option>
                     <option value="Megger DET4TC2">Megger DET4TC2</option>
                     <option value="Megger DET4TC2R">Megger DET4TC2R</option>
                     <option value="Megger DET4TD2 & DET4TR2">Megger DET4TD2 & DET4TR2</option>
                     <option value="Fluke 1623-2">Fluke 1623-2</option>
                     <option value="Fluke 1625-2">Fluke 1625-2</option>
+
                 </select>
             </div>
             <div>
                 <label for="competitor2">Select Competitor 2:</label>
                 <select id="competitor2">
+                    <option value="Sonel MRU-12">Sonel MRU-12</option>
+                    <option value="Sonel MRU-30">Sonel MRU-30</option>
                     <option value="Sonel MRU-120">Sonel MRU-120</option>
-                    <option value="Sonel-12">Sonel-12</option>
-                    <option value="Sonel-120Hd">Sonel-120Hd</option>
+                    <option value="Sonel MRU-120HD">Sonel-120HD</option>
                     <option value="Megger DET2/3">Megger DET2/3</option>
                     <option value="Megger DET4TC2">Megger DET4TC2</option>
                     <option value="Megger DET4TC2R">Megger DET4TC2R</option>
                     <option value="Megger DET4TD2 & DET4TR2">Megger DET4TD2 & DET4TR2</option>
                     <option value="Fluke 1623-2">Fluke 1623-2</option>
                     <option value="Fluke 1625-2">Fluke 1625-2</option>
+
                 </select>
             </div>
         </div>
@@ -150,6 +150,7 @@
             <button onclick="compareSelectedProducts()">Compare Selected</button>
             <button onclick="compareAllProducts()">Compare All</button>
             <button onclick="exportToPDF()">Export to PDF</button>
+            <button onclick="exportAllToPDF()">Export All</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
@@ -158,95 +159,137 @@
     <script>
         // Product Data
         const products = {
+
             "Sonel MRU-12": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "NA",
+                "Double Clamp Method": "NA",
+                "Accuracy": "3%",
+                "Frequency of the Measurement Current": "125 Hz",
+                "Measurement Current": ">20mA",
+                "Memory": "990",
+                "Battery": "Rechargeable battery",
+                "IP": "IP-65"
+
+            },
+            
+            "Sonel MRU-30": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "125 Hz",
-                "Measurement current": ">20mA",
+                "Accuracy": "3%",
+                "Frequency of the Measurement Current": "125 Hz",
+                "Measurement Current": ">200mA",
                 "Memory": "990",
-                "Battery": "Rechargeable battery"
-            },
+                "Battery": "Rechargeable battery",
+                "IP": "IP-54"
+
+             },
+
             "Sonel MRU-120": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "125 Hz",
-                "Measurement current": ">200mA",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "125 Hz",
+                "Measurement Current": ">200mA",
                 "Memory": "990",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-54"
+
             },
             "Sonel MRU-120HD": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "125 Hz",
-                "Measurement current": ">200mA",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "125 Hz",
+                "Measurement Current": ">200mA",
                 "Memory": "990",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-65"
+
             },
             "Megger DET2/3": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "10 Hz to 200 Hz",
-                "Measurement current": "50mA",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "10 Hz to 200 Hz",
+                "Measurement Current": "50mA",
                 "Memory": "Yes",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-65"
+
             },
             "Megger DET4TC2": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "94, 105, 111, 128 Hz",
-                "Measurement current": "4,5mA (0,45)",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "94, 105, 111, 128 Hz",
+                "Measurement Current": "4.5mA (0.45)",
                 "Memory": "NA",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-54"
+
             },
             "Megger DET4TC2R": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "94, 105, 111, 128 Hz",
-                "Measurement current": "4,5mA (0,45)",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "94, 105, 111, 128 Hz",
+                "Measurement Current": "4.5mA (0.45)",
                 "Memory": "NA",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-54"
+
             },
             "Megger DET4TD2 & DET4TR2": {
                 "3p Method": "Available",
                 "4p Method": "Available",
-                "3p + clamps Method": "NA",
+                "3p + clamps Method": "Available",
                 "Double Clamp Method": "NA",
-                "Frequency of the measurement current": "128 Hz",
-                "Measurement current": "4,5mA (0,45)",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "128 Hz",
+                "Measurement Current": "4.5mA (0.45)",
                 "Memory": "Yes",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-54"
+
             },
             "Fluke 1623-2": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "128 Hz",
-                "Measurement current": ">50mA",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "128 Hz",
+                "Measurement Current": ">50mA",
                 "Memory": "Yes",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-56"
+
             },
             "Fluke 1625-2": {
                 "3p Method": "Available",
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Frequency of the measurement current": "94/105/111/128 Hz",
-                "Measurement current": "250mA",
+                "Accuracy": "2%",
+                "Frequency of the Measurement Current": "94/105/111/128 Hz",
+                "Measurement Current": "250mA",
                 "Memory": "NA",
-                "Battery": "Rechargeable battery"
+                "Battery": "Rechargeable battery",
+                "IP": "IP-56"
             }
         };
 
@@ -313,6 +356,35 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Product_Comparison.pdf");
+        }
+
+        // Function to export all products comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
             // Add table to PDF
             const headers = ["Feature", ...Object.keys(products)];
             const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
@@ -330,7 +402,7 @@
                 tableWidth: "auto"
             });
 
-            doc.save("Product_Comparison.pdf");
+            doc.save("All_Products_Comparison.pdf");
         }
     </script>
 </body>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Filter - Thermal Camera</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #1e3a5f;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .filter {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .filter select {
+            padding: 10px;
+            margin: 10px 0;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .product-item {
+            width: 200px;
+            padding: 15px;
+            background-color: #fff;
+            color: #000;
+            margin: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            text-decoration: none;
+        }
+        .product-item:hover {
+            transform: scale(1.05);
+        }
+    </style>
+    <script>
+        function filterProducts() {
+            var resolutionSelect = document.getElementById("resolution");
+            var viewfinderSelect = document.getElementById("viewfinder");
+            var selectedResolution = resolutionSelect.value;
+            var selectedViewfinder = viewfinderSelect.value;
+
+            var products = document.getElementsByClassName("product-item");
+
+            for (var i = 0; i < products.length; i++) {
+                var productResolution = products[i].getAttribute("data-resolution");
+                var productViewfinder = products[i].getAttribute("data-viewfinder");
+
+                if ((selectedResolution === "any" || productResolution === selectedResolution) &&
+                    (selectedViewfinder === "any" || productViewfinder === selectedViewfinder)) {
+                    products[i].style.display = "block";
+                } else {
+                    products[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<header>
+    <h1>Product Filter - Thermal Camera</h1>
+</header>
+<div class="container">
+    <div class="filter">
+        <label for="resolution">Select Resolution:</label>
+        <select id="resolution" onchange="filterProducts()">
+            <option value="any">Any Resolution</option>
+            <option value="120x90-256x192">120 x 90 and 256 x 192</option>
+            <option value="320x240">320 x 240</option>
+            <option value="384x288">384 x 288</option>
+            <option value="480x360">480 x 360</option>
+            <option value="640x480">640 x 480</option>
+        </select>
+
+        <label for="viewfinder">Viewfinder:</label>
+        <select id="viewfinder" onchange="filterProducts()">
+            <option value="any">Any</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
+    </div>
+
+    <div class="product-list">
+        <a href="product_120x90_256x192_no.html" class="product-item" data-resolution="120x90-256x192" data-viewfinder="no">
+            <p>Resolution: 120 x 90 and 256 x 192, Viewfinder: No</p>
+        </a>
+        <a href="product_320x240_no.html" class="product-item" data-resolution="320x240" data-viewfinder="no">
+            <p>Resolution: 320 x 240, Viewfinder: No</p>
+        </a>
+        <a href="product_384x288_no.html" class="product-item" data-resolution="384x288" data-viewfinder="no">
+            <p>Resolution: 384 x 288, Viewfinder: No</p>
+        </a>
+        <a href="product_384x288_yes.html" class="product-item" data-resolution="384x288" data-viewfinder="yes">
+            <p>Resolution: 384 x 288, Viewfinder: Yes</p>
+        </a>
+        <a href="product_480x360_no.html" class="product-item" data-resolution="480x360" data-viewfinder="no">
+            <p>Resolution: 480 x 360, Viewfinder: No</p>
+        </a>
+        <a href="product_640x480_no.html" class="product-item" data-resolution="640x480" data-viewfinder="no">
+            <p>Resolution: 640 x 480, Viewfinder: No</p>
+        </a>
+        <a href="product_640x480_yes.html" class="product-item" data-resolution="640x480" data-viewfinder="yes">
+            <p>Resolution: 640 x 480, Viewfinder: Yes</p>
+        </a>
+    </div>
+</div>
+</body>
+</html>
