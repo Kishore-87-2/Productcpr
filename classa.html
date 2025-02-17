@@ -3,95 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Quality Analyzer Comparison</title>
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
+        /* CSS Styling */
         body {
             font-family: Arial, sans-serif;
-            position: relative;
-        }
-        
-        .export-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .export-btn:hover {
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
             background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-top: 10px;
         }
 
         th, td {
+            padding: 10px;
             border: 1px solid #ddd;
-            padding: 8px;
             text-align: left;
         }
 
         th {
             background-color: #f4f4f4;
         }
-
-        select {
-            padding: 8px;
-            margin: 10px;
-        }
-        
-        .compare-all-btn {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 15px;
-            border-radius: 5px;
-        }
-
-        .compare-all-btn:hover {
-            background-color: #218838;
-        }
     </style>
 </head>
 <body>
-    <button class="export-btn" onclick="exportToPDF()">Export</button>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="SONEL PQM-711">SONEL PQM-711</option>
+                    <option value="SONEL PQM-710">SONEL PQM-710</option>
+                    <option value="Fluke 1773">Fluke 1773</option>
+                    <option value="Fluke 1775">Fluke 1775</option>
+                    <option value="Fluke 1777">Fluke 1777</option>
+                    <option value="HIOKI -3198">HIOKI -3198</option>
+                    <option value="Kusam-Meco-KM-2300">Kusam-Meco-KM-2300</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="SONEL PQM-711">SONEL PQM-711</option>
+                    <option value="SONEL PQM-710">SONEL PQM-710</option>
+                    <option value="Fluke 1773">Fluke 1773</option>
+                    <option value="Fluke 1775">Fluke 1775</option>
+                    <option value="Fluke 1777">Fluke 1777</option>
+                    <option value="HIOKI -3198">HIOKI -3198</option>
+                    <option value="Kusam-Meco-KM-2300">Kusam-Meco-KM-2300</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="SONEL PQM-711">SONEL PQM-711</option>
+                    <option value="SONEL PQM-710">SONEL PQM-710</option>
+                    <option value="Fluke 1773">Fluke 1773</option>
+                    <option value="Fluke 1775">Fluke 1775</option>
+                    <option value="Fluke 1777">Fluke 1777</option>
+                    <option value="HIOKI -3198">HIOKI -3198</option>
+                    <option value="Kusam-Meco-KM-2300">Kusam-Meco-KM-2300</option>
+                </select>
+            </div>
+        </div>
 
-    <h1>Power Quality Analyzer Comparison</h1>
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportToPDF()">Export to PDF</button>
+        </div>
 
-    <label for="productSelect">Select Product:</label>
-    <select id="productSelect" onchange="updateCompetitorOptions()">
-        <option value="SONEL PQM-711">SONEL PQM-711</option>
-    </select>
-
-    <label for="competitorSelect">Select Competitor 1:</label>
-    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
-
-    <label for="competitorSelect2">Select Competitor 2:</label>
-    <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
-
-    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
-
-    <table id="comparisonTable"></table>
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
 
     <script>
-        const productComparisonData = {
+        // Product Data
+        const products = {
             "SONEL PQM-711": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 5,
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "5",
                 "Measurable current range (with clamp)": "6000 Ampere",
                 "Measurable voltage range": "1000 Volt",
                 "Measurable voltage resolution": "0.1 Volt",
@@ -101,14 +165,16 @@
                 "Mobile app for live data": "Available",
                 "GSM for remote operation": "Available",
                 "Order(n) to which Facility to Measure Harmonics available": "Upto 50th",
-                "Facility to Measure Transient Voltage": "8kV",
+                "Facility to Measure Transient Voltage": "Transients up to 8kV",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "IP-65",
+                "Direct IEE 519 Report": "Yes"
             },
             "SONEL PQM-710": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 5,
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "5",
                 "Measurable current range (with clamp)": "6000 Ampere",
                 "Measurable voltage range": "1000 Volt",
                 "Measurable voltage resolution": "0.1 Volt",
@@ -120,12 +186,14 @@
                 "Order(n) to which Facility to Measure Harmonics available": "Upto 50th",
                 "Facility to Measure Transient Voltage": "Not Applicable",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "IP-65",
+                "Direct IEE 519 Report": "Yes"
             },
             "Fluke 1773": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 5,
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "5",
                 "Measurable current range (with clamp)": "6000 Ampere",
                 "Measurable voltage range": "1000 V",
                 "Measurable voltage resolution": "0.1V",
@@ -137,12 +205,14 @@
                 "Order(n) to which Facility to Measure Harmonics available": "Up to 50th",
                 "Facility to Measure Transient Voltage": "No",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "IP-50",
+                "Direct IEE 519 Report": "NA"
             },
             "Fluke 1775": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 5,
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "5",
                 "Measurable current range (with clamp)": "6000 Ampere",
                 "Measurable voltage range": "1000V",
                 "Measurable voltage resolution": "0.1V",
@@ -154,12 +224,14 @@
                 "Order(n) to which Facility to Measure Harmonics available": "Up to 50th",
                 "Facility to Measure Transient Voltage": "8kV",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "IP-50",
+                "Direct IEE 519 Report": "NA"
             },
             "Fluke 1777": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 5,
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "5",
                 "Measurable current range (with clamp)": "6000 Ampere",
                 "Measurable voltage range": "1000V",
                 "Measurable voltage resolution": "0.1V",
@@ -171,30 +243,33 @@
                 "Order(n) to which Facility to Measure Harmonics available": "Up to 50th",
                 "Facility to Measure Transient Voltage": "8kV",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "IP-50",
+                "Direct IEE 519 Report": "NA"
             },
             "HIOKI -3198": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 5,
-                "Measurable current range (with clamp)": "6000 Ampere",
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "5",
+                "Measurable current range (with clamp)": "6000A",
                 "Measurable voltage range": "1000V",
                 "Measurable voltage resolution": "0.1V",
                 "Measurable voltage accuracy": "0.1%",
-                "Measurable current accuracy (%)": "0.2%",
+                "Measurable current accuracy (%)": "2%",
                 "Display type": "LCD",
                 "Mobile app for live data": "Not available",
                 "GSM for remote operation": "Not available",
-                "Order(n) to which Facility to Measure Harmonics available": "Up to 50th",
+                "Order(n) to which Facility to Measure Harmonics available": "Available",
                 "Facility to Measure Transient Voltage": "±6kV with 2 MHZ",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "NA",
+                "Direct IEE 519 Report": "Yes"
             },
-
             "Kusam-Meco-KM-2300": {
                 "Type of Power analyzer": "Three phase",
-                "Number of Current Channels (Nos.)": 4,
-                "Number of Voltage Channels": 4,
+                "Number of Current Channels (Nos.)": "4",
+                "Number of Voltage Channels": "4",
                 "Measurable current range (with clamp)": "3000A",
                 "Measurable voltage range": "1000V",
                 "Measurable voltage resolution": "0.1V",
@@ -206,128 +281,94 @@
                 "Order(n) to which Facility to Measure Harmonics available": "Available",
                 "Facility to Measure Transient Voltage": "±6000Vpk with 163.84kHz",
                 "Facility to Measure Active, Reactive and Apparent Energy": "Available",
-                "Facility to Measure Active, Reactive and Apparent Power": "Available"
+                "Facility to Measure Active, Reactive and Apparent Power": "Available",
+                "IP": "NA",
+                "Direct IEE 519 Report": "NA"
             }
         };
 
-        function loadComparisonTable() {
-            const selectedProduct = document.getElementById("productSelect").value;
-            const selectedCompetitor = document.getElementById("competitorSelect").value;
-            const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
 
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th><th>${selectedCompetitor2}</th></tr>`;
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
 
-            const productData = productComparisonData[selectedProduct];
-            const competitor1Data = productComparisonData[selectedCompetitor] || {};
-            const competitor2Data = productComparisonData[selectedCompetitor2] || {};
-
-            const features = [
-                "Type of Power analyzer",
-                "Number of Current Channels (Nos.)",
-                "Number of Voltage Channels",
-                "Measurable current range (with clamp)",
-                "Measurable voltage range",
-                "Measurable voltage resolution",
-                "Measurable voltage accuracy",
-                "Measurable current accuracy (%)",
-                "Display type",
-                "Mobile app for live data",
-                "GSM for remote operation",
-                "Order(n) to which Facility to Measure Harmonics available",
-                "Facility to Measure Transient Voltage",
-                "Facility to Measure Active, Reactive and Apparent Energy",
-                "Facility to Measure Active, Reactive and Apparent Power"
-            ];
-
-            features.forEach((feature) => {
-                tableContent += `<tr><td>${feature}</td><td>${productData[feature]}</td><td>${competitor1Data[feature] || "N/A"}</td><td>${competitor2Data[feature] || "N/A"}</td></tr>`;
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
             });
 
-            document.getElementById("comparisonTable").innerHTML = tableContent;
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
         }
 
-        function updateCompetitorOptions() {
-            const productSelect = document.getElementById("productSelect");
-            const selectedProduct = productSelect.value;
-
-            const competitorSelect = document.getElementById("competitorSelect");
-            const competitorSelect2 = document.getElementById("competitorSelect2");
-
-            competitorSelect.innerHTML = '';
-            competitorSelect2.innerHTML = '';
-
-            const competitors = Object.keys(productComparisonData).filter(product => product !== selectedProduct);
-
-            competitors.forEach(competitor => {
-                const option = document.createElement("option");
-                option.value = competitor;
-                option.text = competitor;
-                competitorSelect.appendChild(option);
-
-                const option2 = document.createElement("option");
-                option2.value = competitor;
-                option2.text = competitor;
-                competitorSelect2.appendChild(option2);
-            });
-
-            loadComparisonTable();
-        }
-
+        // Function to compare all products
         function compareAllProducts() {
-            const selectedProduct = document.getElementById("productSelect").value;
-            const competitors = Object.keys(productComparisonData).filter(product => product !== selectedProduct);
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
 
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th>`;
-
-            competitors.forEach((competitor) => {
-                tableContent += `<th>${competitor}</th>`;
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
             });
 
-            tableContent += `</tr>`;
-
-            const productData = productComparisonData[selectedProduct];
-
-            const features = [
-                "Type of Power analyzer",
-                "Number of Current Channels (Nos.)",
-                "Number of Voltage Channels",
-                "Measurable current range (with clamp)",
-                "Measurable voltage range",
-                "Measurable voltage resolution",
-                "Measurable voltage accuracy",
-                "Measurable current accuracy (%)",
-                "Display type",
-                "Mobile app for live data",
-                "GSM for remote operation",
-                "Order(n) to which Facility to Measure Harmonics available",
-                "Facility to Measure Transient Voltage",
-                "Facility to Measure Active, Reactive and Apparent Energy",
-                "Facility to Measure Active, Reactive and Apparent Power"
-            ];
-
-            features.forEach((feature) => {
-                tableContent += `<tr><td>${feature}</td><td>${productData[feature]}</td>`;
-
-                competitors.forEach((competitor) => {
-                    const competitorData = productComparisonData[competitor];
-                    tableContent += `<td>${competitorData[feature] || "N/A"}</td>`;
-                });
-
-                tableContent += `</tr>`;
-            });
-
-            document.getElementById("comparisonTable").innerHTML = tableContent;
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
         }
 
+        // Function to export comparison to PDF
         function exportToPDF() {
-            html2canvas(document.querySelector("body")).then(function(canvas) {
-                const pdf = new jsPDF();
-                pdf.addImage(canvas.toDataURL(), "JPEG", 0, 0);
-                pdf.save("product_comparison.pdf");
-            });
-        }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-        window.onload = updateCompetitorOptions;
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Product_Comparison.pdf");
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="Sonel MRU-120">Sonel MRU-120</option>
+                    <option value="Sonel-12">Sonel-12</option>
+                    <option value="Sonel-120Hd">Sonel-120Hd</option>
+                    <option value="Megger DET2/3">Megger DET2/3</option>
+                    <option value="Megger DET4TC2">Megger DET4TC2</option>
+                    <option value="Megger DET4TC2R">Megger DET4TC2R</option>
+                    <option value="Megger DET4TD2 & DET4TR2">Megger DET4TD2 & DET4TR2</option>
+                    <option value="Fluke 1623-2">Fluke 1623-2</option>
+                    <option value="Fluke 1625-2">Fluke 1625-2</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="Sonel MRU-120">Sonel MRU-120</option>
+                    <option value="Sonel-12">Sonel-12</option>
+                    <option value="Sonel-120Hd">Sonel-120Hd</option>
+                    <option value="Megger DET2/3">Megger DET2/3</option>
+                    <option value="Megger DET4TC2">Megger DET4TC2</option>
+                    <option value="Megger DET4TC2R">Megger DET4TC2R</option>
+                    <option value="Megger DET4TD2 & DET4TR2">Megger DET4TD2 & DET4TR2</option>
+                    <option value="Fluke 1623-2">Fluke 1623-2</option>
+                    <option value="Fluke 1625-2">Fluke 1625-2</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="Sonel MRU-120">Sonel MRU-120</option>
+                    <option value="Sonel-12">Sonel-12</option>
+                    <option value="Sonel-120Hd">Sonel-120Hd</option>
+                    <option value="Megger DET2/3">Megger DET2/3</option>
+                    <option value="Megger DET4TC2">Megger DET4TC2</option>
+                    <option value="Megger DET4TC2R">Megger DET4TC2R</option>
+                    <option value="Megger DET4TD2 & DET4TR2">Megger DET4TD2 & DET4TR2</option>
+                    <option value="Fluke 1623-2">Fluke 1623-2</option>
+                    <option value="Fluke 1625-2">Fluke 1625-2</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportToPDF()">Export to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel MRU-12": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "125 Hz",
+                "Measurement current": ">20mA",
+                "Memory": "990",
+                "Battery": "Rechargeable battery"
+            },
+            "Sonel MRU-120": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "125 Hz",
+                "Measurement current": ">200mA",
+                "Memory": "990",
+                "Battery": "Rechargeable battery"
+            },
+            "Sonel MRU-120HD": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "125 Hz",
+                "Measurement current": ">200mA",
+                "Memory": "990",
+                "Battery": "Rechargeable battery"
+            },
+            "Megger DET2/3": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "10 Hz to 200 Hz",
+                "Measurement current": "50mA",
+                "Memory": "Yes",
+                "Battery": "Rechargeable battery"
+            },
+            "Megger DET4TC2": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "94, 105, 111, 128 Hz",
+                "Measurement current": "4,5mA (0,45)",
+                "Memory": "NA",
+                "Battery": "Rechargeable battery"
+            },
+            "Megger DET4TC2R": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "94, 105, 111, 128 Hz",
+                "Measurement current": "4,5mA (0,45)",
+                "Memory": "NA",
+                "Battery": "Rechargeable battery"
+            },
+            "Megger DET4TD2 & DET4TR2": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "NA",
+                "Double Clamp Method": "NA",
+                "Frequency of the measurement current": "128 Hz",
+                "Measurement current": "4,5mA (0,45)",
+                "Memory": "Yes",
+                "Battery": "Rechargeable battery"
+            },
+            "Fluke 1623-2": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "128 Hz",
+                "Measurement current": ">50mA",
+                "Memory": "Yes",
+                "Battery": "Rechargeable battery"
+            },
+            "Fluke 1625-2": {
+                "3p Method": "Available",
+                "4p Method": "Available",
+                "3p + clamps Method": "Available",
+                "Double Clamp Method": "Available",
+                "Frequency of the measurement current": "94/105/111/128 Hz",
+                "Measurement current": "250mA",
+                "Memory": "NA",
+                "Battery": "Rechargeable battery"
+            }
+        };
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export comparison to PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Product_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>
