@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Comparison</title>
+    <title>Product Comparison Tool</title>
     <!-- Include jsPDF library for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -105,34 +105,31 @@
             <div>
                 <label for="product">Select Product:</label>
                 <select id="product">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
+                    <option value="Sonel MPI-530">Sonel MPI-530</option>
+                    <option value="Sonel MPI-540">Sonel MPI-540</option>
+                    <option value="Megger MFT-1835">Megger MFT-1835</option>
+                    <option value="Megger MFT-X1">Megger MFT-X1</option>
+                    <option value="Fluke 1664FC">Fluke 1664FC</option>
                 </select>
             </div>
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
                 <select id="competitor1">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                    <option value="Taurus TFR 54 HF">Taurus TFR 54 HF</option>
-                    <option value="Metrel MI 3290 GX">Metrel MI 3290 GX</option>
-                    <option value="Metrel MI 3290 GF">Metrel MI 3290 GF</option>
-                    <option value="Metrel MI 3290 GL">Metrel MI 3290 GL</option>
-                    <option value="Metrel MI 3290 GP">Metrel MI 3290 GP</option>
-                    <option value="Scope -MegaBras Tm 25 t">Scope -MegaBras Tm 25 t</option>
+                    <option value="Sonel MPI-530">Sonel MPI-530</option>
+                    <option value="Sonel MPI-540">Sonel MPI-540</option>
+                    <option value="Megger MFT-1835">Megger MFT-1835</option>
+                    <option value="Megger MFT-X1">Megger MFT-X1</option>
+                    <option value="Fluke 1664FC">Fluke 1664FC</option>
                 </select>
             </div>
             <div>
                 <label for="competitor2">Select Competitor 2:</label>
                 <select id="competitor2">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                    <option value="Taurus TFR 54 HF">Taurus TFR 54 HF</option>
-                    <option value="Metrel MI 3290 GX">Metrel MI 3290 GX</option>
-                    <option value="Metrel MI 3290 GF">Metrel MI 3290 GF</option>
-                    <option value="Metrel MI 3290 GL">Metrel MI 3290 GL</option>
-                    <option value="Metrel MI 3290 GP">Metrel MI 3290 GP</option>
-                    <option value="Scope -MegaBras Tm 25 t">Scope -MegaBras Tm 25 t</option>
+                    <option value="Sonel MPI-530">Sonel MPI-530</option>
+                    <option value="Sonel MPI-540">Sonel MPI-540</option>
+                    <option value="Megger MFT-1835">Megger MFT-1835</option>
+                    <option value="Megger MFT-X1">Megger MFT-X1</option>
+                    <option value="Fluke 1664FC">Fluke 1664FC</option>
                 </select>
             </div>
         </div>
@@ -150,130 +147,90 @@
     <script>
         // Product Data
         const products = {
-            "Sonel MRU-200": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Measurement of leakage": "0,1mA...300A",
-                "Frequency of the measurement current": "16 2/3 Hz, 50 Hz, 60 Hz and 400 Hz",
-                "Measurement current": ">200mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "1.5KV & 1A",
-                "impulse method": "Yes - impulse shape (4/10, 8/20, 10/350) 0,0..200Ω",
-                "Memory": "990",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Sonel MPI-530": {
+                "Measurement of current": "Range: 3kA, Resolution: 0.1mA",
+                "Measurement of active power P, reactive power Q and apparent power": "Range [W], [VA], [var]: 1.50M",
+                "Measurement of short circuit loop impedance ZS": "Range: 1999.9",
+                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.01ohm-1999 ohm",
+                "RCD trigger and response time test tA": "Range: 0..500ms, Resolution: 0.5x,1x,2x,5x, Accuracy: 2%",
+                "Measurement of RCD tripping current I": "Range: 3mA to 1000mA, Resolution: 0.1mA",
+                "Earth resistance": "Type: 3P,4P,3P+Clamp,Double Clamp, Range: 0.00 to 1.99k",
+                "Insulation resistance": "Range: 50,100,250V,500V,1000V, s.c: <2mA",
+                "Phase sequence indication": "Phase-To-Phase voltages",
+                "Memory": "50,000 results",
+                "Harmonics": "No of Harmonic: 1…40, Accuracy: 5%, THD: Available",
+                "LUX measurement": "Available",
+                "Soil Resistivity": "Available",
+                "Measurement of open circuit DC voltage UOC": "NA",
+                "Measurement of short circuit DC current ISC": "NA"
             },
-            "Sonel MRU-200 GPS": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Measurement of leakage": "0,1mA...300A",
-                "Frequency of the measurement current": "16 2/3 Hz, 50 Hz, 60 Hz and 400 Hz",
-                "Measurement current": ">200mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "1.5KV & 1A",
-                "impulse method": "Yes - impulse shape (4/10, 8/20, 10/350) 0,0..200Ω",
-                "Memory": "990",
-                "GPS function": "Yes",
-                "Battery": "Rechargeable battery"
+            "Sonel MPI-540": {
+                "Measurement of current": "Range: 3kA, Resolution: 0.01",
+                "Measurement of active power P, reactive power Q and apparent power": "Range [W], [VA], [var]: 1.50M",
+                "Measurement of short circuit loop impedance ZS": "Range: 1999.9",
+                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.01ohm-1999 ohm",
+                "RCD trigger and response time test tA": "Range: 0..500ms, Resolution: 0.5x,1x,2x,5x, Accuracy: 2%",
+                "Measurement of RCD tripping current I": "Range: 3mA to 1000mA, Resolution: 0.1mA",
+                "Earth resistance": "Type: 3P,4P,3P+Clamp,Double Clamp, Range: 0.00 to 1.99k",
+                "Insulation resistance": "Range: 50,100,250V,500V,1000V, s.c: <2mA",
+                "Phase sequence indication": "Phase-To-Phase voltages",
+                "Memory": "50,000 results",
+                "Harmonics": "No of Harmonic: 1…40, Accuracy: 5%, THD: Available",
+                "LUX measurement": "Available",
+                "Soil Resistivity": "Available",
+                "Measurement of open circuit DC voltage UOC": "1000V",
+                "Measurement of short circuit DC current ISC": "20A"
             },
-            "Taurus TFR 54 HF": {
-                "3p Method": "NA",
-                "4p Method": "NA",
-                "3p + clamps Method": "NA",
-                "Double Clamp Method": "NA",
-                "Measurement of leakage": "NA",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "20mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "250V &20mA",
-                "impulse method": "NA",
-                "Memory": "Available",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Megger MFT-1835": {
+                "Measurement of current": "Range: 199 A, Resolution: 0.5mA",
+                "Measurement of active power P, reactive power Q and apparent power": "NA",
+                "Measurement of short circuit loop impedance ZS": "Range: 0.01 ohm to 1000 ohm",
+                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.01 ohm to 1000 ohm",
+                "RCD trigger and response time test tA": "Available, Accuracy: 10%",
+                "Measurement of RCD tripping current I": "Range: 10 mA to 1000 mA, Resolution: NM",
+                "Earth resistance": "Type: 2P,3P,3P+clamp,Stakeless, Range: 1.0 ohm to 1.99 kohm",
+                "Insulation resistance": "Range: 100,250V,500V,1000V, s.c: 1.5mA",
+                "Phase sequence indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "1000 Results",
+                "Harmonics": "NA",
+                "LUX measurement": "NA",
+                "Soil Resistivity": "NA",
+                "Measurement of open circuit DC voltage UOC": "NA",
+                "Measurement of short circuit DC current ISC": "NA"
             },
-            "Metrel MI 3290 GX": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Measurement of leakage": "49.9 A",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "Available",
-                "Memory": "Available",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Megger MFT-X1": {
+                "Measurement of current": "Range: 300A, Resolution: 1mA",
+                "Measurement of active power P, reactive power Q and apparent power": "NA",
+                "Measurement of short circuit loop impedance ZS": "Range: 0.001ohm-1999 ohm",
+                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.001ohm-1999 ohm",
+                "RCD trigger and response time test tA": "Available, Accuracy: 10%",
+                "Measurement of RCD tripping current I": "Range: 10 mA to 1000 mA, Resolution: NM",
+                "Earth resistance": "Type: 2P,3P,3P+clamp,Stakeless, Range: 1.0 ohm to 1.99 kohm",
+                "Insulation resistance": "Range: 100,250V,500V,1000V, s.c: 1.5mA",
+                "Phase sequence indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "1000 Results",
+                "Harmonics": "NA",
+                "LUX measurement": "NA",
+                "Soil Resistivity": "NA",
+                "Measurement of open circuit DC voltage UOC": "NA",
+                "Measurement of short circuit DC current ISC": "NA"
             },
-            "Metrel MI 3290 GF": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Leakage current measurement": "NA",
-                "Frequency of the measurement current": "15 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "NA",
-                "Memory": "Available",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
-            },
-            "Metrel MI 3290 GL": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "Available",
-                "Memory": "Available",
-                "Measurement of leakage": "49.9 A",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
-            },
-            "Metrel MI 3290 GP": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
-                "Frequency of the measurement current": "15 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "NA",
-                "Memory": "Available",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
-            },
-            "Scope -MegaBras Tm 25 t": {
-                "3p Method": "NA",
-                "4p Method": "NA",
-                "3p + clamps Method": "NA",
-                "Double Clamp Method": "NA",
-                "Leakage current measurement": "NA",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "20 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "Yes",
-                "impulse method": "NA",
-                "Memory": "Yes",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Fluke 1664FC": {
+                "Measurement of current": "NA",
+                "Measurement of active power P, reactive power Q and apparent power": "NA",
+                "Measurement of short circuit loop impedance ZS": "Range: 2000",
+                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "NA",
+                "RCD trigger and response time test tA": "Range: 0..510ms, Resolution: 1x,2x,5x, Accuracy: 1%",
+                "Measurement of RCD tripping current I": "Range: 10 mA to 1000 mA, Resolution: NM",
+                "Earth resistance": "Type: 3P, Range: 2000ohm",
+                "Insulation resistance": "Range: 50,100,250V,500V,1000V, s.c: 1mA",
+                "Phase sequence indication": "“1-2-3”: or “3-2-1”",
+                "Memory": "3000 records",
+                "Harmonics": "NA",
+                "LUX measurement": "NA",
+                "Soil Resistivity": "NA",
+                "Measurement of open circuit DC voltage UOC": "NA",
+                "Measurement of short circuit DC current ISC": "NA"
             }
         };
 
@@ -344,6 +301,9 @@
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
 
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
+
             // Add table to PDF
             const headers = ["Feature", product, competitor1, competitor2];
             const rows = Object.keys(products[product]).map(feature => {
@@ -368,6 +328,9 @@
         function exportAllToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
 
             // Add table to PDF
             const headers = ["Feature", ...Object.keys(products)];

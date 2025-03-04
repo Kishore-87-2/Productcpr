@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison Tool</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="Sonel KT-650">Sonel KT-650</option>
+                    <option value="Sonel KT-670">Sonel KT-670</option>
+                    <option value="Flir T865">Flir T865</option>
+                    <option value="Flir T560">Flir T560</option>
+                    <option value="Fluke TiX501">Fluke TiX501</option>
+                    <option value="Fluke 580">Fluke 580</option>
+                    <option value="Fluke TiX870">Fluke TiX870</option>
+                    <option value="Fluke TiX875">Fluke TiX875</option>
+                    <option value="Fluke TiX880">Fluke TiX880</option>
+                    <option value="Fluke TiX885">Fluke TiX885</option>
+                    <option value="Testo 890">Testo 890</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="Sonel KT-650">Sonel KT-650</option>
+                    <option value="Sonel KT-670">Sonel KT-670</option>
+                    <option value="Flir T865">Flir T865</option>
+                    <option value="Flir T560">Flir T560</option>
+                    <option value="Fluke TiX501">Fluke TiX501</option>
+                    <option value="Fluke 580">Fluke 580</option>
+                    <option value="Fluke TiX870">Fluke TiX870</option>
+                    <option value="Fluke TiX875">Fluke TiX875</option>
+                    <option value="Fluke TiX880">Fluke TiX880</option>
+                    <option value="Fluke TiX885">Fluke TiX885</option>
+                    <option value="Testo 890">Testo 890</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="Sonel KT-650">Sonel KT-650</option>
+                    <option value="Sonel KT-670">Sonel KT-670</option>
+                    <option value="Flir T865">Flir T865</option>
+                    <option value="Flir T560">Flir T560</option>
+                    <option value="Fluke TiX501">Fluke TiX501</option>
+                    <option value="Fluke 580">Fluke 580</option>
+                    <option value="Fluke TiX870">Fluke TiX870</option>
+                    <option value="Fluke TiX875">Fluke TiX875</option>
+                    <option value="Fluke TiX880">Fluke TiX880</option>
+                    <option value="Fluke TiX885">Fluke TiX885</option>
+                    <option value="Testo 890">Testo 890</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel KT-650": {
+                "Detector's resolution": "640x480",
+                "Display": "5\", 1280×720 high light touch screen",
+                "Viewfinder": "1280×960 LCOS screen",
+                "FOV": "Standard Lens 24.6°×18.5°/25mm; Optional Lens 45.4°×34.9°/13mm; Optional Lens 11.3°×8.5°/55mm",
+                "Digital Zoom": "1-35× continuously",
+                "Focus": "Moto-drive/Auto",
+                "Temperature range": "filter1: -40℃ to 150℃, filter2: 100℃ to 800℃ (optional up to 2000℃)",
+                "Auto Image/Video Capturing": "Yes",
+                "Accuracy": "Filter1: ±1℃～±1% of reading; Filter2: ±2℃～±2% of reading",
+                "Thermal Sensitivity": "40mK",
+                "Visual camera": "8MP & 5MP visual camera",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MIF"
+            },
+            "Sonel KT-670": {
+                "Detector's resolution": "640x480",
+                "Display": "5\", 1280×720 high light touch screen",
+                "Viewfinder": "1280×960 LCOS screen",
+                "FOV": "Standard Lens 24.6°×18.5°/25mm; Optional Lens 45.4°×34.9°/13mm; Optional Lens 11.3°×8.5°/55mm",
+                "Digital Zoom": "1-35× continuously",
+                "Focus": "Moto-drive/Auto",
+                "Temperature range": "filter1: -40℃ to 150℃, filter2: 100℃ to 800℃ (optional up to 2000℃)",
+                "Auto Image/Video Capturing": "Yes",
+                "Accuracy": "±1℃～±1% of reading",
+                "Thermal Sensitivity": "35mK",
+                "Visual camera": "8MP & 5MP visual camera",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MIF"
+            },
+            "Flir T865": {
+                "Detector's resolution": "640 x 480",
+                "Display": "4\" 640 x 480 Pixel touchscreen",
+                "Viewfinder": "Yes",
+                "FOV": "24°",
+                "Digital Zoom": "up to 8x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "filter1: -40℃ to 120℃, filter2: 0℃ to 650℃ (optional up to 2000℃)",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "Filter1: ±1℃～±1% of reading; Filter2: ±2℃～±2% of reading",
+                "Thermal Sensitivity": "30mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Flir T560": {
+                "Detector's resolution": "640 x 480",
+                "Display": "4\", 640 × 480 pixel touchscreen LCD",
+                "Viewfinder": "None",
+                "FOV": "24°",
+                "Digital Zoom": "up to 8x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-20 to 1500°C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "±2°C (±3.6°F) or ±2%",
+                "Thermal Sensitivity": "30mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Fluke TiX501": {
+                "Detector's resolution": "640 x 480",
+                "Display": "5.7 inch (14.4 cm) landscape 640 x 480 LCD",
+                "Viewfinder": "None",
+                "FOV": "34 °H x 24 °V",
+                "Digital Zoom": "2x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-20 °C to +650 °C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "± 2 °C or 2 %",
+                "Thermal Sensitivity": "75 mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Fluke 580": {
+                "Detector's resolution": "640 x 480",
+                "Display": "5.7 inch (14.4 cm) landscape 640 x 480 LCD",
+                "Viewfinder": "None",
+                "FOV": "34 °H x 24 °V",
+                "Digital Zoom": "2x, 4x, 8x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-20 °C to +1,000 °C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "± 2 °C or 2 %",
+                "Thermal Sensitivity": "50 mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Fluke TiX870": {
+                "Detector's resolution": "640 x 480",
+                "Display": "5.5 inches",
+                "Viewfinder": "None",
+                "FOV": "25.0° x 19.0°",
+                "Digital Zoom": "1 to 25x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-40 to 700'C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "± 2 °C or 2 %",
+                "Thermal Sensitivity": "<35 Mk",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Fluke TiX875": {
+                "Detector's resolution": "640 x 480",
+                "Display": "5.5 inches",
+                "Viewfinder": "None",
+                "FOV": "25.0° x 19.0°",
+                "Digital Zoom": "1 to 25x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-40 to 700'C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "± 2 °C or 2 %",
+                "Thermal Sensitivity": "<30 mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Fluke TiX880": {
+                "Detector's resolution": "640 x 480",
+                "Display": "5.5 inches",
+                "Viewfinder": "None",
+                "FOV": "25.0° x 19.0°",
+                "Digital Zoom": "1 to 35x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-40 to 1200' C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "± 2 °C or 2 %",
+                "Thermal Sensitivity": "<25 mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Fluke TiX885": {
+                "Detector's resolution": "640 x 480",
+                "Display": "5.5 inches",
+                "Viewfinder": "None",
+                "FOV": "25.0° x 19.0°",
+                "Digital Zoom": "1 to 35x",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-40 to 1200' C",
+                "Auto Image/Video Capturing": "NM",
+                "Accuracy": "± 2 °C or 2 %",
+                "Thermal Sensitivity": "<25 mK",
+                "Visual camera": "5MP",
+                "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
+            },
+            "Testo 890": {
+                "Detector's resolution": "640 x 480 (307,200 pixels)",
+                "Display": "4.3\" LCD colour touchscreen display with 480 x 272 pixels",
+                "Viewfinder": "None",
+                "FOV": "42° x 32° / 0.1 m (Standard), 25° x 19° / 0.2 m (25° Lens), 15° x 11° / 0.5 m (Telephoto), 6.6° x 5° / 2 m (Super-telephoto)",
+                "Digital Zoom": "4X",
+                "Focus": "Auto/Manual",
+                "Temperature range": "-30 to +100 °C / 0 to +350 °C (switchable), 0 to +650 °C (switchable)",
+                "Auto Image/Video Capturing": "Auto image capture",
+                "Accuracy": "±2 °C, ±2 % of m.v. (±3 °C of m.v. at -30 to -22 °C)",
+                "Thermal Sensitivity": "<40mK",
+                "Visual camera": "3.1 MP",
+                "Image Mode": "IR and Visual"
+            }
+        };
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("All_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>

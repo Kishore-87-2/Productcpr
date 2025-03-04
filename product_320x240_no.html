@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                <option value="Sonel KT 520">Sonel KT 520</option>
+                <option value="Flir E8pro">Flir E8pro</option>
+                <option value="Flir E54">Flir E54</option>
+                <option value="Flir E76">Flir E76</option>
+                <option value="Fluke Ti300+">Fluke Ti300+</option>
+                <option value="Fluke TiS60+">Fluke TiS60+</option>
+                <option value="Testo 872">Testo 872</option>
+                <option value="Testo 883">Testo 883</option>
+</select>
+</div>
+<div>
+<label for="competitor1">Select Competitor 1:</label>
+<select id="competitor1">
+    <option value="Sonel KT 520">Sonel KT 520</option>
+    <option value="Flir E8pro">Flir E8pro</option>
+    <option value="Flir E54">Flir E54</option>
+    <option value="Flir E76">Flir E76</option>
+    <option value="Fluke Ti300+">Fluke Ti300+</option>
+    <option value="Fluke TiS60+">Fluke TiS60+</option>
+    <option value="Testo 872">Testo 872</option>
+    <option value="Testo 883">Testo 883</option>
+</select>
+</div>
+<div>
+ <label for="competitor2">Select Competitor 2:</label>
+ <select id="competitor2">
+    <option value="Sonel KT 520">Sonel KT 520</option>
+    <option value="Flir E8pro">Flir E8pro</option>
+    <option value="Flir E54">Flir E54</option>
+    <option value="Flir E76">Flir E76</option>
+    <option value="Fluke Ti300+">Fluke Ti300+</option>
+    <option value="Fluke TiS60+">Fluke TiS60+</option>
+    <option value="Testo 872">Testo 872</option>
+    <option value="Testo 883">Testo 883</option>
+</select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+       // Product Data
+const products = {
+    // Existing products...
+    // Add new products here:
+    "Sonel KT 520": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "640x480",
+        "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
+        "Detector type": "VOx, 7.5to 14um",
+        "Field of view": "25°x19°",
+        "Min. object distance": "0.1m",
+        "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
+        "Digital zoom": "1.1xto 8x",
+        "Shot recognition": "Auto",
+        "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
+        "Accuracy": "±2°C or 2%",
+        "Others": "Isothermals, Smart Stroke, Intelligently calculate the area",
+        "Image mode": "IR, VIS, MIF, PIP"
+    },
+    "Flir E8pro": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "NA",
+        "Display screen": "3.5 inch, 640 × 480 color LCD",
+        "Detector type": "7.5–13 µm",
+        "Field of view": "33° × 25°",
+        "Min. object distance": "0.36 m",
+        "Focusing mode": "Focus free",
+        "Digital zoom": "NA",
+        "Shot recognition": "NA",
+        "Measurement range": "-20°C to 550°C",
+        "Accuracy": "±2°C or 2%",
+        "Others": "NA",
+        "Image mode": "IR, VIS, MIF, PIP"
+    },
+    "Flir E54": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "NA",
+        "Display screen": "4 in.640 × 480 color LCD",
+        "Detector type": "Uncooled microbolometer/7.5–14 µm",
+        "Field of view": "24° × 18°",
+        "Min. object distance": "0.15 m",
+        "Focusing mode": "Manual",
+        "Digital zoom": "1–4× continuous",
+        "Shot recognition": "NA",
+        "Measurement range": "-20°C to 650°C",
+        "Accuracy": "±2°C or 2%",
+        "Others": "NA",
+        "Image mode": "IR, VIS, MIF, PIP"
+    },
+    "Flir E76": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "NA",
+        "Display screen": "4 in.640 × 480 color LCD",
+        "Detector type": "Uncooled microbolometer/7.5–14 µm",
+        "Field of view": "24° × 18°",
+        "Min. object distance": "0.15 m",
+        "Focusing mode": "Manual",
+        "Digital zoom": "1–4× continuous",
+        "Shot recognition": "NA",
+        "Measurement range": "-20°C to 650°C Optional 300 to 1000°C",
+        "Accuracy": "±2°C or 2%",
+        "Others": "NA",
+        "Image mode": "IR, VIS, MIF, PIP"
+    },
+    "Fluke Ti300+": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "Available",
+        "Display screen": "3.5 inch (landscape), 640 x 480 LCD",
+        "Detector type": "7.5 μm to 14 μm",
+        "Field of view": "34° H x 24° V",
+        "Min. object distance": "0.15 m",
+        "Focusing mode": "Auto and manual",
+        "Digital zoom": "NA",
+        "Shot recognition": "NA",
+        "Measurement range": "-20 °C to 650 °C",
+        "Accuracy": "±2°C or 2%",
+        "Others": "NA",
+        "Image mode": "IR, VIS, MIF"
+    },
+    "Fluke TiS60+": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "Available",
+        "Display screen": "3.5 inch (8.9 cm landscape) 320 x 240 LCD",
+        "Detector type": "Uncooled microbolometer/7.5–14 µm",
+        "Field of view": "34.1 °H x 25.6 °V",
+        "Min. object distance": "46 cm",
+        "Focusing mode": "Auto and manual",
+        "Digital zoom": "NA",
+        "Shot recognition": "NA",
+        "Measurement range": "-20 °C to 400 °C",
+        "Accuracy": "±2°C or 2%",
+        "Others": "NA",
+        "Image mode": "IR, VIS, MIF, PIP"
+    },
+    "Testo 872": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "640 x 480",
+        "Display screen": "8.9 cm (3.5\") TFT, QVGA (320 x 240 pixels)",
+        "Detector type": "7.5 to14 µm",
+        "Field of view": "42° x 30°",
+        "Min. object distance": "< 0.5 m",
+        "Focusing mode": "Fixed focus",
+        "Digital zoom": "NA",
+        "Shot recognition": "NA",
+        "Measurement range": "-20 to +650 °C",
+        "Accuracy": "±2 °C or 2 %",
+        "Others": "NA",
+        "Image mode": "IR, VIS"
+    },
+    "Testo 883": {
+        "Infrared resolution": "320x240",
+        "Super resolution": "640 x 480",
+        "Display screen": "8.9 cm (3.5\") TFT, QVGA (320 x 240 pixels)",
+        "Detector type": "7.5 to14 µm",
+        "Field of view": "30° x 23°",
+        "Min. object distance": "< 0.1 m",
+        "Focusing mode": "manual",
+        "Digital zoom": "2x, 3x, 4x",
+        "Shot recognition": "NA",
+        "Measurement range": "-30 to +650 °C",
+        "Accuracy": "±2 °C or 2 %",
+        "Others": "NA",
+        "Image mode": "IR image / real image / overlay"
+    }
+};
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("All_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Comparison</title>
+    <title>Product Comparison Tool</title>
     <!-- Include jsPDF library for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -105,34 +105,34 @@
             <div>
                 <label for="product">Select Product:</label>
                 <select id="product">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
+                    <option value="KT 550">KT 550</option>
+                    <option value="FLIR E96">FLIR E96</option>
+                    <option value="Fluke Ti480 PRO">Fluke Ti480 PRO</option>
+                    <option value="Fluke Ti401 PRO">Fluke Ti401 PRO</option>
+                    <option value="Toshniwal TI348A">Toshniwal TI348A</option>
+                    <option value="Fluke Ti 480u">Fluke Ti 480u</option>
                 </select>
             </div>
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
                 <select id="competitor1">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                    <option value="Taurus TFR 54 HF">Taurus TFR 54 HF</option>
-                    <option value="Metrel MI 3290 GX">Metrel MI 3290 GX</option>
-                    <option value="Metrel MI 3290 GF">Metrel MI 3290 GF</option>
-                    <option value="Metrel MI 3290 GL">Metrel MI 3290 GL</option>
-                    <option value="Metrel MI 3290 GP">Metrel MI 3290 GP</option>
-                    <option value="Scope -MegaBras Tm 25 t">Scope -MegaBras Tm 25 t</option>
+                    <option value="KT 550">KT 550</option>
+                    <option value="FLIR E96">FLIR E96</option>
+                    <option value="Fluke Ti480 PRO">Fluke Ti480 PRO</option>
+                    <option value="Fluke Ti401 PRO">Fluke Ti401 PRO</option>
+                    <option value="Toshniwal TI348A">Toshniwal TI348A</option>
+                    <option value="Fluke Ti 480u">Fluke Ti 480u</option>
                 </select>
             </div>
             <div>
                 <label for="competitor2">Select Competitor 2:</label>
                 <select id="competitor2">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                    <option value="Taurus TFR 54 HF">Taurus TFR 54 HF</option>
-                    <option value="Metrel MI 3290 GX">Metrel MI 3290 GX</option>
-                    <option value="Metrel MI 3290 GF">Metrel MI 3290 GF</option>
-                    <option value="Metrel MI 3290 GL">Metrel MI 3290 GL</option>
-                    <option value="Metrel MI 3290 GP">Metrel MI 3290 GP</option>
-                    <option value="Scope -MegaBras Tm 25 t">Scope -MegaBras Tm 25 t</option>
+                    <option value="KT 550">KT 550</option>
+                    <option value="FLIR E96">FLIR E96</option>
+                    <option value="Fluke Ti480 PRO">Fluke Ti480 PRO</option>
+                    <option value="Fluke Ti401 PRO">Fluke Ti401 PRO</option>
+                    <option value="Toshniwal TI348A">Toshniwal TI348A</option>
+                    <option value="Fluke Ti 480u">Fluke Ti 480u</option>
                 </select>
             </div>
         </div>
@@ -150,130 +150,101 @@
     <script>
         // Product Data
         const products = {
-            "Sonel MRU-200": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Measurement of leakage": "0,1mA...300A",
-                "Frequency of the measurement current": "16 2/3 Hz, 50 Hz, 60 Hz and 400 Hz",
-                "Measurement current": ">200mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "1.5KV & 1A",
-                "impulse method": "Yes - impulse shape (4/10, 8/20, 10/350) 0,0..200Ω",
-                "Memory": "990",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "KT 550": {
+                "Infrared resolution": "640x480",
+                "Field of view": "25°x19°",
+                "IFOV": "0.68mrad",
+                "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
+                "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
+                "Super resolution": "1280x960",
+                "Detector type": "VOx, 7.5to 14um",
+                "NETD": "≤40 mK",
+                "Min. object distance": "0.15m",
+                "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
+                "Digital zoom": "1.1xt0 20x",
+                "Accuracy": "±2°C or 2%",
+                "Digital camera": "13MP",
+                "Image mode": "IR, VIS, MIF, PIP"
             },
-            "Sonel MRU-200 GPS": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Measurement of leakage": "0,1mA...300A",
-                "Frequency of the measurement current": "16 2/3 Hz, 50 Hz, 60 Hz and 400 Hz",
-                "Measurement current": ">200mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "1.5KV & 1A",
-                "impulse method": "Yes - impulse shape (4/10, 8/20, 10/350) 0,0..200Ω",
-                "Memory": "990",
-                "GPS function": "Yes",
-                "Battery": "Rechargeable battery"
+            "FLIR E96": {
+                "Infrared resolution": "640x480",
+                "Field of view": "24° × 18°",
+                "IFOV": "1.66 mrad/pixel",
+                "Measurement range": "-20°C to 650°C",
+                "Display screen": "4 in.640 × 480 color LCD",
+                "Super resolution": "1280x960",
+                "Detector type": "VOx, 7.5to 14um",
+                "NETD": "<40 mK @ +30°C (+86°F)",
+                "Min. object distance": "0.15 m",
+                "Focusing mode": "Manual",
+                "Digital zoom": "1–4× continuous",
+                "Accuracy": "±2°C or 2%",
+                "Digital camera": "5MP",
+                "Image mode": "IR, VIS, MIF, PIP"
             },
-            "Taurus TFR 54 HF": {
-                "3p Method": "NA",
-                "4p Method": "NA",
-                "3p + clamps Method": "NA",
-                "Double Clamp Method": "NA",
-                "Measurement of leakage": "NA",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "20mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "250V &20mA",
-                "impulse method": "NA",
-                "Memory": "Available",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Fluke Ti480 PRO": {
+                "Infrared resolution": "640x480",
+                "Field of view": "34 °H x 24 °",
+                "IFOV": "0.93 mRad",
+                "Measurement range": "-20 °C to +1,000 °C",
+                "Display screen": "3.5 inch (landscape), 640 x 480 LCD",
+                "Super resolution": "1280 x 960",
+                "Detector type": "7.5 μm to 14 μm",
+                "NETD": "≤ 0.05 °C at 30 °C target temp (50 mK)",
+                "Min. object distance": "0.15 m",
+                "Focusing mode": "Auto and manual",
+                "Digital zoom": "2x and 4x",
+                "Accuracy": "±2°C or 2%",
+                "Digital camera": "5MP",
+                "Image mode": "IR, VIS, MIF, PIP"
             },
-            "Metrel MI 3290 GX": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Measurement of leakage": "49.9 A",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "Available",
-                "Memory": "Available",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Fluke Ti401 PRO": {
+                "Infrared resolution": "640x480",
+                "Field of view": "34 °H x 24 °",
+                "IFOV": "0.93 mRad",
+                "Measurement range": "-20 °C to +650 °C",
+                "Display screen": "3.5 inch (landscape), 640 x 480 LCD",
+                "Super resolution": "NA",
+                "Detector type": "7.5 μm to 14 μm",
+                "NETD": "≤ 0.075 °C at 30 °C target temp (75 mK)",
+                "Min. object distance": "0.15 m",
+                "Focusing mode": "Auto and manual",
+                "Digital zoom": "2x and 4x",
+                "Accuracy": "±2°C or 2%",
+                "Digital camera": "5MP",
+                "Image mode": "IR, VIS, MIF, PIP"
             },
-            "Metrel MI 3290 GF": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Leakage current measurement": "NA",
-                "Frequency of the measurement current": "15 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "NA",
-                "Memory": "Available",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Toshniwal TI348A": {
+                "Infrared resolution": "640 x 480",
+                "Field of view": "25° x 19°",
+                "IFOV": "NA",
+                "Measurement range": "-20°C to 120°C; 0°C to 650°C; 300°C to 1550°C",
+                "Display screen": "NA",
+                "Super resolution": "1280 x 960",
+                "Detector type": "NA",
+                "NETD": "NA",
+                "Min. object distance": "NA",
+                "Focusing mode": "NA",
+                "Digital zoom": "NA",
+                "Accuracy": "NA",
+                "Digital camera": "13MP",
+                "Image mode": "NA"
             },
-            "Metrel MI 3290 GL": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "Available",
-                "Memory": "Available",
-                "Measurement of leakage": "49.9 A",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
-            },
-            "Metrel MI 3290 GP": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
-                "Frequency of the measurement current": "15 kHz",
-                "Measurement current": "> 220 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "40 VAC &>220 mA",
-                "impulse method": "NA",
-                "Memory": "Available",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
-            },
-            "Scope -MegaBras Tm 25 t": {
-                "3p Method": "NA",
-                "4p Method": "NA",
-                "3p + clamps Method": "NA",
-                "Double Clamp Method": "NA",
-                "Leakage current measurement": "NA",
-                "Frequency of the measurement current": "25 kHz",
-                "Measurement current": "20 mA",
-                "TFR": "Yes",
-                "TFR OUTPUT": "Yes",
-                "impulse method": "NA",
-                "Memory": "Yes",
-                "Measurement of leakage": "NA",
-                "GPS function": "NA",
-                "Battery": "Rechargeable battery"
+            "Fluke Ti 480u": {
+                "Infrared resolution": "640 x 480",
+                "Field of view": "25° x 19°",
+                "IFOV": "0.68 mrad",
+                "Measurement range": "-20°C to 1200 °C",
+                "Display screen": "3.5\" LCD, 640 x 480",
+                "Super resolution": "NA",
+                "Detector type": "7.5 μm to 14 μm",
+                "NETD": "50 mK",
+                "Min. object distance": "0.1 m",
+                "Focusing mode": "Manual / Auto",
+                "Digital zoom": "1..4X",
+                "Accuracy": "±2°C or ±2% of reading",
+                "Digital camera": "13 MP",
+                "Image mode": "IR / Visual / Infrafusion MIF / PiP"
             }
         };
 
@@ -344,6 +315,9 @@
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
 
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
+
             // Add table to PDF
             const headers = ["Feature", product, competitor1, competitor2];
             const rows = Object.keys(products[product]).map(feature => {
@@ -368,6 +342,9 @@
         function exportAllToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
 
             // Add table to PDF
             const headers = ["Feature", ...Object.keys(products)];
