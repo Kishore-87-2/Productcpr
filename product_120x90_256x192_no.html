@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="Sonel KT-510">Sonel KT-510</option>
+                    <option value="Sonel KT-128">Sonel KT-128</option>
+                    <option value="Sonel KT-256">Sonel KT-256</option>
+                    <option value="Sonel KT-256F">Sonel KT-256F</option>
+                    <option value="Flir E5PRO">Flir E5PRO</option>
+                    <option value="Flir E6PRO">Flir E6PRO</option>
+                    <option value="Fluke TiS55+">Fluke TiS55+</option>
+                    <option value="Fluke TiS20+">Fluke TiS20+</option>
+                    <option value="Testo 865">Testo 865</option>
+                    <option value="Testo 871">Testo 871</option>
+                    <option value="Testo 868">Testo 868</option>
+                    <option value="Toshniwal TI323F">Toshniwal TI323F</option>
+                    <option value="ThermEye 256 A">ThermEye 256 A</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="Sonel KT-510">Sonel KT-510</option>
+                    <option value="Sonel KT-128">Sonel KT-128</option>
+                    <option value="Sonel KT-256">Sonel KT-256</option>
+                    <option value="Sonel KT-256F">Sonel KT-256F</option>
+                    <option value="Flir E5PRO">Flir E5PRO</option>
+                    <option value="Flir E6PRO">Flir E6PRO</option>
+                    <option value="Fluke TiS55+">Fluke TiS55+</option>
+                    <option value="Fluke TiS20+">Fluke TiS20+</option>
+                    <option value="Testo 865">Testo 865</option>
+                    <option value="Testo 871">Testo 871</option>
+                    <option value="Testo 868">Testo 868</option>
+                    <option value="Toshniwal TI323F">Toshniwal TI323F</option>
+                    <option value="ThermEye 256 A">ThermEye 256 A</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="Sonel KT-510">Sonel KT-510</option>
+                    <option value="Sonel KT-128">Sonel KT-128</option>
+                    <option value="Sonel KT-256">Sonel KT-256</option>
+                    <option value="Sonel KT-256F">Sonel KT-256F</option>
+                    <option value="Flir E5PRO">Flir E5PRO</option>
+                    <option value="Flir E6PRO">Flir E6PRO</option>
+                    <option value="Fluke TiS55+">Fluke TiS55+</option>
+                    <option value="Fluke TiS20+">Fluke TiS20+</option>
+                    <option value="Testo 865">Testo 865</option>
+                    <option value="Testo 871">Testo 871</option>
+                    <option value="Testo 868">Testo 868</option>
+                    <option value="Toshniwal TI323F">Toshniwal TI323F</option>
+                    <option value="ThermEye 256 A">ThermEye 256 A</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel KT-510": {
+                "Infrared resolution": "256x192",
+                "Super resolution": "512x384",
+                "Detector type": "7.5 to 14um",
+                "NETD": "<45 mK",
+                "Frame rate": "30Hz/9Hz",
+                "Field of view": "25°x19°",
+                "IFOV": "1.70mrad",
+                "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
+                "Measurement range": "-40°C to 150°C, 0°C to 650°C",
+                "Accuracy": "±2°C or 2%",
+                "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
+                "Image mode": "IR, VIS, MIF, PIP",
+                "Palettes": "15",
+                "Storage media": "Local storage (64 GB) and external SD card (64 GB and up to 256 GB)"
+            },
+            "Sonel KT-128": {
+                "Infrared resolution": "120 X 90",
+                "Super resolution": "NA",
+                "Detector type": "7.5 to 14um",
+                "NETD": "60 mK",
+                "Frame rate": "25 Hz",
+                "Field of view": "50° x 38°",
+                "IFOV": "7.6 mrad",
+                "Focusing mode": "Fixed",
+                "Measurement range": "-20C to 400 C",
+                "Accuracy": "±2°C or 2%",
+                "Display screen": "2.4\" 240 x 320 px LCD",
+                "Image mode": "IR, VIS, MIF, PIP",
+                "Palettes": "6",
+                "Storage media": "microSD card slot (max. 32 GB)"
+            },
+            "Sonel KT-256": {
+                "Infrared resolution": "256X192",
+                "Super resolution": "NA",
+                "Detector type": "7.5 to 14um",
+                "NETD": "45 mK",
+                "Frame rate": "25 Hz",
+                "Field of view": "56° x 48°",
+                "IFOV": "3.75 mrad",
+                "Focusing mode": "Fixed",
+                "Measurement range": "-20C to 550 C",
+                "Accuracy": "±2°C or 2%",
+                "Display screen": "2.4\" 240 x 320 px LCD",
+                "Image mode": "IR, VIS, MIF, PIP",
+                "Palettes": "6",
+                "Storage media": "microSD card slot (max. 32 GB)"
+            },
+            "Sonel KT-256F": {
+                "Infrared resolution": "256X192",
+                "Super resolution": "NA",
+                "Detector type": "7.5 to 14um",
+                "NETD": "45 mK",
+                "Frame rate": "25 Hz",
+                "Field of view": "25° x 19°",
+                "IFOV": "1.71 mrad",
+                "Focusing mode": "Auto",
+                "Measurement range": "-20C to 550 C",
+                "Accuracy": "±2°C or 2%",
+                "Display screen": "2.4\" 240 x 320 px LCD",
+                "Image mode": "IR, VIS, MIF, PIP",
+                "Palettes": "6",
+                "Storage media": "microSD card slot (max. 32 GB)"
+            },
+            "Flir E5PRO": {
+                "Infrared resolution": "160 × 120",
+                "Super resolution": "NA",
+                "Detector type": "7.5 to 13 µm",
+                "NETD": "<60 mK",
+                "Frame rate": "9 Hz",
+                "Field of view": "33° × 25°",
+                "IFOV": "3.7 mrad",
+                "Focusing mode": "Focus free",
+                "Measurement range": "-20°C to 400°C",
+                "Accuracy": "±2°C (±3.6°F) or ±2%",
+                "Display screen": "3.5 inch, 640 × 480 color LCD",
+                "Image mode": "IR, VIS, MIF, PIP",
+                "Palettes": "7",
+                "Storage media": "Available"
+            },
+            "Flir E6PRO": {
+                "Infrared resolution": "240 × 180",
+                "Super resolution": "NA",
+                "Detector type": "7.5 to 13 µm",
+                "NETD": "<50 mK",
+                "Frame rate": "9 Hz",
+                "Field of view": "33° × 25°",
+                "IFOV": "2.5 mrad",
+                "Focusing mode": "Focus free",
+                "Measurement range": "-20°C to 550°C",
+                "Accuracy": "±2°C (±3.6°F) or ±2%",
+                "Display screen": "3.5 inch, 640 × 480 color LCD",
+                "Image mode": "IR, VIS, MIF, PIP",
+                "Palettes": "7",
+                "Storage media": "Available"
+            },
+            "Fluke TiS55+": {
+                "Infrared resolution": "256 x 192",
+                "Super resolution": "NA",
+                "Detector type": "8 to 14μm",
+                "NETD": "40 mk",
+                "Frame rate": "9 Hz or 27 Hz models",
+                "Field of view": "28° x 20°",
+                "IFOV": "1.91 mRad",
+                "Focusing mode": "Manual focus",
+                "Measurement range": "-20 °C to 550 °C",
+                "Accuracy": "±2 °C or 2 %",
+                "Display screen": "3.5\" VGA Touchscreen LCD display",
+                "Image mode": "IR, VIS",
+                "Palettes": "6",
+                "Storage media": "500 images,≥4 GB SD card"
+            },
+            "Fluke TiS20+": {
+                "Infrared resolution": "120 x 90",
+                "Super resolution": "NA",
+                "Detector type": "8 to 14μm",
+                "NETD": "60 Mk",
+                "Frame rate": "9 Hz",
+                "Field of view": "50° H x 38° V",
+                "IFOV": "7.6 mRad",
+                "Focusing mode": "Fixed focus",
+                "Measurement range": "-20 °C to 400 °C",
+                "Accuracy": "±2 °C or 2 %",
+                "Display screen": "3.5\" VGA Touchscreen LCD display",
+                "Image mode": "IR, VIS",
+                "Palettes": "6",
+                "Storage media": "500 images,≥4 GB SD card"
+            },
+            "Testo 865": {
+                "Infrared resolution": "160 x 120",
+                "Super resolution": "320 x 240",
+                "Detector type": "7.5 to 14 µm",
+                "NETD": "100 mK",
+                "Frame rate": "9 Hz",
+                "Field of view": "31° x 23°",
+                "IFOV": "3.4 mrad",
+                "Focusing mode": "Fixed focus",
+                "Measurement range": "-20 to +280 °C",
+                "Accuracy": "±2 °C or 2 %",
+                "Display screen": "8.9 cm (3.5\") TFT, QVGA (320 x 240 pixels)",
+                "Image mode": "IR, VIS",
+                "Palettes": "4",
+                "Storage media": "Internal memory (2.8 GB)"
+            },
+            "Testo 871": {
+                "Infrared resolution": "240 x 180",
+                "Super resolution": "480 × 360",
+                "Detector type": "7.5 to 14 µm",
+                "NETD": "80 mK)",
+                "Frame rate": "9 Hz",
+                "Field of view": "35° x 26°",
+                "IFOV": "2.6 mrad",
+                "Focusing mode": "Fixed focus",
+                "Measurement range": "-20 to +650 °C",
+                "Accuracy": "±2 °C or 2 %",
+                "Display screen": "8.9 cm (3.5\") TFT, QVGA (320 x 240 pixels)",
+                "Image mode": "IR, VIS",
+                "Palettes": "4",
+                "Storage media": "Internal memory (2.8 GB)"
+            },
+            "Testo 868": {
+                "Infrared resolution": "160 x 120",
+                "Super resolution": "320 x 240",
+                "Detector type": "7.5 to14 µm",
+                "NETD": "80 mK",
+                "Frame rate": "9 Hz",
+                "Field of view": "31° x 23°",
+                "IFOV": "3.4 mrad",
+                "Focusing mode": "Fixed focus",
+                "Measurement range": "-20 to +650 °C",
+                "Accuracy": "±2 °C or 2 %",
+                "Display screen": "8.9 cm (3.5\") TFT, QVGA (320 x 240 pixels)",
+                "Image mode": "IR, VIS",
+                "Palettes": "4",
+                "Storage media": "Internal memory (2.8 GB)"
+            },
+            "Toshniwal TI323F": {
+                "Infrared resolution": "264x198",
+                "Super resolution": "528x396",
+                "Detector type": "7μm to 14μm",
+                "NETD": "NA",
+                "Frame rate": "NA",
+                "Field of view": "NA",
+                "IFOV": "NA",
+                "Focusing mode": "focus free",
+                "Measurement range": "-20 °C to +550°C",
+                "Accuracy": "NA",
+                "Display screen": "3.5 inch Color touch screen LCD",
+                "Image mode": "IR, VIS ,MIF",
+                "Palettes": "NA",
+                "Storage media": "NA"
+            },
+            "ThermEye 256 A": {
+                "Infrared resolution": "256 x 192",
+                "Super resolution": "NA",
+                "Detector type": "8 to 14μm",
+                "NETD": "<50mK",
+                "Frame rate": "25Hz",
+                "Field of view": "56° x 42.2°",
+                "IFOV": "3.8 mrad",
+                "Focusing mode": "Focus free",
+                "Measurement range": "-20 °C to +550°C",
+                "Accuracy": "±2 °C or 2 %",
+                "Display screen": "2.8\" LCD display pixels 320 x 240",
+                "Image mode": "IR, Fusion, PIP & Visual Mode",
+               "Palettes": "NA",
+                "Storage media": "NA"
+          }
+        };
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("All_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>
