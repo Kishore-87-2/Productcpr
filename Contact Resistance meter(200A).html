@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison Tool</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="Sonel MMR-6700">Sonel MMR-6700</option>
+                    <option value="Scope-CRM 200B">Scope-CRM 200B</option>
+                    <option value="Scope-CRM 200B+">Scope-CRM 200B+</option>
+                    <option value="Megger MOM-2">Megger MOM-2</option>
+                    <option value="Motwane PCRM 200S">Motwane PCRM 200S</option>
+                    <option value="Crestech MVT 200B & 200B+">Crestech MVT 200B & 200B+</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="Sonel MMR-6700">Sonel MMR-6700</option>
+                    <option value="Scope-CRM 200B">Scope-CRM 200B</option>
+                    <option value="Scope-CRM 200B+">Scope-CRM 200B+</option>
+                    <option value="Megger MOM-2">Megger MOM-2</option>
+                    <option value="Motwane PCRM 200S">Motwane PCRM 200S</option>
+                    <option value="Crestech MVT 200B & 200B+">Crestech MVT 200B & 200B+</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="Sonel MMR-6700">Sonel MMR-6700</option>
+                    <option value="Scope-CRM 200B">Scope-CRM 200B</option>
+                    <option value="Scope-CRM 200B+">Scope-CRM 200B+</option>
+                    <option value="Megger MOM-2">Megger MOM-2</option>
+                    <option value="Motwane PCRM 200S">Motwane PCRM 200S</option>
+                    <option value="Crestech MVT 200B & 200B+">Crestech MVT 200B & 200B+</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel MMR-6700": {
+                "Range": "1999.9 Ω",
+                "Resolution": "0.1 µΩ",
+                "Test current": "200 A",
+                "Accuracy (Percentage)": "0.25",
+                "Maximum resistance of leads for 10A current": "0.1Ω",
+                "Auto temperature compensation function": "Available",
+                "Temperature coefficient": "Available",
+                "Measurement triggering": "normal, automatic and continuous",
+                "Limit setting": "Available",
+                "Flow of current": "Unidirectional & Bidirectional",
+                "Measurement category": "CAT IV 50 V",
+                "Ingress protection": "IP 67",
+                "Memory": "990 Cells",
+                "Display": "TFT graphic display",
+                "Interface": "USB, LAN",
+                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
+                "Weight": "8.7 kg"
+            },
+            "Scope-CRM 200B": {
+                "Range": "19.99mΩ",
+                "Resolution": "0.1 µΩ",
+                "Test current": "200A",
+                "Accuracy (Percentage)": "2",
+                "Maximum resistance of leads for 10A current": "NA",
+                "Auto temperature compensation function": "NA",
+                "Temperature coefficient": "NA",
+                "Measurement triggering": "NA",
+                "Limit setting": "NA",
+                "Flow of current": "Unidirectional & Bidirectional",
+                "Measurement category": "NA",
+                "Ingress protection": "NA",
+                "Memory": "NA",
+                "Display": "LCD Display",
+                "Interface": "NA",
+                "EMC requirements": "NA",
+                "Weight": "9.1 kg"
+            },
+            "Scope-CRM 200B+": {
+                "Range": "20mΩ",
+                "Resolution": "0.01 µΩ",
+                "Test current": "200A",
+                "Accuracy (Percentage)": "1",
+                "Maximum resistance of leads for 10A current": "NA",
+                "Auto temperature compensation function": "NA",
+                "Temperature coefficient": "NA",
+                "Measurement triggering": "NA",
+                "Limit setting": "NA",
+                "Flow of current": "Unidirectional & Bidirectional",
+                "Measurement category": "NA",
+                "Ingress protection": "IP 67",
+                "Memory": "1000 records, Internal",
+                "Display": "LCD Display",
+                "Interface": "USB",
+                "EMC requirements": "NA",
+                "Weight": "5kg"
+            },
+            "Megger MOM-2": {
+                "Range": "1000 mΩ",
+                "Resolution": "1 µΩ",
+                "Test current": "240 A",
+                "Accuracy (Percentage)": "1",
+                "Maximum resistance of leads for 10A current": "NA",
+                "Auto temperature compensation function": "NA",
+                "Temperature coefficient": "NA",
+                "Measurement triggering": "Pulse Mode",
+                "Limit setting": "NA",
+                "Flow of current": "Unidirectional",
+                "Measurement category": "NA",
+                "Ingress protection": "IP 54",
+                "Memory": "190 measurements",
+                "Display": "LCD Display",
+                "Interface": "Bluetooth",
+                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
+                "Weight": "1kg"
+            },
+            "Motwane PCRM 200S": {
+                "Range": "20mΩ",
+                "Resolution": "0.1 µΩ",
+                "Test current": "200A",
+                "Accuracy (Percentage)": "1",
+                "Maximum resistance of leads for 10A current": "NA",
+                "Auto temperature compensation function": "NA",
+                "Temperature coefficient": "NA",
+                "Measurement triggering": "NA",
+                "Limit setting": "NA",
+                "Flow of current": "Unidirectional",
+                "Measurement category": "CAT II",
+                "Ingress protection": "IP 54",
+                "Memory": "199 reading storage facility",
+                "Display": "3 ½ digit LCD Display with Backlit.",
+                "Interface": "USB",
+                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
+                "Weight": "13 Kg"
+            },
+            "Crestech MVT 200B & 200B+": {
+                "Range": "20 mΩ",
+                "Resolution": "0.01µΩ to 10µΩ",
+                "Test current": "200A DC",
+                "Accuracy (Percentage)": "2",
+                "Maximum resistance of leads for 10A current": "NA",
+                "Auto temperature compensation function": "NA",
+                "Temperature coefficient": "NA",
+                "Measurement triggering": "NA",
+                "Limit setting": "NA",
+                "Flow of current": "Unidirectional",
+                "Measurement category": "NA",
+                "Ingress protection": "IP 67",
+                "Memory": "500 Records",
+                "Display": "4½ digit large LCD display",
+                "Interface": "USB",
+                "EMC requirements": "EN 61326-1",
+                "Weight": "4 kg"
+            }
+        };
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Set a compatible font (e.g., Helvetica)
+            doc.setFont("helvetica");
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("All_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>
