@@ -469,29 +469,46 @@
         }
 
         // Function to export all comparison to PDF
-        function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+      function exportAllToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
+    // Get all product names and features
+    const allProducts = Object.keys(products);
+    const features = Object.keys(products[allProducts[0]]);
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
+    // Split products into chunks of 5
+    const chunkSize = 5;
+    for (let i = 0; i < allProducts.length; i += chunkSize) {
+        const chunk = allProducts.slice(i, i + chunkSize);
 
-            doc.save("All_Comparison.pdf");
+        // Add a new page for each chunk (except the first page)
+        if (i > 0) {
+            doc.addPage();
         }
+
+        // Prepare headers and rows for the current chunk
+        const headers = ["Feature", ...chunk];
+        const rows = features.map(feature => {
+            return [feature, ...chunk.map(product => products[product][feature])];
+        });
+
+        // Add table to PDF
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 20,
+            theme: "grid",
+            styles: { fontSize: 10 },
+            headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+            margin: { horizontal: 10 },
+            tableWidth: "auto"
+        });
+    }
+
+    // Save the PDF
+    doc.save("All_Comparison.pdf");
+}
     </script>
 </body>
 </html>
