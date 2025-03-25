@@ -104,213 +104,275 @@
         <div class="dropdowns">
             <div>
                 <label for="product">Select Product:</label>
-                <select id="product">
-                    <option value="Sonel KT-560">Sonel KT-560</option>
-                    <option value="Flir T540">Flir T540</option>
-                    <option value="Flir T840">Flir T840</option>
-                </select>
+                <select id="product"></select>
             </div>
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
-                    <option value="Sonel KT-560">Sonel KT-560</option>
-                    <option value="Flir T540">Flir T540</option>
-                    <option value="Flir T840">Flir T840</option>
-                </select>
+                <select id="competitor1"></select>
             </div>
             <div>
                 <label for="competitor2">Select Competitor 2:</label>
-                <select id="competitor2">
-                    <option value="Sonel KT-560">Sonel KT-560</option>
-                    <option value="Flir T540">Flir T540</option>
-                    <option value="Flir T840">Flir T840</option>
-                </select>
+                <select id="competitor2"></select>
             </div>
         </div>
 
         <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button id="compareSelectedBtn">Compare Selected</button>
+            <button id="compareAllBtn">Compare All</button>
+            <button id="exportSelectedBtn">Export Selected to PDF</button>
+            <button id="exportAllBtn">Export All to PDF</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
     <script>
-        // Product Data
-        const products = {
-            "Sonel KT-560": {
-                "Detector resolution": "384 x 288",
-                "Focus": "Manual / Auto",
-                "Lens (field of view/focal length)": "24.9° x 18.7°",
-                "IFOV": "1.13 mrad",
-                "Tele Lens": "11.2° x 8.4°",
-                "IFOV (Tele Lens)": "0.52 mrad",
-                "Wide Lens": "48.1° x 35.9°",
-                "IFOV (Wide Lens)": "2.19 mrad",
-                "Display": "5”, 1280 x 720 high brightness, LCD touchscreen",
-                "Digital zoom": "1…10",
-                "Temperature range (Standard)": "Range 1: -40°C...150°C, Range 2: 100°C…800°C",
-                "Temperature range (Optional)": "700°C…2000°C",
-                "Image analysis modes": "12 points, 12 lines, 12 areas. Temperature indication: min, max, average. Isotherm. Temperature alarm. Smart stroke.",
-                "Palettes": "8",
-                "Visual camera resolution": "13 MPix"
-            },
-            "Flir T540": {
-                "Detector resolution": "464 × 348",
-                "Focus": "Manual / Auto",
-                "Lens (field of view/focal length)": "24",
-                "IFOV": "NA",
-                "Tele Lens": "14",
-                "IFOV (Tele Lens)": "NA",
-                "Wide Lens": "42",
-                "IFOV (Wide Lens)": "NA",
-                "Display": "4\", 640 × 480 pixel touchscreen LCD with auto-rotation",
-                "Digital zoom": "1…6 X",
-                "Temperature range (Standard)": "-20°C to 120°C, 0°C to 650°C, 300°C..1500°C",
-                "Temperature range (Optional)": "NA",
-                "Image analysis modes": "3 ea. in live mode: No measurement, center spot, hot spot, cold spot, User Preset 1, User Preset 2",
-                "Palettes": "8",
-                "Visual camera resolution": "5 Mp"
-            },
-            "Flir T840": {
-                "Detector resolution": "464 × 348",
-                "Focus": "Manual / Auto",
-                "Lens (field of view/focal length)": "24",
-                "IFOV": "NA",
-                "Tele Lens": "14",
-                "IFOV (Tele Lens)": "NA",
-                "Wide Lens": "42",
-                "IFOV (Wide Lens)": "NA",
-                "Display": "4\", 640 × 480 pixel touchscreen LCD with auto-rotation",
-                "Digital zoom": "1…6 X",
-                "Temperature range (Standard)": "-20°C to 120°C, 0°C to 650°C, 300°C..1500°C",
-                "Temperature range (Optional)": "NA",
-                "Image analysis modes": "No measurement, Center spot, Hot spot, Cold spot, User Preset 1, User Preset 2",
-                "Palettes": "7",
-                "Visual camera resolution": "5 Mp"
-            }
-        };
+        // Product Data Module
+        const ProductData = (function() {
+            const products = {
+                "Sonel KT-560": {
+                    "Display": "5”, 1280 x 720 high brightness, LCD touchscreen",
+                    "Detector resolution": "384 x 288",
+                    "Focus": "Manual / Auto",
+                    "Visual camera resolution": "13 MPix",
+                    "Lens (field of view/focal length)": "24.9° x 18.7°",
+                    "IFOV": "1.13 mrad",
+                    "Tele Lens": "11.2° x 8.4°",
+                    "IFOV (Tele Lens)": "0.52 mrad",
+                    "Wide Lens": "48.1° x 35.9°",
+                    "IFOV (Wide Lens)": "2.19 mrad",
+                    "Digital zoom": "1…10",
+                    "Temperature range (Standard)": "Range 1: -40°C...150°C, Range 2: 100°C…800°C, Optional:700°C…2000°C",
+                    "Image analysis modes": "12 points, 12 lines, 12 areas. Temperature indication: min, max, average. Isotherm. Temperature alarm. Smart stroke.",
+                    "Palettes": "8",
+                },
+                "Flir T540": {
+                    "Display": "4\", 640 × 480 pixel touchscreen LCD with auto-rotation",
+                    "Detector resolution": "464 × 348",
+                    "Focus": "Manual / Auto",
+                    "Visual camera resolution": "5 Mp",
+                    "Lens (field of view/focal length)": "24",
+                    "IFOV": "NA",
+                    "Tele Lens": "14",
+                    "IFOV (Tele Lens)": "NA",
+                    "Wide Lens": "42",
+                    "IFOV (Wide Lens)": "NA",
+                    "Digital zoom": "1…6 X",
+                    "Temperature range (Standard)": "-20°C to 120°C, 0°C to 650°C, 300°C..1500°C",
+                    "Image analysis modes": "3 ea. in live mode: No measurement, center spot, hot spot, cold spot, User Preset 1, User Preset 2",
+                    "Palettes": "8"
+                },
+                "Flir T840": {
+                    "Detector resolution": "464 × 348",
+                    "Focus": "Manual / Auto",
+                    "Visual camera resolution": "5 Mp",
+                    "Lens (field of view/focal length)": "24",
+                    "IFOV": "NA",
+                    "Tele Lens": "14",
+                    "IFOV (Tele Lens)": "NA",
+                    "Wide Lens": "42",
+                    "IFOV (Wide Lens)": "NA",
+                    "Display": "4\", 640 × 480 pixel touchscreen LCD with auto-rotation",
+                    "Digital zoom": "1…6 X",
+                    "Temperature range (Standard)": "-20°C to 120°C, 0°C to 650°C, 300°C..1500°C",
+                    "Image analysis modes": "No measurement, Center spot, Hot spot, Cold spot, User Preset 1, User Preset 2",
+                    "Palettes": "7"
+                }
+            };
 
-        // Function to compare selected products
-        function compareSelectedProducts() {
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+            const getProductNames = () => Object.keys(products);
+            const getProductData = (productName) => products[productName];
+            const getAllFeatures = () => {
+                // Get all unique features from all products
+                const featureSet = new Set();
+                Object.values(products).forEach(product => {
+                    Object.keys(product).forEach(feature => {
+                        featureSet.add(feature);
+                    });
+                });
+                return Array.from(featureSet);
+            };
 
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
-            `;
+            return {
+                getProductNames,
+                getProductData,
+                getAllFeatures
+            };
+        })();
 
-            Object.keys(products[product]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
+        // UI Controller Module
+        const UIController = (function() {
+            const DOMstrings = {
+                productSelect: '#product',
+                competitor1Select: '#competitor1',
+                competitor2Select: '#competitor2',
+                compareSelectedBtn: '#compareSelectedBtn',
+                compareAllBtn: '#compareAllBtn',
+                exportSelectedBtn: '#exportSelectedBtn',
+                exportAllBtn: '#exportAllBtn',
+                comparisonResult: '#comparisonResult'
+            };
+
+            const populateDropdowns = () => {
+                const productNames = ProductData.getProductNames();
+                const dropdowns = [
+                    document.querySelector(DOMstrings.productSelect),
+                    document.querySelector(DOMstrings.competitor1Select),
+                    document.querySelector(DOMstrings.competitor2Select)
+                ];
+
+                dropdowns.forEach(dropdown => {
+                    dropdown.innerHTML = '';
+                    productNames.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product;
+                        option.textContent = product;
+                        dropdown.appendChild(option);
+                    });
+                });
+
+                // Set default selections
+                if (productNames.length >= 3) {
+                    document.querySelector(DOMstrings.productSelect).value = productNames[0];
+                    document.querySelector(DOMstrings.competitor1Select).value = productNames[1];
+                    document.querySelector(DOMstrings.competitor2Select).value = productNames[2];
+                }
+            };
+
+            const getSelectedProducts = () => {
+                return {
+                    product: document.querySelector(DOMstrings.productSelect).value,
+                    competitor1: document.querySelector(DOMstrings.competitor1Select).value,
+                    competitor2: document.querySelector(DOMstrings.competitor2Select).value
+                };
+            };
+
+            const displayComparison = (productsToCompare) => {
+                const resultDiv = document.querySelector(DOMstrings.comparisonResult);
+                const productNames = Object.keys(productsToCompare);
+                const features = ProductData.getAllFeatures();
+
+                let tableHTML = `
+                    <h3>Comparison Result:</h3>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            ${productNames.map(name => `<th>${name}</th>`).join('')}
+                        </tr>
                 `;
-            });
 
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
-        }
+                features.forEach(feature => {
+                    tableHTML += `
+                        <tr>
+                            <td>${feature}</td>
+                            ${productNames.map(name => `<td>${productsToCompare[name][feature] || 'N/A'}</td>`).join('')}
+                        </tr>
+                    `;
+                });
 
-        // Function to compare all products
-        function compareAllProducts() {
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
-            `;
+                tableHTML += `</table>`;
+                resultDiv.innerHTML = tableHTML;
+            };
 
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
-                    </tr>
-                `;
-            });
+            return {
+                getDOMstrings: () => DOMstrings,
+                populateDropdowns,
+                getSelectedProducts,
+                displayComparison
+            };
+        })();
 
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
-        }
+        // Main App Controller
+        const AppController = (function(ProductData, UIController) {
+            const DOM = UIController.getDOMstrings();
 
-        // Function to export selected comparison to PDF
-        function exportSelectedToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const setupEventListeners = () => {
+                document.querySelector(DOM.compareSelectedBtn).addEventListener('click', compareSelectedProducts);
+                document.querySelector(DOM.compareAllBtn).addEventListener('click', compareAllProducts);
+                document.querySelector(DOM.exportSelectedBtn).addEventListener('click', exportSelectedToPDF);
+                document.querySelector(DOM.exportAllBtn).addEventListener('click', exportAllToPDF);
+            };
 
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+            const compareSelectedProducts = () => {
+                const { product, competitor1, competitor2 } = UIController.getSelectedProducts();
+                const productsToCompare = {
+                    [product]: ProductData.getProductData(product),
+                    [competitor1]: ProductData.getProductData(competitor1),
+                    [competitor2]: ProductData.getProductData(competitor2)
+                };
+                UIController.displayComparison(productsToCompare);
+            };
 
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
+            const compareAllProducts = () => {
+                const productNames = ProductData.getProductNames();
+                const productsToCompare = {};
+                
+                productNames.forEach(name => {
+                    productsToCompare[name] = ProductData.getProductData(name);
+                });
+                
+                UIController.displayComparison(productsToCompare);
+            };
 
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
+            const exportToPDF = (productsToCompare, filename) => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const productNames = Object.keys(productsToCompare);
+                const features = ProductData.getAllFeatures();
+                
+                const headers = ["Feature", ...productNames];
+                const rows = features.map(feature => {
+                    return [feature, ...productNames.map(name => productsToCompare[name][feature] || 'N/A')];
+                });
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
+                doc.setFont("helvetica");
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 20,
+                    theme: "grid",
+                    styles: { fontSize: 9 },  // Slightly smaller font for better fit
+                    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                    margin: { horizontal: 5 }, // Smaller margins for more space
+                    tableWidth: "auto"
+                });
 
-            doc.save("Selected_Comparison.pdf");
-        }
+                doc.save(filename);
+            };
 
-        // Function to export all comparison to PDF
-        function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const exportSelectedToPDF = () => {
+                const { product, competitor1, competitor2 } = UIController.getSelectedProducts();
+                const productsToCompare = {
+                    [product]: ProductData.getProductData(product),
+                    [competitor1]: ProductData.getProductData(competitor1),
+                    [competitor2]: ProductData.getProductData(competitor2)
+                };
+                exportToPDF(productsToCompare, "Selected_Comparison.pdf");
+            };
 
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
+            const exportAllToPDF = () => {
+                const productNames = ProductData.getProductNames();
+                const productsToCompare = {};
+                
+                productNames.forEach(name => {
+                    productsToCompare[name] = ProductData.getProductData(name);
+                });
+                
+                exportToPDF(productsToCompare, "All_Comparison.pdf");
+            };
 
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
+            return {
+                init: function() {
+                    console.log('Initializing App...');
+                    UIController.populateDropdowns();
+                    setupEventListeners();
+                }
+            };
+        })(ProductData, UIController);
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("All_Comparison.pdf");
-        }
+        // Initialize the application
+        AppController.init();
     </script>
 </body>
 </html>
