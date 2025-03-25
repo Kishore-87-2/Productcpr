@@ -8,7 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* CSS Styling (same as before) */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -41,12 +40,19 @@
             justify-content: space-between;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dropdown-group {
+            flex: 1;
+            min-width: 200px;
         }
 
         label {
             display: block;
             margin: 10px 0 5px;
             font-weight: bold;
+            text-align: left;
         }
 
         select {
@@ -55,24 +61,35 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            background-color: #fff;
         }
 
         .buttons {
             margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         button {
             padding: 10px 20px;
-            margin: 5px;
             border: none;
             border-radius: 4px;
             background-color: #007bff;
             color: #fff;
             cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
 
         .comparison-result {
@@ -81,36 +98,72 @@
             overflow-x: auto;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        /* Add these styles to your existing CSS */
+table {
+    table-layout: fixed; /* Ensures equal column width */
+    width: 100%;
+}
+
+th, td {
+    word-wrap: break-word; /* Allows text to wrap within cells */
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+/* Equal width for all columns */
+th:nth-child(1), td:nth-child(1) {
+    width: 25%; /* Feature column */
+}
+
+th:nth-child(n+2), td:nth-child(n+2) {
+    width: 25%; /* Equal width for product columns */
+}
+        .loading {
+            display: none;
+            margin: 20px 0;
+            color: #007bff;
+            font-weight: bold;
         }
 
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
+        .error-message {
+            color: #dc3545;
+            margin: 20px 0;
+            font-weight: bold;
         }
 
-        th {
-            background-color: #f4f4f4;
+        @media (max-width: 768px) {
+            .dropdowns {
+                flex-direction: column;
+            }
+            
+            .dropdown-group {
+                width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Product Comparison Tool</h1>
+        
         <div class="dropdowns">
-            <div>
+            <div class="dropdown-group">
                 <label for="product">Select Product:</label>
                 <select id="product">
+                    <option value="">-- Select Product --</option>
                     <option value="KT-525">KT-525</option>
                 </select>
             </div>
-            <div>
+            <div class="dropdown-group">
                 <label for="competitor1">Select Competitor 1:</label>
                 <select id="competitor1">
+                    <option value="">-- Select Competitor --</option>
                     <option value="Fluke TiS75+">Fluke TiS75+</option>
                     <option value="Toshniwal TI7">Toshniwal TI7</option>
                     <option value="Toshniwal TI8">Toshniwal TI8</option>
@@ -118,87 +171,90 @@
                     <option value="Thermeye384M">Thermeye384M</option>
                 </select>
             </div>
-            <div>
+            <div class="dropdown-group">
                 <label for="competitor2">Select Competitor 2:</label>
                 <select id="competitor2">
+                    <option value="">-- Select Competitor --</option>
                     <option value="Fluke TiS75+">Fluke TiS75+</option>
                     <option value="Toshniwal TI7">Toshniwal TI7</option>
                     <option value="Toshniwal TI8">Toshniwal TI8</option>
                     <option value="Toshniwal TI346A">Toshniwal TI346A</option>
                     <option value="Thermeye384M">Thermeye384M</option>
-
                 </select>
             </div>
         </div>
 
         <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button id="compareSelectedBtn" onclick="compareSelectedProducts()" disabled>Compare Selected</button>
+            <button id="compareAllBtn" onclick="compareAllProducts()">Compare All</button>
+            <button id="exportSelectedBtn" onclick="exportSelectedToPDF()" disabled>Export Selected to PDF</button>
+            <button id="exportAllBtn" onclick="exportAllToPDF()">Export All to PDF</button>
         </div>
 
+        <div id="loading" class="loading">Generating comparison, please wait...</div>
+        <div id="errorMessage" class="error-message"></div>
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
     <script>
-        // Product Data
-        const products = {
+        // Product Data - Organized as a constant at the top
+        const PRODUCTS = {
             "KT-525": {
+                "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
                 "Infrared resolution": "384x288",
                 "Super resolution": "768x576",
-                "Detector type": "VOx, 7.5to 14um",
-                "NETD": "<45 mK",
-                "Frame rate": "30Hz/9Hz",
+                "Detector type": "7.5 -14 um",
+                "NETD": " <45 mK",
+                "Frame rate": "30Hz",
                 "Field of view": "25°x19°",
                 "IFOV": "1.13mrad",
                 "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
-                "Digital zoom": "1.1xto 10x",
+                "Digital zoom": "1.1x to 10x",
                 "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
                 "Accuracy": "±2°C or 2%",
-                "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
                 "Digital camera": "8MP",
                 "Image mode": "IR, VIS, MIF, PIP",
                 "Image adjustment": "Level span mode: Automatic, Semi-automatic, Manual",
                 "Palettes": "15"
             },
             "Fluke TiS75+": {
+                "Display screen": "3.5\"Touchscreen LCD display",
                 "Infrared resolution": "384 x 288",
                 "Super resolution": "NA",
-                "Detector type": "~8-14μm",
+                "Detector type": "8-14 um",
                 "NETD": "40 mk",
-                "Frame rate": "9 Hz or 27 Hz models",
+                "Frame rate": "9 Hz or 27 Hz",
                 "Field of view": "42° x 30°",
                 "IFOV": "1.91 mRad",
                 "Focusing mode": "Manual focus",
                 "Digital zoom": "NA",
                 "Measurement range": "-20 °C to 550 °C",
                 "Accuracy": "±2 °C or 2 %",
-                "Display screen": "3.5\" VGA Touchscreen LCD display",
                 "Digital camera": "5MP",
                 "Image mode": "IR, VIS",
                 "Image adjustment": "NA",
                 "Palettes": "6"
             },
             "Toshniwal TI7": {
+                "Display screen": "NA",
                 "Infrared resolution": "384 x 288",
                 "Super resolution": "NA",
-                "Detector type": "7.5to 14μm",
+                "Detector type": "7.5-14um",
                 "NETD": "NA",
                 "Frame rate": "NA",
                 "Field of view": "NA",
                 "IFOV": "NA",
                 "Focusing mode": "Manual focus",
                 "Digital zoom": "NA",
-                "Measurement range": "Range -20°C- +650°C,can be extended to 1200°C",
+                "Measurement range": "Range -20°C- +650°C, Optional 1200°C",
                 "Accuracy": "±2 °C or 2 %",
-                "Display screen": "NA",
                 "Digital camera": "NA",
                 "Image mode": "NA",
                 "Image adjustment": "Adjustment Auto/manual contrast, brightness adjust",
                 "Palettes": "11"
             },
             "Toshniwal TI8": {
+                "Display screen": "NA",
                 "Infrared resolution": "384 x 288",
                 "Super resolution": "NA",
                 "Detector type": "7.5to 14μm",
@@ -208,164 +264,403 @@
                 "IFOV": "NA",
                 "Focusing mode": "Manual / Auto",
                 "Digital zoom": "2X, 4X",
-                "Measurement range": "-20°C − +650°C(can expanded to 1200/2000°C)",
+                "Measurement range": "-20°C to +650°C",
                 "Accuracy": "±2 °C or 2 %",
-                "Display screen": "NA",
                 "Digital camera": "5 MP",
                 "Image mode": "NA",
                 "Image adjustment": "NA",
                 "Palettes": "NA"
             },
             "Toshniwal TI346A": {
+                "Display screen": "5-inch color touch screen",
                 "Infrared resolution": "384 x 288",
                 "Super resolution": "768 x 576",
                 "Detector type": "NA",
-                "NETD": "<0.03°C@30°C",
+                "NETD": "NA",
                 "Frame rate": "NA",
                 "Field of view": "25° x 19°",
                 "IFOV": "NA",
                 "Focusing mode": "NA",
                 "Digital zoom": "NA",
-                "Measurement range": "-20°C to 120°C ; 0°C to 650°C ; 300°C to 1550°C",
+                "Measurement range": "-20°C to 120°C ; 0°C to 650°C ,Optional 300°C to 1550°C",
                 "Accuracy": "NA",
-                "Display screen": "5-inch color touch screen",
                 "Digital camera": "13MP",
                 "Image mode": "NA",
                 "Image adjustment": "NA",
                 "Palettes": "NA"
             },
             "Thermeye384M": {
+                "Display screen": "3.5 LCD (640×480) touch screen",
                 "Infrared resolution": "384×288",
                 "Super resolution": "1280x1024",
-                "Detector type": "7.5to 14μm",
+                "Detector type": "7.5to 14 um",
                 "NETD": "<35mK",
                 "Frame rate": "25Hz",
                 "Field of view": "24",
                 "IFOV": "1.98mrad",
                 "Focusing mode": "Manual focusing",
                 "Digital zoom": "NA",
-                "Measurement range": "20°C～+550°C",
+                "Measurement range": "20°C- +550°C",
                 "Accuracy": "±2°C or ±2%",
-                "Display screen": "3.5” LCD (640×480) touch screen",
                 "Digital camera": "5 MP",
                 "Image mode": "NA",
                 "Image adjustment": "NA",
                 "Palettes": "NA"
             }
-
         };
 
-        // Function to compare selected products
+        // DOM Elements - Cached for better performance
+        const domElements = {
+            productSelect: document.getElementById("product"),
+            competitor1Select: document.getElementById("competitor1"),
+            competitor2Select: document.getElementById("competitor2"),
+            compareSelectedBtn: document.getElementById("compareSelectedBtn"),
+            compareAllBtn: document.getElementById("compareAllBtn"),
+            exportSelectedBtn: document.getElementById("exportSelectedBtn"),
+            exportAllBtn: document.getElementById("exportAllBtn"),
+            loading: document.getElementById("loading"),
+            errorMessage: document.getElementById("errorMessage"),
+            comparisonResult: document.getElementById("comparisonResult")
+        };
+
+        // Initialize the application
+        function init() {
+            setupEventListeners();
+            console.log("Application initialized");
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Enable/disable buttons based on selection
+            [domElements.productSelect, domElements.competitor1Select, domElements.competitor2Select].forEach(select => {
+                select.addEventListener('change', validateSelections);
+            });
+        }
+
+        // Validate selections and enable/disable buttons accordingly
+        function validateSelections() {
+            const productSelected = domElements.productSelect.value !== "";
+            const competitor1Selected = domElements.competitor1Select.value !== "";
+            const competitor2Selected = domElements.competitor2Select.value !== "";
+            
+            domElements.compareSelectedBtn.disabled = !(productSelected && competitor1Selected && competitor2Selected);
+            domElements.exportSelectedBtn.disabled = !(productSelected && competitor1Selected && competitor2Selected);
+            
+            // Clear any previous results if selection changes
+            if (domElements.compareSelectedBtn.disabled) {
+                domElements.comparisonResult.innerHTML = "";
+            }
+        }
+
+        // Show loading indicator
+        function showLoading() {
+            domElements.loading.style.display = "block";
+            domElements.errorMessage.textContent = "";
+        }
+
+        // Hide loading indicator
+        function hideLoading() {
+            domElements.loading.style.display = "none";
+        }
+
+        // Show error message
+        function showError(message) {
+            domElements.errorMessage.textContent = message;
+            hideLoading();
+        }
+
+        // Get all unique features from selected products
+        function getAllFeatures(selectedProducts) {
+            const features = new Set();
+            selectedProducts.forEach(product => {
+                if (PRODUCTS[product]) {
+                    Object.keys(PRODUCTS[product]).forEach(feature => {
+                        features.add(feature);
+                    });
+                }
+            });
+            return Array.from(features);
+        }
+
+        // Compare selected products
         function compareSelectedProducts() {
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
-
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
-            `;
-
-            Object.keys(products[product]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
+            try {
+                showLoading();
+                
+                const product = domElements.productSelect.value;
+                const competitor1 = domElements.competitor1Select.value;
+                const competitor2 = domElements.competitor2Select.value;
+                
+                // Validate selections
+                if (!product || !competitor1 || !competitor2) {
+                    showError("Please select all products for comparison");
+                    return;
+                }
+                
+                if (competitor1 === competitor2) {
+                    showError("Please select different competitors");
+                    return;
+                }
+                
+                const selectedProducts = [product, competitor1, competitor2];
+                const features = getAllFeatures(selectedProducts);
+                
+                // Generate comparison table
+                let tableHTML = `
+                    <h3>Comparison Result: ${product} vs ${competitor1} vs ${competitor2}</h3>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>${product}</th>
+                            <th>${competitor1}</th>
+                            <th>${competitor2}</th>
+                        </tr>
                 `;
-            });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+                
+                features.forEach(feature => {
+                    tableHTML += `
+                        <tr>
+                            <td>${feature}</td>
+                            <td>${PRODUCTS[product][feature] || 'N/A'}</td>
+                            <td>${PRODUCTS[competitor1][feature] || 'N/A'}</td>
+                            <td>${PRODUCTS[competitor2][feature] || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `</table>`;
+                domElements.comparisonResult.innerHTML = tableHTML;
+                hideLoading();
+            } catch (error) {
+                showError(`Error during comparison: ${error.message}`);
+                console.error("compareSelectedProducts error:", error);
+            }
         }
 
-        // Function to compare all products
+        // Compare all products
         function compareAllProducts() {
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
-            `;
-
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
-                    </tr>
+            try {
+                showLoading();
+                const allProducts = Object.keys(PRODUCTS);
+                const features = getAllFeatures(allProducts);
+                
+                // Generate comparison table
+                let tableHTML = `
+                    <h3>Comparison Result: All Products</h3>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            ${allProducts.map(product => `<th>${product}</th>`).join("")}
+                        </tr>
                 `;
-            });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+                
+                features.forEach(feature => {
+                    tableHTML += `
+                        <tr>
+                            <td>${feature}</td>
+                            ${allProducts.map(product => `<td>${PRODUCTS[product][feature] || 'N/A'}</td>`).join("")}
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `</table>`;
+                domElements.comparisonResult.innerHTML = tableHTML;
+                hideLoading();
+            } catch (error) {
+                showError(`Error during full comparison: ${error.message}`);
+                console.error("compareAllProducts error:", error);
+            }
         }
 
-        // Function to export selected comparison to PDF
-        function exportSelectedToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
-
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("Selected_Comparison.pdf");
+        // Update the export functions to ensure equal column widths
+function exportSelectedToPDF() {
+    try {
+        showLoading();
+        
+        const product = domElements.productSelect.value;
+        const competitor1 = domElements.competitor1Select.value;
+        const competitor2 = domElements.competitor2Select.value;
+        
+        if (!product || !competitor1 || !competitor2) {
+            showError("Please select all products for PDF export");
+            return;
         }
-
-        // Function to export all comparison to PDF
-        function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("All_Comparison.pdf");
+        
+        if (competitor1 === competitor2) {
+            showError("Please select different competitors for PDF export");
+            return;
         }
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape');
+        
+        // Add title
+        doc.setFontSize(16);
+        doc.text('Product Comparison', 14, 15);
+        doc.setFontSize(12);
+        doc.text(`${product} vs ${competitor1} vs ${competitor2}`, 14, 22);
+        
+        // Prepare data
+        const selectedProducts = [product, competitor1, competitor2];
+        const features = getAllFeatures(selectedProducts);
+        const headers = ["Feature", ...selectedProducts];
+        
+        const rows = features.map(feature => {
+            return [feature, ...selectedProducts.map(product => PRODUCTS[product][feature] || 'N/A')];
+        });
+        
+        // Calculate column widths
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 20;
+        const availableWidth = pageWidth - (margin * 2);
+        const columnCount = headers.length;
+        const columnWidth = availableWidth / columnCount;
+        
+        // Add table with equal column widths
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 30,
+            theme: "grid",
+            styles: { 
+                fontSize: 8,
+                cellPadding: 3,
+                overflow: 'linebreak',
+                lineWidth: 0.1
+            },
+            headStyles: { 
+                fillColor: [41, 128, 185], 
+                textColor: [255, 255, 255],
+                fontSize: 9,
+                lineWidth: 0.1
+            },
+            margin: { horizontal: margin },
+            columnStyles: {
+                0: { cellWidth: columnWidth },
+                1: { cellWidth: columnWidth },
+                2: { cellWidth: columnWidth },
+                3: { cellWidth: columnWidth }
+            },
+            tableWidth: 'auto'
+        });
+        
+        doc.save(`Comparison_${product}_vs_${competitor1}_vs_${competitor2}.pdf`);
+        hideLoading();
+    } catch (error) {
+        showError(`Error generating PDF: ${error.message}`);
+        console.error("exportSelectedToPDF error:", error);
+    }
+}
+
+function exportAllToPDF() {
+    try {
+        showLoading();
+        const { jsPDF } = window.jspdf;
+        const allProducts = Object.keys(PRODUCTS);
+        const features = getAllFeatures(allProducts);
+        
+        // Create a new PDF document in landscape with larger format
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: [297, 420] // A3 size for more space
+        });
+
+        // Set document metadata
+        doc.setProperties({
+            title: 'All Products Comparison',
+            subject: 'Technical Specifications Comparison',
+            author: 'Product Comparison Tool'
+        });
+
+        // Prepare data
+        const headers = ["Feature", ...allProducts];
+        const rows = features.map(feature => {
+            return [feature, ...allProducts.map(product => PRODUCTS[product][feature] || 'N/A')];
+        });
+
+        // Calculate dynamic font size based on number of columns
+        const baseFontSize = 8;
+        const minFontSize = 6;
+        const columnCount = headers.length;
+        const fontSize = Math.max(minFontSize, baseFontSize - Math.floor(columnCount / 10));
+        
+        // Calculate column widths - first column wider for features
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 10;
+        const availableWidth = pageWidth - (margin * 2);
+        const firstColWidth = availableWidth * 0.25;
+        const otherColWidth = (availableWidth - firstColWidth) / (columnCount - 1);
+        
+        // Create column styles
+        const columnStyles = {};
+        headers.forEach((_, index) => {
+            columnStyles[index] = { 
+                cellWidth: index === 0 ? firstColWidth : otherColWidth,
+                minCellHeight: 8 // Ensure minimum row height
+            };
+        });
+
+        // Add title on first page
+        doc.setFontSize(16);
+        doc.setTextColor(40);
+        doc.text('Complete Product Comparison Report', margin, 15);
+        doc.setFontSize(12);
+        doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+        // Add the table with automatic page breaks
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 30,
+            theme: "grid",
+            styles: { 
+                fontSize: fontSize,
+                cellPadding: 3,
+                overflow: 'linebreak',
+                lineWidth: 0.1,
+                lineColor: 200,
+                textColor: 40,
+                fontStyle: 'normal'
+            },
+            headStyles: { 
+                fillColor: [41, 128, 185], 
+                textColor: [255, 255, 255],
+                fontSize: fontSize + 1,
+                lineWidth: 0.1,
+                fontStyle: 'bold'
+            },
+            bodyStyles: {
+                lineWidth: 0.1
+            },
+            margin: { 
+                horizontal: margin,
+                top: 30
+            },
+            columnStyles: columnStyles,
+            tableWidth: 'auto',
+            showHead: 'everyPage', // Repeat headers on each page
+            pageBreak: 'auto', // Automatic page breaks
+            rowPageBreak: 'avoid', // Try to keep rows together
+            didDrawPage: function(data) {
+                // Footer with page numbers
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                const pageCount = doc.internal.getNumberOfPages();
+                doc.text(`Page ${data.pageNumber} of ${pageCount}`, margin, doc.internal.pageSize.getHeight() - 10);
+            }
+        });
+
+        doc.save('All_Products_Comparison.pdf');
+        hideLoading();
+    } catch (error) {
+        showError(`Error generating full PDF: ${error.message}`);
+        console.error("exportAllToPDF error:", error);
+        hideLoading();
+    }
+}
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
