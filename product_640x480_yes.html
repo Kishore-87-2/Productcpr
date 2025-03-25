@@ -7,103 +7,225 @@
     <!-- Include jsPDF library for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Styling */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
             padding: 20px;
         }
 
         .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+        }
+
+        header {
             text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
         }
 
         h1 {
-            margin-bottom: 20px;
-            color: #333;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
-        .dropdowns {
+        .subtitle {
+            color: #6c757d;
+            font-weight: 300;
+        }
+
+        .controls {
             display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .select-group {
+            flex: 1;
+            min-width: 250px;
         }
 
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
         }
 
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background-color: var(--light-color);
         }
 
-        .buttons {
-            margin-bottom: 20px;
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.25);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: #fff;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #3a86ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #38b6db;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d91a6a;
+            transform: translateY(-2px);
         }
 
         .comparison-result {
-            margin-top: 20px;
-            text-align: left;
+            margin-top: 30px;
             overflow-x: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            min-width: 800px;
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 15px;
             text-align: left;
+            border-bottom: 1px solid #e9ecef;
         }
 
         th {
-            background-color: #f4f4f4;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+       
+
+        .feature-name {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product Comparison Tool</h1>
-        <div class="dropdowns">
-            <div>
-                <label for="product">Select Product:</label>
+        <header>
+            <h1>Thermal Camera Comparison Tool</h1>
+            <p class="subtitle">Compare specifications across different thermal imaging cameras</p>
+        </header>
+
+        <div class="controls">
+            <div class="select-group">
+                <label for="product">Your Product</label>
                 <select id="product">
                     <option value="Sonel KT-650">Sonel KT-650</option>
                     <option value="Sonel KT-670">Sonel KT-670</option>
@@ -118,8 +240,8 @@
                     <option value="Testo 890">Testo 890</option>
                 </select>
             </div>
-            <div>
-                <label for="competitor1">Select Competitor 1:</label>
+            <div class="select-group">
+                <label for="competitor1">Competitor 1</label>
                 <select id="competitor1">
                     <option value="Sonel KT-650">Sonel KT-650</option>
                     <option value="Sonel KT-670">Sonel KT-670</option>
@@ -134,8 +256,8 @@
                     <option value="Testo 890">Testo 890</option>
                 </select>
             </div>
-            <div>
-                <label for="competitor2">Select Competitor 2:</label>
+            <div class="select-group">
+                <label for="competitor2">Competitor 2</label>
                 <select id="competitor2">
                     <option value="Sonel KT-650">Sonel KT-650</option>
                     <option value="Sonel KT-670">Sonel KT-670</option>
@@ -152,11 +274,31 @@
             </div>
         </div>
 
-        <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        <div class="button-group">
+            <button class="btn-primary" onclick="compareSelectedProducts()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm4.5 0a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM8 11a.5.5 0 0 0 .5-.5V6.707l1.146 1.147a.5.5 0 0 0 .708-.708l-2-2a.5.5 0 0 0-.708 0l-2 2a.5.5 0 1 0 .708.708L7.5 6.707V10.5a.5.5 0 0 0 .5.5z"/>
+                </svg>
+                Compare Selected
+            </button>
+            <button class="btn-secondary" onclick="compareAllProducts()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>
+                </svg>
+                Compare All
+            </button>
+            <button class="btn-success" onclick="exportSelectedToPDF()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.5 1.5A1.5 1.5 0 0 1 10 0h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h6c-.314.418-.5.937-.5 1.5v6h-2a.5.5 0 0 0-.354.854l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5A.5.5 0 0 0 10.5 7.5h-2v-6z"/>
+                </svg>
+                Export Selected to PDF
+            </button>
+            <button class="btn-warning" onclick="exportAllToPDF()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.5 1.5A1.5 1.5 0 0 1 10 0h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h6c-.314.418-.5.937-.5 1.5v6h-2a.5.5 0 0 0-.354.854l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5A.5.5 0 0 0 10.5 7.5h-2v-6z"/>
+                </svg>
+                Export All to PDF
+            </button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
@@ -167,28 +309,28 @@
         const products = {
             "Sonel KT-650": {
                 "Detector's resolution": "640x480",
-                "Display": "5\", 1280×720 high light touch screen",
+                "Display": "5 inch, 1280×720 high light touch screen",
                 "Viewfinder": "1280×960 LCOS screen",
                 "FOV": "Standard Lens 24.6°×18.5°/25mm; Optional Lens 45.4°×34.9°/13mm; Optional Lens 11.3°×8.5°/55mm",
                 "Digital Zoom": "1-35× continuously",
                 "Focus": "Moto-drive/Auto",
-                "Temperature range": "filter1: -40℃ to 150℃, filter2: 100℃ to 800℃ (optional up to 2000℃)",
+                "Temperature range": "-40°C to 150°C,100°C to 800 °C (optional up to 2000°C)",
                 "Auto Image/Video Capturing": "Yes",
-                "Accuracy": "Filter1: ±1℃～±1% of reading; Filter2: ±2℃～±2% of reading",
+                "Accuracy": "±1°C or ±1%,±2°C or ±2% of reading",
                 "Thermal Sensitivity": "40mK",
                 "Visual camera": "8MP & 5MP visual camera",
                 "Image Mode": "IR Image/ Visual image/ PIP/ MIF"
             },
             "Sonel KT-670": {
                 "Detector's resolution": "640x480",
-                "Display": "5\", 1280×720 high light touch screen",
+                "Display": "5 inch 1280×720 high light touch screen",
                 "Viewfinder": "1280×960 LCOS screen",
                 "FOV": "Standard Lens 24.6°×18.5°/25mm; Optional Lens 45.4°×34.9°/13mm; Optional Lens 11.3°×8.5°/55mm",
                 "Digital Zoom": "1-35× continuously",
                 "Focus": "Moto-drive/Auto",
-                "Temperature range": "filter1: -40℃ to 150℃, filter2: 100℃ to 800℃ (optional up to 2000℃)",
+                "Temperature range": "-40 °Cto 150 °C,100 °Cto 800°C (optional up to 2000°C)",
                 "Auto Image/Video Capturing": "Yes",
-                "Accuracy": "±1℃～±1% of reading",
+                "Accuracy": "±1 °C or ±1% of reading",
                 "Thermal Sensitivity": "35mK",
                 "Visual camera": "8MP & 5MP visual camera",
                 "Image Mode": "IR Image/ Visual image/ PIP/ MIF"
@@ -200,9 +342,9 @@
                 "FOV": "24°",
                 "Digital Zoom": "up to 8x",
                 "Focus": "Auto/Manual",
-                "Temperature range": "filter1: -40℃ to 120℃, filter2: 0℃ to 650℃ (optional up to 2000℃)",
+                "Temperature range": "-40°C to 120°C,0°C to 650°C (optional up to 2000°C)",
                 "Auto Image/Video Capturing": "NM",
-                "Accuracy": "Filter1: ±1℃～±1% of reading; Filter2: ±2℃～±2% of reading",
+                "Accuracy": "Filter1: ±1°C～±1% of reading; Filter2: ±2°C～±2% of reading",
                 "Thermal Sensitivity": "30mK",
                 "Visual camera": "5MP",
                 "Image Mode": "IR Image/ Visual image/ PIP/ MSX"
@@ -321,77 +463,98 @@
             }
         };
 
-        // Function to compare selected products
-        function compareSelectedProducts() {
+       function compareSelectedProducts() {
             const product = document.getElementById("product").value;
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
 
             const resultDiv = document.getElementById("comparisonResult");
             let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th class="highlight">${product}</th>
+                            <th>${competitor1}</th>
+                            <th>${competitor2}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
 
             Object.keys(products[product]).forEach(feature => {
                 tableHTML += `
                     <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
+                        <td class="feature-name">${feature}</td>
+                        <td class="highlight">${products[product][feature]}</td>
                         <td>${products[competitor1][feature]}</td>
                         <td>${products[competitor2][feature]}</td>
                     </tr>
                 `;
             });
 
-            tableHTML += `</table>`;
+            tableHTML += `</tbody></table>`;
             resultDiv.innerHTML = tableHTML;
         }
 
         // Function to compare all products
         function compareAllProducts() {
             const resultDiv = document.getElementById("comparisonResult");
+            const allProducts = Object.keys(products);
+            const columns = allProducts.length;
+            
             let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            ${allProducts.map(product => 
+                                `<th ${product === document.getElementById("product").value ? 'class="highlight"' : ''}>${product}</th>`
+                            ).join("")}
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
 
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+            Object.keys(products[allProducts[0]]).forEach(feature => {
                 tableHTML += `
                     <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                        <td class="feature-name">${feature}</td>
+                        ${allProducts.map(product => 
+                            `<td ${product === document.getElementById("product").value ? 'class="highlight"' : ''}>${products[product][feature]}</td>`
+                        ).join("")}
                     </tr>
                 `;
             });
 
-            tableHTML += `</table>`;
+            tableHTML += `</tbody></table>`;
             resultDiv.innerHTML = tableHTML;
         }
 
         // Function to export selected comparison to PDF
         function exportSelectedToPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm'
+            });
 
             const product = document.getElementById("product").value;
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
 
-            // Set a compatible font (e.g., Helvetica)
+            // Calculate equal column widths (25% each)
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 20;
+            const availableWidth = pageWidth - (margin * 2);
+            const colWidth = availableWidth / 4;
+            
             doc.setFont("helvetica");
-
-            // Add table to PDF
+            doc.setFontSize(18);
+            doc.text("Thermal Camera Comparison", margin, 15);
+            doc.setFontSize(12);
+            doc.text(`Comparing: ${product} vs ${competitor1} vs ${competitor2}`, margin, 22);
+            
             const headers = ["Feature", product, competitor1, competitor2];
             const rows = Object.keys(products[product]).map(feature => {
                 return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
@@ -400,43 +563,98 @@
             doc.autoTable({
                 head: [headers],
                 body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
+                startY: 30,
+                margin: { left: margin, right: margin },
+                styles: { 
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    cellWidth: 'wrap'
+                },
+                columnStyles: {
+                    0: { cellWidth: colWidth, fontStyle: 'bold' },
+                    1: { cellWidth: colWidth, fillColor: [220, 230, 255] },
+                    2: { cellWidth: colWidth },
+                    3: { cellWidth: colWidth }
+                },
+                headStyles: {
+                    fillColor: [67, 97, 238],
+                    textColor: 255,
+                    fontStyle: 'bold'
+                }
             });
 
-            doc.save("Selected_Comparison.pdf");
+            doc.save(`${product}_vs_${competitor1}_vs_${competitor2}_Comparison.pdf`);
         }
 
-        // Function to export all comparison to PDF
+        // Function to export all comparison to PDF with equal spacing
         function exportAllToPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
-
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm'
             });
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
+            const allProducts = Object.keys(products);
+            const mainProduct = document.getElementById("product").value;
+            const features = Object.keys(products[allProducts[0]]);
+            
+            // Calculate equal column widths
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 15;
+            const availableWidth = pageWidth - (margin * 2);
+            const featureColWidth = 40; // Fixed width for feature column
+            const productColWidth = (availableWidth - featureColWidth) / Math.min(4, allProducts.length);
+            
+            // Split products into groups of 4
+            for (let i = 0; i < allProducts.length; i += 4) {
+                if (i > 0) doc.addPage('landscape');
+                
+                const productGroup = allProducts.slice(i, i + 4);
+                
+                doc.setFont("helvetica");
+                doc.setFontSize(18);
+                doc.text("Complete Thermal Camera Comparison", margin, 15);
+                doc.setFontSize(12);
+                doc.text(`Products: ${productGroup.join(", ")}`, margin, 22);
+                
+                const headers = ["Feature", ...productGroup];
+                const rows = features.map(feature => {
+                    return [feature, ...productGroup.map(product => products[product][feature])];
+                });
 
-            doc.save("All_Comparison.pdf");
+                // Create column styles dynamically
+                const columnStyles = {
+                    0: { cellWidth: featureColWidth, fontStyle: 'bold' }
+                };
+                
+                productGroup.forEach((_, index) => {
+                    columnStyles[index + 1] = { 
+                        cellWidth: productColWidth,
+                        fillColor: productGroup[index] === mainProduct ? [220, 230, 255] : [255, 255, 255]
+                    };
+                });
+
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 30,
+                    margin: { left: margin, right: margin },
+                    styles: { 
+                        fontSize: 7,
+                        cellPadding: 2,
+                        overflow: 'linebreak'
+                    },
+                    columnStyles: columnStyles,
+                    headStyles: {
+                        fillColor: [67, 97, 238],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    }
+                });
+            }
+
+            doc.save("Complete_Thermal_Camera_Comparison.pdf");
         }
     </script>
 </body>
