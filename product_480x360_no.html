@@ -8,7 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* CSS Styling (same as before) */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -111,16 +110,13 @@
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
                 <select id="competitor1">
-                     <option value="FLIR E86">FLIR E86</option>
+                    <option value="FLIR E86">FLIR E86</option>
                 </select>
             </div>
-           
         </div>
 
         <div class="buttons">
-            
             <button onclick="compareAllProducts()">Compare All</button>
-            
             <button onclick="exportAllToPDF()">Export All to PDF</button>
         </div>
 
@@ -128,162 +124,161 @@
     </div>
 
     <script>
-        // Product Data
-        const products = {
-    // Existing products...
-    // Add new products here:
-    "Sonel KT-530": {
-        "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
-        "Infrared resolution": "480x360",
-        "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
-        "Super resolution": "960x720",
-        "Detector type": "7.5-14um",
-        "Frame rate": "30Hz",
-        "Field of view": "25°x19°",
-        "Digital camera": "8MP",
-        "IFOV": "0.91mrad",
-        "Min. object distance": "0.15m",
-        "Digital zoom": "1.1xto 10x",
-        "Shot recognition": "Auto",
-        "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
-        "Accuracy": "±2°C or 2%",
-        "Others": "Isothermals, Smart Stroke, Intelligently calculate the area",
-        "Image mode": "IR, VIS, MIF, PIP",
-        "Image adjustment": "Level span mode: Automatic, Semi-automatic, Manual",
-        "Palettes": "15"
-    },
-    "FLIR E86": {
-        "Display screen": "4 in.640 × 480 color LCD",        
-        "Infrared resolution": "464 × 348",
-        "Focusing mode": "Manual",
-        "Super resolution": "Yes",
-        "Detector type": "7.5-14um",
-        "Frame rate": "30 Hz",
-        "Field of view": "24° X18°",
-        "Digital camera": "5MP",
-        "IFOV": "1.66 mrad/pixel",
-        "Min. object distance": "0.15 m",
-        "Digital zoom": "1–4× continuous",
-        "Shot recognition": "NA",
-        "Measurement range": "-20°C to 650°C",
-        "Accuracy": "±2°C or 2%",
-        "Others": "NA",
-        "Image mode": "IR, VIS, MIF, PIP",
-        "Image adjustment": "Automatic, Automatic maximum, Automatic minimum, Manual",
-        "Palettes": "7"
-    }
-};
+        // Product Data Module
+        const ProductData = (function() {
+            const products = {
+                "Sonel KT-530": {
+                    "Display screen": "4.3 inch 800x480 pixel touchscreen LCD",
+                    "Infrared resolution": "480x360",
+                    "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
+                    "Super resolution": "960x720",
+                    "Detector type": "7.5-14um",
+                    "Frame rate": "30Hz",
+                    "Field of view": "25°x19°",
+                    "Digital camera": "8MP",
+                    "IFOV": "0.91mrad",
+                    "Min. object distance": "0.15m",
+                    "Digital zoom": "1.1xto 10x",
+                    "Shot recognition": "Auto",
+                    "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
+                    "Accuracy": "±2°C or 2%",
+                    "Others": "Isothermals, Smart Stroke, Intelligently calculate the area",
+                    "Image mode": "IR, VIS, MIF, PIP",
+                    "Image adjustment": "Level span mode: Automatic, Semi-automatic, Manual",
+                    "Palettes": "15"
+                },
+                "FLIR E86": {
+                    "Display screen": "4 inch 640 × 480 color LCD",        
+                    "Infrared resolution": "464 × 348",
+                    "Focusing mode": "Manual",
+                    "Super resolution": "Yes",
+                    "Detector type": "7.5-14um",
+                    "Frame rate": "30 Hz",
+                    "Field of view": "24° X18°",
+                    "Digital camera": "5MP",
+                    "IFOV": "1.66 mrad/pixel",
+                    "Min. object distance": "0.15 m",
+                    "Digital zoom": "1–4× continuous",
+                    "Shot recognition": "NA",
+                    "Measurement range": "-20°C to 650°C",
+                    "Accuracy": "±2°C or 2%",
+                    "Others": "NA",
+                    "Image mode": "IR, VIS, MIF, PIP",
+                    "Image adjustment": "Automatic, Automatic maximum, Automatic minimum, Manual",
+                    "Palettes": "7"
+                }
+            };
 
-        // Function to compare selected products
+            return {
+                getProducts: function() {
+                    return products;
+                },
+                getProductNames: function() {
+                    return Object.keys(products);
+                },
+                getFeatures: function() {
+                    return Object.keys(products[Object.keys(products)[0]]);
+                }
+            };
+        })();
+
+        // Comparison Module
+        const Comparison = (function() {
+            function generateComparisonTable(productsToCompare) {
+                const features = ProductData.getFeatures();
+                let tableHTML = `
+                    <h3>Comparison Result:</h3>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            ${productsToCompare.map(product => `<th>${product}</th>`).join("")}
+                        </tr>
+                `;
+
+                features.forEach(feature => {
+                    tableHTML += `
+                        <tr>
+                            <td>${feature}</td>
+                            ${productsToCompare.map(product => {
+                                const products = ProductData.getProducts();
+                                return `<td>${products[product][feature]}</td>`;
+                            }).join("")}
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `</table>`;
+                return tableHTML;
+            }
+
+            function generatePDF(productsToCompare) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const products = ProductData.getProducts();
+                const features = ProductData.getFeatures();
+
+                const headers = ["Feature", ...productsToCompare];
+                const rows = features.map(feature => {
+                    return [feature, ...productsToCompare.map(product => products[product][feature])];
+                });
+
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 20,
+                    theme: "grid",
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                    margin: { horizontal: 10 },
+                    tableWidth: "auto"
+                });
+
+                return doc;
+            }
+
+            return {
+                compareSelected: function() {
+                    const product = document.getElementById("product").value;
+                    const competitor1 = document.getElementById("competitor1").value;
+                    const productsToCompare = [product, competitor1];
+                    
+                    const resultDiv = document.getElementById("comparisonResult");
+                    resultDiv.innerHTML = generateComparisonTable(productsToCompare);
+                },
+                compareAll: function() {
+                    const resultDiv = document.getElementById("comparisonResult");
+                    resultDiv.innerHTML = generateComparisonTable(ProductData.getProductNames());
+                },
+                exportSelectedToPDF: function() {
+                    const product = document.getElementById("product").value;
+                    const competitor1 = document.getElementById("competitor1").value;
+                    const productsToCompare = [product, competitor1];
+                    
+                    const doc = generatePDF(productsToCompare);
+                    doc.save("Selected_Comparison.pdf");
+                },
+                exportAllToPDF: function() {
+                    const doc = generatePDF(ProductData.getProductNames());
+                    doc.save("All_Comparison.pdf");
+                }
+            };
+        })();
+
+        // Global functions for button clicks
         function compareSelectedProducts() {
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
-
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
-            `;
-
-            Object.keys(products[product]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
-                `;
-            });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+            Comparison.compareSelected();
         }
 
-        // Function to compare all products
         function compareAllProducts() {
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
-            `;
-
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
-                    </tr>
-                `;
-            });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+            Comparison.compareAll();
         }
 
-        // Function to export selected comparison to PDF
         function exportSelectedToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
-
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("Selected_Comparison.pdf");
+            Comparison.exportSelectedToPDF();
         }
 
-        // Function to export all comparison to PDF
         function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("All_Comparison.pdf");
+            Comparison.exportAllToPDF();
         }
     </script>
 </body>
