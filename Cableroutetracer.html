@@ -3,174 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Support</title>
+    <title>Cable Route Tracer Comparison</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background-color: #1e3a5f;
-            color: #fff;
-            padding: 20px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-        header nav {
-            position: relative;
-        }
-        header nav a {
-            color: #fff;
-            text-decoration: none;
-            margin-left: 20px;
-            position: relative;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        .dropdown {
-            display: none;
-            position: absolute;
-            background-color: #1e3a5f;
-            color: #fff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ddd;
-            padding: 10px;
-            z-index: 1;
-            border-radius: 5px;
-            min-width: 160px;
-        }
-        .dropdown p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-        .dropdown a {
-            color: #fff;
-            text-decoration: none;
-        }
-        header nav:hover .dropdown {
-            display: block;
-        }
-        .folder-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
-        .folder {
-            width: 150px;
-            height: 150px;
-            background-color: #1e3a5f;
-            margin: 15px;
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1200px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .dropdowns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .dropdown-group {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select {
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            border-radius: 4px;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
             cursor: pointer;
-            color: #fff;
         }
-        .folder a {
-            text-decoration: none;
-            color: #fff;
-            font-weight: bold;
+        button:hover {
+            background-color: #0056b3;
         }
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #1e3a5f;
-            color: #fff;
+        .comparison-result {
+            overflow-x: auto;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
+        table {
             width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        th {
+            background-color: #f4f4f4;
+            position: sticky;
+            top: 0;
         }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .document {
-            margin: 10px 0;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
     </style>
-    <script>
-        function toggleModal(id) {
-            const modal = document.getElementById(id);
-            if (modal.style.display === "block") {
-                modal.style.display = "none";
-            } else {
-                modal.style.display = "block";
-            }
-        }
-    </script>
 </head>
 <body>
+    <div class="container">
+        <h1>Cable Route Tracer Comparison Tool</h1>
+        
+        <div class="dropdowns">
+            <div class="dropdown-group">
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="Sonel LKZ-2500">Sonel LKZ-2500</option>
+                    <option value="RD 8200/RD 8200 G">RD 8200/RD 8200 G</option>
+                    <option value="RD7200">RD7200</option>
+                    <option value="Stanlay STLOC5DL/GPS">Stanlay STLOC5DL/GPS</option>
+                    <option value="Stanlay STLOC10/GPS">Stanlay STLOC10/GPS</option>
+                    <option value="Technoac AG-309.15G">Technoac AG-309.15G</option>
+                    <option value="Ridgid SR -20/ST-510">Ridgid SR -20/ST-510</option>
+                </select>
+            </div>
+            <div class="dropdown-group">
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="Sonel LKZ-2500">Sonel LKZ-2500</option>
+                    <option value="RD 8200/RD 8200 G">RD 8200/RD 8200 G</option>
+                    <option value="RD7200">RD7200</option>
+                    <option value="Stanlay STLOC5DL/GPS">Stanlay STLOC5DL/GPS</option>
+                    <option value="Stanlay STLOC10/GPS">Stanlay STLOC10/GPS</option>
+                    <option value="Technoac AG-309.15G">Technoac AG-309.15G</option>
+                    <option value="Ridgid SR -20/ST-510">Ridgid SR -20/ST-510</option>
+                </select>
+            </div>
+            <div class="dropdown-group">
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="Sonel LKZ-2500">Sonel LKZ-2500</option>
+                    <option value="RD 8200/RD 8200 G">RD 8200/RD 8200 G</option>
+                    <option value="RD7200">RD7200</option>
+                    <option value="Stanlay STLOC5DL/GPS">Stanlay STLOC5DL/GPS</option>
+                    <option value="Stanlay STLOC10/GPS">Stanlay STLOC10/GPS</option>
+                    <option value="Technoac AG-309.15G">Technoac AG-309.15G</option>
+                    <option value="Ridgid SR -20/ST-510">Ridgid SR -20/ST-510</option>
+                </select>
+            </div>
+        </div>
 
-<header>
-    <h1>Product Support</h1>
-</header>
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
 
-<section class="folder-container">
-    <div class="folder">
-        <a href="test18.html">Insulation Tester</a>
+        <div id="comparisonResult" class="comparison-result"></div>
     </div>
-    <div class="folder">
-        <a href="mrupage2.html">Earth Tester</a>
-    </div>
-    <div class="folder">
-        <a href="thermal.html">Thermal Camera</a>
-    </div>
-    <div class="folder">
-        <a href="multi-function-meter.html">Multi-function Meter</a>
-    </div>
-    <div class="folder">
-        <a href="pqmp2.html">Power Quality Analyzer</a>
-    </div>
-    <div class="folder">
-        <a href="microohmmeter.html">Microohmmeter</a>
-    </div>
-    <div class="folder">
-        <a href="Cable route tracer.html">Cable route tracer</a>
-    </div>
-</section>
 
-<footer>
-    Have a Nice Day
-</footer>
+    <script>
+        // Product Data for Cable Route Tracers
+        const products = {
+            "Sonel LKZ-2500": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "12",
+                "Frequencies": "8 kHz, 32 kHz, 50 Hz, 60 Hz, 2...65 kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "IP 67",
+                "Rechargeable battery": "Li-Ion 7.2 V 9.8 Ah",
+                "Operating time": "16 Hrs",
+                "Weight": "3.4 kg",
+                "Galvanic method": "max. 3.6 W",
+                "Induction method": "max. 84 VA",
+                "Depth": "≤6 m",
+                "Accuracy": "2.5%",
+                "Detector IP": "IP65",
+                "Detector battery": "Li-Ion 3.6 V 6.7 Ah",
+                "Detector operating time": "13 h",
+                "Detector weight": "1.2 kg",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "Yes"
+            },
+            "RD 8200/RD 8200 G": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "NA",
+                "Frequencies": "4kHz,512Hz, 570Hz, 577Hz, 640Hz, 760Hz, 870Hz, 920Hz, 940Hz, 1090Hz, 1450Hz, 4096Hz, 8kHz, 8440Hz, 9820Hz, 33kHz, 65kHz, 82kHz, 83kHz, 131kHz and 200kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "NA",
+                "Rechargeable battery": "Li-Ion 2 × Alkaline D-Cells",
+                "Operating time": "13 hours",
+                "Weight": "2.6kg",
+                "Galvanic method": "NA",
+                "Induction method": "NA",
+                "Depth": "10 m",
+                "Accuracy": "± 3%",
+                "Detector IP": "NA",
+                "Detector battery": "Li-Ion 2 × Alkaline D-Cells",
+                "Detector operating time": "13 hours",
+                "Detector weight": "2.4 kg",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "X/✔"
+            },
+            "RD7200": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "NA",
+                "Frequencies": "512Hz, 640Hz, 8kHz, 33kHz, 512Hz, 640Hz, 8kHz, 33kHz, 65kHz, 83kHz, 131kHz and 200kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "NA",
+                "Rechargeable battery": "Li-Ion 2 × Alkaline D-Cells",
+                "Operating time": "13 hours",
+                "Weight": "2.6kg",
+                "Galvanic method": "NA",
+                "Induction method": "NA",
+                "Depth": "10 m",
+                "Accuracy": "± 3%",
+                "Detector IP": "NA",
+                "Detector battery": "Li-Ion 2 × Alkaline D-Cells",
+                "Detector operating time": "13 hours",
+                "Detector weight": "2.4 kg",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "X/✔"
+            },
+            "Stanlay STLOC5DL/GPS": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "3",
+                "Frequencies": "200Hz, 256Hz, 273Hz, 340Hz, 400Hz, 460Hz, 512Hz, 560Hz, 570Hz, 577Hz, 640Hz, 760Hz, 797Hz, 815Hz, 870Hz, 920Hz, 940Hz, 1.01kHz, 1.02kHz, 1.10kHz, 1.45kHz, 4kHz, 8.192kHz, 8.4kHz, 8.9kHz, 9.8kHz, 29kHz, 33kHz, 51kHz, 65kHz, 82kHz, 83kHz, 93kHz, 116kHz, 118kHz, 131kHz, 145kHz, 200kHz, 262kHz, 478kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "NA",
+                "Rechargeable battery": "9V, 6\"AA\" cell batteries",
+                "Operating time": "40 hours",
+                "Weight": "1.79kg",
+                "Galvanic method": "5W",
+                "Induction method": "NA",
+                "Depth": "10 m",
+                "Accuracy": "± 3%",
+                "Detector IP": "NA",
+                "Detector battery": "Lithium-Ion",
+                "Detector operating time": "40 hours",
+                "Detector weight": "NA",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "X/✔"
+            },
+            "Stanlay STLOC10/GPS": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "3",
+                "Frequencies": "200Hz, 256Hz, 273Hz, 340Hz, 400Hz, 460Hz, 512Hz, 560Hz, 570Hz, 577Hz, 640Hz, 760Hz, 797Hz, 815Hz, 870Hz, 920Hz, 940Hz, 1.01kHz, 1.02kHz, 1.10kHz, 1.45kHz, 4kHz, 8.192kHz, 8.4kHz, 8.9kHz, 9.8kHz, 29kHz, 33kHz, 51kHz, 65kHz, 82kHz, 83kHz, 93kHz, 116kHz, 118kHz, 131kHz, 145kHz, 200kHz, 262kHz, 478kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "NA",
+                "Rechargeable battery": "9V, 6\"AA\" cell batteries",
+                "Operating time": "40 hours",
+                "Weight": "1.79kg",
+                "Galvanic method": "12W",
+                "Induction method": "NA",
+                "Depth": "10 m",
+                "Accuracy": "± 3%",
+                "Detector IP": "NA",
+                "Detector battery": "Lithium-Ion",
+                "Detector operating time": "40 hours",
+                "Detector weight": "NA",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "X/✔"
+            },
+            "Technoac AG-309.15G": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "NA",
+                "Frequencies": "50(60)/ 100(120)/ 512/ 1024/ 8192 / 32768 Hz,8 - 40 kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "IP65",
+                "Rechargeable battery": "8 type C batteries (accumulators)",
+                "Operating time": "10 hrs",
+                "Weight": "NA",
+                "Galvanic method": "20W",
+                "Induction method": "5 A",
+                "Depth": "10 m",
+                "Accuracy": "±5%",
+                "Detector IP": "NA",
+                "Detector battery": "8 type C batteries (accumulators)",
+                "Detector operating time": "20 hrs",
+                "Detector weight": "2,4 kg",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "Yes"
+            },
+            "Ridgid SR -20/ST-510": {
+                "Active mode": "✔",
+                "Passive mode": "✔",
+                "No of antenna": "NA",
+                "Frequencies": "<4kHz, 4kHz - 15kHz, 15kHz - 30kHz, 16Hz, 512Hz, 33kHz",
+                "Signal Mode": "✔",
+                "Power Mode": "✔",
+                "Radio Mode": "✔",
+                "Method": "Galvanic mode, Clamp Mode, Inductive Mode",
+                "IP": "NA",
+                "Rechargeable battery": "Alkaline batteries",
+                "Operating time": "NA",
+                "Weight": "3.6 kg",
+                "Galvanic method": "10 W",
+                "Induction method": "NA",
+                "Depth": "NA",
+                "Accuracy": "NA",
+                "Detector IP": "NA",
+                "Detector battery": "Alkaline batteries",
+                "Detector operating time": "NA",
+                "Detector weight": "1.9 kg",
+                "EMC": "EN 61326-1, EN 61326-2-2",
+                "GPS": "Yes"
+            }
+        };
 
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        <th>${competitor2}</th>
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        <td>${products[competitor2][feature]}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, competitor2];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 5 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Cable_Tracer_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 6 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 2 },
+                tableWidth: "auto"
+            });
+
+            doc.save("All_Cable_Tracer_Comparison.pdf");
+        }
+    </script>
 </body>
 </html>
