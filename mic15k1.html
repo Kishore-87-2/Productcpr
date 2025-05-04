@@ -80,7 +80,9 @@
     <select id="competitorSelect" onchange="loadComparisonTable()"></select>
 
     <label for="competitorSelect2">Select Competitor 2:</label>
-    <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
+    <select id="competitorSelect2" onchange="loadComparisonTable()">
+        <option value="None">None</option>
+    </select>
 
     <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
 
@@ -158,8 +160,7 @@
                 "IP": "IP65",
                 "Remote control by phone": "NA",
                 "Data transmission": "NA",
-                "Partial discharges range": "NA",
-             
+                "Partial discharges range": "NA"
             }
         };
 
@@ -168,11 +169,13 @@
             const selectedCompetitor = document.getElementById("competitorSelect").value;
             const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
 
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th><th>${selectedCompetitor2}</th></tr>`;
-
-            const productData = productComparisonData[selectedProduct];
-            const competitor1Data = productComparisonData[selectedCompetitor] || {};
-            const competitor2Data = productComparisonData[selectedCompetitor2] || {};
+            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th>`;
+            
+            if (selectedCompetitor2 !== "None") {
+                tableContent += `<th>${selectedCompetitor2}</th>`;
+            }
+            
+            tableContent += `</tr>`;
 
             // Get all unique features from all products
             const allFeatures = new Set();
@@ -185,10 +188,14 @@
             Array.from(allFeatures).forEach(feature => {
                 tableContent += `<tr>
                     <td>${feature}</td>
-                    <td>${productData[feature] || "NA"}</td>
-                    <td>${competitor1Data[feature] || "NA"}</td>
-                    <td>${competitor2Data[feature] || "NA"}</td>
-                </tr>`;
+                    <td>${productComparisonData[selectedProduct][feature] || "NA"}</td>
+                    <td>${productComparisonData[selectedCompetitor][feature] || "NA"}</td>`;
+                
+                if (selectedCompetitor2 !== "None") {
+                    tableContent += `<td>${productComparisonData[selectedCompetitor2][feature] || "NA"}</td>`;
+                }
+                
+                tableContent += `</tr>`;
             });
 
             document.getElementById("comparisonTable").innerHTML = tableContent;
@@ -201,7 +208,10 @@
             const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
 
             competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-            competitorSelect2.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            
+            // Keep the "None" option and add other competitors
+            competitorSelect2.innerHTML = '<option value="None">None</option>' + 
+                competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
 
             loadComparisonTable();
         }
