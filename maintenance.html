@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Mode</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --success: #4cc9f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-image: radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.05) 0%, rgba(67, 97, 238, 0.05) 90%);
+        }
+        
+        .maintenance-card {
+            max-width: 640px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .maintenance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .maintenance-icon {
+            width: 120px;
+            height: 120px;
+            margin: 1.5rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+        }
+        
+        .maintenance-icon svg {
+            width: 60px;
+            height: 60px;
+            color: var(--primary);
+        }
+        
+        .countdown {
+            background: rgba(67, 97, 238, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .countdown-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .countdown-timer {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .countdown-segment {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .countdown-value {
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .countdown-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        
+        .resume-time {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 640px) {
+            .maintenance-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .countdown-timer {
+                font-size: 1.5rem;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-card">
+        <div class="maintenance-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        
+        <h1>We're Under Maintenance</h1>
+        <p class="subtitle">We're upgrading our systems to serve you better. Thank you for your patience.</p>
+        
+        <div class="countdown">
+            <div class="countdown-title">We'll be back in</div>
+            <div class="countdown-timer" id="countdown">
+                <div class="countdown-segment">
+                    <span class="countdown-value" id="days">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-segment">
+                    <span class="countdown-value" id="hours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-segment">
+                    <span class="countdown-value" id="minutes">00</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-segment">
+                    <span class="countdown-value" id="seconds">00</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            </div>
+            <div class="resume-time">Estimated completion: May 7, 2025 at 7:00 PM</div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Countdown Timer
+        function updateCountdown() {
+            const targetDate = new Date('2025-05-07T19:00:00');
+            const now = new Date();
+            const diff = targetDate - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdown').innerHTML = 
+                    '<div class="countdown-segment"><span style="font-size: 1.2rem;">We\'re back online!</span></div>';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        // Initialize and update every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        // Add a subtle animation to the card on load
+        document.querySelector('.maintenance-card').style.opacity = '0';
+        document.querySelector('.maintenance-card').style.transform = 'translateY(20px)';
+        document.querySelector('.maintenance-card').style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        
+        setTimeout(() => {
+            document.querySelector('.maintenance-card').style.opacity = '1';
+            document.querySelector('.maintenance-card').style.transform = 'translateY(0)';
+        }, 100);
+    </script>
+</body>
+</html>
