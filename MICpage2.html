@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #1e3a5f;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .filter {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .filter select {
+            padding: 10px;
+            margin: 10px 0;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .product-item {
+            width: 200px;
+            padding: 15px;
+            background-color: #fff;
+            margin: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            text-decoration: none; /* Remove underline */
+        }
+        .product-item:hover {
+            transform: scale(1.05);
+        }
+        .product-item h3 {
+            margin-bottom: 10px;
+        }
+        .product-item p {
+            color: #555;
+        }
+    </style>
+    <script>
+        function filterProducts() {
+            var voltage = document.getElementById("voltage").value;
+            var current = document.getElementById("current").value;
+            var products = document.getElementsByClassName("product-item");
+
+            for (var i = 0; i < products.length; i++) {
+                var productVoltage = products[i].getAttribute("data-voltage");
+                var productCurrent = products[i].getAttribute("data-current");
+
+                if ((voltage === "any" || productVoltage === voltage) && 
+                    (current === "any" || productCurrent.includes(current))) {
+                    products[i].style.display = "block";
+                } else {
+                    products[i].style.display = "none";
+                }
+            }
+        }
+
+        function updateCurrentOptions() {
+            var voltage = document.getElementById("voltage").value;
+            var currentSelect = document.getElementById("current");
+            var currentOptions = {
+                "1kV": ["1mA"],
+                "2.5kV": ["1mA","2mA"],
+                "5kV": ["1.5", "1.2mA","3mA", "6mA"],
+                "10kV": ["1.2mA", "3mA", "6mA"],
+                "15kV": ["1.2mA", "3mA", "5mA", "7mA"]
+            };
+
+            // Clear existing options
+            currentSelect.innerHTML = "";
+
+            // Add default option
+            var defaultOption = document.createElement("option");
+            defaultOption.value = "any";
+            defaultOption.textContent = "Any Current";
+            currentSelect.appendChild(defaultOption);
+
+            // Add the relevant options based on selected voltage
+            if (voltage !== "any") {
+                currentOptions[voltage].forEach(function(option) {
+                    var newOption = document.createElement("option");
+                    newOption.value = option;
+                    newOption.textContent = option;
+                    currentSelect.appendChild(newOption);
+                });
+            }
+            
+            // Trigger the filtering function after updating the options
+            filterProducts();
+        }
+
+        window.onload = function() {
+            updateCurrentOptions();  // Set the initial options when the page loads
+        };
+    </script>
+</head>
+<body>
+
+<header>
+    <h1>Product Filter - Insulation Tester</h1>
+</header>
+
+<div class="container">
+    <div class="filter">
+        <label for="voltage">Select Tester Voltage:</label>
+        <select id="voltage" onchange="updateCurrentOptions()">
+            <option value="any">Any Voltage</option>
+            <option value="1kV">1kV</option>
+            <option value="2.5kV">2.5kV</option>
+            <option value="5kV">5kV</option>
+            <option value="10kV">10kV</option>
+            <option value="15kV">15kV</option>
+        </select>
+        
+        <label for="current">Select Short-Circuit Current:</label>
+        <select id="current" onchange="filterProducts()">
+            <!-- Options will be dynamically populated -->
+        </select>
+    </div>
+
+    <div class="product-list">
+        <a href="mic10mic30page2.html" target="_blank" class="product-item" data-voltage="1kV" data-current="1mA">
+            <p>Voltage: 1kV, Current: 1mA</p>
+        </a>
+        <a href="mic2501mic2511page2.html" target="_blank" class="product-item" data-voltage="2.5kV" data-current="1mA">
+            <p>Voltage: 2.5kV, Current: 1 mA</p>
+        </a>
+        <a href="mic2501mic2511page2.html" target="_blank" class="product-item" data-voltage="2.5kV" data-current="2mA">
+            <p>Voltage: 2.5kV, Current: 2mA</p>
+        </a>
+        <a href="mic5001page2.html" target="_blank" class="product-item" data-voltage="5kV" data-current="1.2mA">
+            <p>Voltage: 5kV, Current: 1.5mA</p>
+        </a>
+        <a href="mic50055010page2.html" target="_blank" class="product-item" data-voltage="5kV" data-current="1.2mA,3mA">
+            <p>Voltage: 5kV, Current: 1.2mA, 3mA</p>
+        </a>
+        <a href="mic5050page2.html" target="_blank" class="product-item" data-voltage="5kV" data-current="1.2mA,3mA,6mA">
+            <p>Voltage: 5kV, Current: 1.2mA, 3mA, 6mA</p>
+        </a>
+        <a href="mic10K1page2.html" target="_blank" class="product-item" data-voltage="10kV" data-current="1.2mA,3mA,6mA">
+            <p>Voltage: 10kV, Current: 1.2mA, 3mA, 6mA</p>
+        </a>
+        <a href="mic15k1page2.html" target="_blank" class="product-item" data-voltage="15kV" data-current="1.2mA,3mA,5mA,7mA">
+            <p>Voltage: 15kV, Current: 1.2mA, 3mA, 5mA, 7mA</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
