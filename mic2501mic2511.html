@@ -92,6 +92,8 @@
     <script>
         const productComparisonData = {
             "Sonel MIC-2501": {
+                "Brand": "Sonel",
+                "Model": "MIC-2501",
                 "Measuring Voltage": "2500V",
                 "Short Circuit Current": "1mA",
                 "Resistance Range": "1 TΩ",
@@ -104,6 +106,8 @@
                 "IP": "IP65"
             },
             "Sonel MIC-2511": {
+                "Brand": "Sonel",
+                "Model": "MIC-2511",
                 "Measuring Voltage": "2500V",
                 "Short Circuit Current": "2mA",
                 "Resistance Range": "2 TΩ",
@@ -116,6 +120,8 @@
                 "IP": "IP65"
             },
             "Kyoritsu 3125 B": {
+                "Brand": "Kyoritsu",
+                "Model": "3125 B",
                 "Measuring Voltage": "2500V",
                 "Short Circuit Current": "1.5mA",
                 "Resistance Range": "100.0 GΩ",
@@ -128,6 +134,8 @@
                 "IP": "NM"
             },
             "Megger MIT2500": {
+                "Brand": "Megger",
+                "Model": "MIT2500",
                 "Measuring Voltage": "2500V",
                 "Short Circuit Current": "2mA",
                 "Resistance Range": "200 GΩ",
@@ -146,15 +154,17 @@
             const selectedCompetitor = document.getElementById("competitorSelect").value;
             const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
 
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th>`;
+            let tableContent = `<tr><th>Feature</th><th>${productComparisonData[selectedProduct].Brand} ${productComparisonData[selectedProduct].Model}</th><th>${productComparisonData[selectedCompetitor].Brand} ${productComparisonData[selectedCompetitor].Model}</th>`;
             
             if (selectedCompetitor2 !== "None") {
-                tableContent += `<th>${selectedCompetitor2}</th>`;
+                tableContent += `<th>${productComparisonData[selectedCompetitor2].Brand} ${productComparisonData[selectedCompetitor2].Model}</th>`;
             }
             
             tableContent += `</tr>`;
 
             const features = [
+                "Brand",
+                "Model",
                 "Measuring Voltage",
                 "Short Circuit Current",
                 "Resistance Range",
@@ -168,6 +178,8 @@
             ];
 
             features.forEach(feature => {
+                if (feature === "Brand" || feature === "Model") return; // Skip as we've already shown them in headers
+                
                 tableContent += `<tr>
                     <td>${feature}</td>
                     <td>${productComparisonData[selectedProduct][feature] || "NA"}</td>
@@ -189,11 +201,11 @@
             const competitorSelect2 = document.getElementById("competitorSelect2");
             const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
 
-            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${productComparisonData[comp].Brand} ${productComparisonData[comp].Model}</option>`).join("");
             
             // Keep the "None" option and add other competitors
             competitorSelect2.innerHTML = '<option value="None">None</option>' + 
-                competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+                competitors.map(comp => `<option value="${comp}">${productComparisonData[comp].Brand} ${productComparisonData[comp].Model}</option>`).join("");
 
             loadComparisonTable();
         }
@@ -202,12 +214,14 @@
             const allProducts = Object.keys(productComparisonData);
             let tableContent = `<tr><th>Feature</th>`;
             allProducts.forEach(product => {
-                tableContent += `<th>${product}</th>`;
+                tableContent += `<th>${productComparisonData[product].Brand} ${productComparisonData[product].Model}</th>`;
             });
             tableContent += `</tr>`;
 
             const firstProduct = allProducts[0];
             for (let feature in productComparisonData[firstProduct]) {
+                if (feature === "Brand" || feature === "Model") continue; // Skip as we've already shown them in headers
+                
                 tableContent += `<tr><td>${feature}</td>`;
                 allProducts.forEach(product => {
                     tableContent += `<td>${productComparisonData[product][feature]}</td>`;
