@@ -9,55 +9,35 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
+            position: relative;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        
-        .export-btn, .compare-all-btn {
+        .export-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             padding: 10px 15px;
+            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
             font-size: 14px;
-            margin: 10px 5px;
         }
-        
-        .export-btn {
-            background-color: #007bff;
-        }
-        
+
         .export-btn:hover {
             background-color: #0056b3;
-        }
-        
-        .compare-all-btn {
-            background-color: #28a745;
-        }
-        
-        .compare-all-btn:hover {
-            background-color: #218838;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 20px 0;
         }
 
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
 
@@ -68,89 +48,103 @@
         select {
             padding: 8px;
             margin: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
         }
         
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            table {
-                font-size: 12px;
-            }
-            select {
-                width: 100%;
-                margin: 5px 0;
-            }
-            .export-btn, .compare-all-btn {
-                width: 100%;
-            }
+        .compare-all-btn {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .compare-all-btn:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <button class="export-btn" onclick="exportToPDF()">Export</button>
-        <h1>Product Comparison</h1>
-        <label for="productSelect">Select Product:</label>
-        <select id="productSelect" onchange="updateCompetitorOptions()">
-            <option value="MIC-2501">MIC-2501</option>
-            <option value="MIC-2511">MIC-2511</option>
-        </select>
-        <label for="competitorSelect">Select Competitor 1:</label>
-        <select id="competitorSelect" onchange="loadComparisonTable()"></select>
-        <label for="competitorSelect2">Select Competitor 2:</label>
-        <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
-        <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
-        <table id="comparisonTable"></table>
-    </div>
+    <button class="export-btn" onclick="exportToPDF()">Export</button>
+
+    <h1>Product Comparison</h1>
+
+    <label for="productSelect">Select Product:</label>
+    <select id="productSelect" onchange="updateCompetitorOptions()">
+        <option value="Sonel MIC-2501">Sonel MIC-2501</option>
+        <option value="Sonel MIC-2511">Sonel MIC-2511</option>
+    </select>
+
+    <label for="competitorSelect">Select Competitor 1:</label>
+    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+
+    <label for="competitorSelect2">Select Competitor 2:</label>
+    <select id="competitorSelect2" onchange="loadComparisonTable()">
+        <option value="None">None</option>
+    </select>
+
+    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
+
+    <table id="comparisonTable"></table>
+
     <script>
-      
         const productComparisonData = {
-           
-            "MIC-2501": {
-                "Measuring Voltage": "2500 V",
-                "Short Circuit Current": "1 mA",
+            "Sonel MIC-2501": {
+                "Brand": "Sonel",
+                "Model": "MIC-2501",
+                "Measuring Voltage": "2500V",
+                "Short Circuit Current": "1mA",
                 "Resistance Range": "1 TΩ",
                 "Floors and walls Resistance measurement": "Available",
                 "Standard": "EN 61557",
                 "DC and AC voltage measurement Range": "750V",
                 "Capacitance measurement range": "NA",
                 "Measurement of leakage current range": "Available",
+                "SPD": "NA",
                 "IP": "IP65"
             },
-            "MIC-2511": {
-                "Measuring Voltage": "2500 V",
-                "Short Circuit Current": "2 mA",
+            "Sonel MIC-2511": {
+                "Brand": "Sonel",
+                "Model": "MIC-2511",
+                "Measuring Voltage": "2500V",
+                "Short Circuit Current": "2mA",
                 "Resistance Range": "2 TΩ",
                 "Floors and walls Resistance measurement": "Available",
                 "Standard": "EN 61557",
-                "DC and AC voltage measurement Range": "1500 V",
-                "Capacitance measurement range": "9.99 μF",
+                "DC and AC voltage measurement Range": "1500V",
+                "Capacitance measurement range": "9.99 µF",
                 "Measurement of leakage current range": "Available",
+                "SPD": "Available",
                 "IP": "IP65"
             },
             "Kyoritsu 3125 B": {
-                "Measuring Voltage": "2500 V",
-                "Short Circuit Current": "1.5 mA",
+                "Brand": "Kyoritsu",
+                "Model": "3125 B",
+                "Measuring Voltage": "2500V",
+                "Short Circuit Current": "1.5mA",
                 "Resistance Range": "100.0 GΩ",
                 "Floors and walls Resistance measurement": "NA",
                 "Standard": "NA",
-                "DC and AC voltage measurement Range": "600 V",
+                "DC and AC voltage measurement Range": "600V",
                 "Capacitance measurement range": "NA",
                 "Measurement of leakage current range": "NA",
+                "SPD": "NA",
                 "IP": "NM"
             },
             "Megger MIT2500": {
-                "Measuring Voltage": "2500 V",
-                "Short Circuit Current": "2 mA",
+                "Brand": "Megger",
+                "Model": "MIT2500",
+                "Measuring Voltage": "2500V",
+                "Short Circuit Current": "2mA",
                 "Resistance Range": "200 GΩ",
                 "Floors and walls Resistance measurement": "NA",
                 "Standard": "EN 61557",
-                "DC and AC voltage measurement Range": "600 V",
+                "DC and AC voltage measurement Range": "600V",
                 "Capacitance measurement range": "10 µF",
                 "Measurement of leakage current range": "Available",
+                "SPD": "NA",
                 "IP": "IP54"
             }
         };
@@ -160,13 +154,17 @@
             const selectedCompetitor = document.getElementById("competitorSelect").value;
             const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
 
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th><th>${selectedCompetitor2}</th></tr>`;
-
-            const productData = productComparisonData[selectedProduct];
-            const competitor1Data = productComparisonData[selectedCompetitor] || {};
-            const competitor2Data = productComparisonData[selectedCompetitor2] || {};
+            let tableContent = `<tr><th>Feature</th><th>${productComparisonData[selectedProduct].Brand} ${productComparisonData[selectedProduct].Model}</th><th>${productComparisonData[selectedCompetitor].Brand} ${productComparisonData[selectedCompetitor].Model}</th>`;
+            
+            if (selectedCompetitor2 !== "None") {
+                tableContent += `<th>${productComparisonData[selectedCompetitor2].Brand} ${productComparisonData[selectedCompetitor2].Model}</th>`;
+            }
+            
+            tableContent += `</tr>`;
 
             const features = [
+                "Brand",
+                "Model",
                 "Measuring Voltage",
                 "Short Circuit Current",
                 "Resistance Range",
@@ -175,16 +173,23 @@
                 "DC and AC voltage measurement Range",
                 "Capacitance measurement range",
                 "Measurement of leakage current range",
+                "SPD",
                 "IP"
             ];
 
             features.forEach(feature => {
+                if (feature === "Brand" || feature === "Model") return; // Skip as we've already shown them in headers
+                
                 tableContent += `<tr>
                     <td>${feature}</td>
-                    <td>${productData[feature] || "NA"}</td>
-                    <td>${competitor1Data[feature] || "NA"}</td>
-                    <td>${competitor2Data[feature] || "NA"}</td>
-                </tr>`;
+                    <td>${productComparisonData[selectedProduct][feature] || "NA"}</td>
+                    <td>${productComparisonData[selectedCompetitor][feature] || "NA"}</td>`;
+                
+                if (selectedCompetitor2 !== "None") {
+                    tableContent += `<td>${productComparisonData[selectedCompetitor2][feature] || "NA"}</td>`;
+                }
+                
+                tableContent += `</tr>`;
             });
 
             document.getElementById("comparisonTable").innerHTML = tableContent;
@@ -196,8 +201,11 @@
             const competitorSelect2 = document.getElementById("competitorSelect2");
             const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
 
-            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-            competitorSelect2.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${productComparisonData[comp].Brand} ${productComparisonData[comp].Model}</option>`).join("");
+            
+            // Keep the "None" option and add other competitors
+            competitorSelect2.innerHTML = '<option value="None">None</option>' + 
+                competitors.map(comp => `<option value="${comp}">${productComparisonData[comp].Brand} ${productComparisonData[comp].Model}</option>`).join("");
 
             loadComparisonTable();
         }
@@ -206,12 +214,14 @@
             const allProducts = Object.keys(productComparisonData);
             let tableContent = `<tr><th>Feature</th>`;
             allProducts.forEach(product => {
-                tableContent += `<th>${product}</th>`;
+                tableContent += `<th>${productComparisonData[product].Brand} ${productComparisonData[product].Model}</th>`;
             });
             tableContent += `</tr>`;
 
             const firstProduct = allProducts[0];
             for (let feature in productComparisonData[firstProduct]) {
+                if (feature === "Brand" || feature === "Model") continue; // Skip as we've already shown them in headers
+                
                 tableContent += `<tr><td>${feature}</td>`;
                 allProducts.forEach(product => {
                     tableContent += `<td>${productComparisonData[product][feature]}</td>`;
@@ -240,8 +250,6 @@
 
         // Initial setup
         updateCompetitorOptions();
-    
-
     </script>
 </body>
 </html>
