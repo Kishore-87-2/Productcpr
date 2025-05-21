@@ -10,91 +10,178 @@
     <style>
         /* CSS Styling */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             text-align: center;
         }
 
         h1 {
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #007bff, #00c4ff);
+            -webkit-background-clip: text;
+            color: transparent;
         }
 
         .dropdowns {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
         }
 
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
 
         .buttons {
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: #007bff;
             color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            position: relative;
         }
 
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
 
         .comparison-result {
             margin-top: 20px;
-            text-align: left;
             overflow-x: auto;
+            max-height: 500px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            font-size: 0.9rem;
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
             text-align: left;
         }
 
         th {
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
         }
     </style>
 </head>
@@ -103,68 +190,29 @@
         <h1>Product Comparison Tool</h1>
         <div class="dropdowns">
             <div>
-                <label for="product">Select Product:</label>
-                <select id="product">
-                    <option value="Sonel KT-510">Sonel KT-510</option>
-                    <option value="Sonel KT-128">Sonel KT-128</option>
-                    <option value="Sonel KT-256">Sonel KT-256</option>
-                    <option value="Sonel KT-256F">Sonel KT-256F</option>
-                    <option value="Flir E5PRO">Flir E5PRO</option>
-                    <option value="Flir E6PRO">Flir E6PRO</option>
-                    <option value="Fluke TiS55+">Fluke TiS55+</option>
-                    <option value="Fluke TiS20+">Fluke TiS20+</option>
-                    <option value="Testo 865">Testo 865</option>
-                    <option value="Testo 871">Testo 871</option>
-                    <option value="Testo 868">Testo 868</option>
-                    <option value="Toshniwal TI323F">Toshniwal TI323F</option>
-                    <option value="ThermEye 256 A">ThermEye 256 A</option>
-                </select>
+                <label for="product">Select Sonel Product:</label>
+                <select id="product"></select>
             </div>
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
-                    <option value="Sonel KT-510">Sonel KT-510</option>
-                    <option value="Sonel KT-128">Sonel KT-128</option>
-                    <option value="Sonel KT-256">Sonel KT-256</option>
-                    <option value="Sonel KT-256F">Sonel KT-256F</option>
-                    <option value="Flir E5PRO">Flir E5PRO</option>
-                    <option value="Flir E6PRO">Flir E6PRO</option>
-                    <option value="Fluke TiS55+">Fluke TiS55+</option>
-                    <option value="Fluke TiS20+">Fluke TiS20+</option>
-                    <option value="Testo 865">Testo 865</option>
-                    <option value="Testo 871">Testo 871</option>
-                    <option value="Testo 868">Testo 868</option>
-                    <option value="Toshniwal TI323F">Toshniwal TI323F</option>
-                    <option value="ThermEye 256 A">ThermEye 256 A</option>
-                </select>
+                <select id="competitor1"></select>
             </div>
             <div>
                 <label for="competitor2">Select Competitor 2:</label>
-                <select id="competitor2">
-                    <option value="Sonel KT-510">Sonel KT-510</option>
-                    <option value="Sonel KT-128">Sonel KT-128</option>
-                    <option value="Sonel KT-256">Sonel KT-256</option>
-                    <option value="Sonel KT-256F">Sonel KT-256F</option>
-                    <option value="Flir E5PRO">Flir E5PRO</option>
-                    <option value="Flir E6PRO">Flir E6PRO</option>
-                    <option value="Fluke TiS55+">Fluke TiS55+</option>
-                    <option value="Fluke TiS20+">Fluke TiS20+</option>
-                    <option value="Testo 865">Testo 865</option>
-                    <option value="Testo 871">Testo 871</option>
-                    <option value="Testo 868">Testo 868</option>
-                    <option value="Toshniwal TI323F">Toshniwal TI323F</option>
-                    <option value="ThermEye 256 A">ThermEye 256 A</option>
-                </select>
+                <select id="competitor2"></select>
             </div>
         </div>
 
         <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button class="tooltip" onclick="compareSelectedProducts()" data-tooltip="Compare the selected products">Compare Selected</button>
+            <button class="tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All</button>
+            <button class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF">Export Selected to PDF</button>
+            <button class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
+            <button class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
         </div>
 
+        <div id="loading" class="loading"></div>
+        <div id="notification" class="notification"></div>
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
@@ -319,7 +367,7 @@
                 "Infrared resolution": "240 x 180",
                 "Super resolution": "480 × 360",
                 "Detector type": "7.5 to 14 µm",
-                "NETD": "80 mK)",
+                "NETD": "80 mK",
                 "Frame rate": "9 Hz",
                 "Field of view": "35° x 26°",
                 "IFOV": "2.6 mrad",
@@ -334,7 +382,7 @@
             "Testo 868": {
                 "Infrared resolution": "160 x 120",
                 "Super resolution": "320 x 240",
-                "Detector type": "7.5 to14 µm",
+                "Detector type": "7.5 to 14 µm",
                 "NETD": "80 mK",
                 "Frame rate": "9 Hz",
                 "Field of view": "31° x 23°",
@@ -376,10 +424,109 @@
                 "Accuracy": "±2 °C or 2 %",
                 "Display screen": "2.8\" LCD display pixels 320 x 240",
                 "Image mode": "IR, Fusion, PIP & Visual Mode",
-               "Palettes": "NA",
+                "Palettes": "NA",
                 "Storage media": "NA"
-          }
+            }
         };
+
+        // Define Sonel products
+        const sonelProducts = ["Sonel KT-510", "Sonel KT-128", "Sonel KT-256", "Sonel KT-256F"];
+
+        // Initialize dropdowns
+        function initializeDropdowns() {
+            const productSelect = document.getElementById("product");
+            const competitor1Select = document.getElementById("competitor1");
+            const competitor2Select = document.getElementById("competitor2");
+            const productNames = Object.keys(products);
+
+            // Populate product dropdown with only Sonel products
+            sonelProducts.forEach(product => {
+                productSelect.add(new Option(product, product));
+            });
+
+            // Populate competitor dropdowns with all products
+            productNames.forEach(product => {
+                competitor1Select.add(new Option(product, product));
+                competitor2Select.add(new Option(product, product));
+            });
+
+            // Add "None" option to competitor2
+            competitor2Select.add(new Option("None", "None"), 0);
+            competitor2Select.value = "None";
+
+            // Prevent duplicate selections
+            productSelect.addEventListener("change", updateDropdowns);
+            competitor1Select.addEventListener("change", updateDropdowns);
+            competitor2Select.addEventListener("change", updateDropdowns);
+        }
+
+        // Update dropdowns to prevent duplicates
+        function updateDropdowns() {
+            const productSelect = document.getElementById("product");
+            const competitor1Select = document.getElementById("competitor1");
+            const competitor2Select = document.getElementById("competitor2");
+            const productNames = Object.keys(products);
+
+            const selectedProduct = productSelect.value;
+            const selectedCompetitor1 = competitor1Select.value;
+            const selectedCompetitor2 = competitor2Select.value;
+
+            // Clear and repopulate dropdowns
+            productSelect.innerHTML = "";
+            competitor1Select.innerHTML = "";
+            competitor2Select.innerHTML = "";
+
+            // Repopulate product dropdown with Sonel products
+            sonelProducts.forEach(product => {
+                if (product !== selectedCompetitor1 && product !== selectedCompetitor2) {
+                    productSelect.add(new Option(product, product));
+                }
+            });
+
+            // Repopulate competitor dropdowns with all products
+            productNames.forEach(product => {
+                if (product !== selectedProduct && product !== selectedCompetitor2) {
+                    competitor1Select.add(new Option(product, product));
+                }
+                if (product !== selectedProduct && product !== selectedCompetitor1) {
+                    competitor2Select.add(new Option(product, product));
+                }
+            });
+
+            // Restore "None" option for competitor2
+            competitor2Select.add(new Option("None", "None"), 0);
+
+            // Restore selected values
+            productSelect.value = selectedProduct;
+            competitor1Select.value = selectedCompetitor1;
+            competitor2Select.value = selectedCompetitor2;
+        }
+
+        // Clear selections
+        function clearSelections() {
+            document.getElementById("product").selectedIndex = 0;
+            document.getElementById("competitor1").selectedIndex = 0;
+            document.getElementById("competitor2").value = "None";
+            document.getElementById("comparisonResult").innerHTML = "";
+            updateDropdowns();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.style.display = "block";
+            setTimeout(() => {
+                notification.style.display = "none";
+            }, 3000);
+        }
+
+        // Show/hide loading spinner
+        function toggleLoading(show) {
+            document.getElementById("loading").style.display = show ? "block" : "none";
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach(button => (button.disabled = show));
+        }
 
         // Function to compare selected products
         function compareSelectedProducts() {
@@ -387,17 +534,19 @@
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
 
+            if (!product || !competitor1) {
+                showNotification("Please select a Sonel product and at least one competitor.");
+                return;
+            }
+
             const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
-            `;
+            let tableHTML = `<h3>Comparison Result:</h3><table><tr><th>Feature</th><th>${product}</th><th>${competitor1}</th>`;
+
+            // Include competitor2 only if not "None"
+            if (competitor2 !== "None") {
+                tableHTML += `<th>${competitor2}</th>`;
+            }
+            tableHTML += `</tr>`;
 
             Object.keys(products[product]).forEach(feature => {
                 tableHTML += `
@@ -405,9 +554,11 @@
                         <td>${feature}</td>
                         <td>${products[product][feature]}</td>
                         <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
                 `;
+                if (competitor2 !== "None") {
+                    tableHTML += `<td>${products[competitor2][feature]}</td>`;
+                }
+                tableHTML += `</tr>`;
             });
 
             tableHTML += `</table>`;
@@ -440,7 +591,8 @@
         }
 
         // Function to export selected comparison to PDF
-        function exportSelectedToPDF() {
+        async function exportSelectedToPDF() {
+            toggleLoading(true);
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -448,11 +600,30 @@
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
 
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
+            if (!product || !competitor1) {
+                toggleLoading(false);
+                showNotification("Please select a Sonel product and at least one competitor.");
+                return;
+            }
+
+            // Prepare headers and rows
+            let headers = ["Feature", product, competitor1];
+            let rows = Object.keys(products[product]).map(feature => [
+                feature,
+                products[product][feature],
+                products[competitor1][feature]
+            ]);
+
+            // Include competitor2 only if not "None"
+            if (competitor2 !== "None") {
+                headers.push(competitor2);
+                rows = Object.keys(products[product]).map(feature => [
+                    feature,
+                    products[product][feature],
+                    products[competitor1][feature],
+                    products[competitor2][feature]
+                ]);
+            }
 
             doc.autoTable({
                 head: [headers],
@@ -466,49 +637,57 @@
             });
 
             doc.save("Selected_Comparison.pdf");
+            toggleLoading(false);
+            showNotification("Selected comparison exported successfully!");
         }
 
         // Function to export all comparison to PDF
-      function exportAllToPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+        async function exportAllToPDF() {
+            toggleLoading(true);
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-    // Get all product names and features
-    const allProducts = Object.keys(products);
-    const features = Object.keys(products[allProducts[0]]);
+            // Get all product names and features
+            const allProducts = Object.keys(products);
+            const features = Object.keys(products[allProducts[0]]);
 
-    // Split products into chunks of 5
-    const chunkSize = 5;
-    for (let i = 0; i < allProducts.length; i += chunkSize) {
-        const chunk = allProducts.slice(i, i + chunkSize);
+            // Split products into chunks of 5
+            const chunkSize = 5;
+            for (let i = 0; i < allProducts.length; i += chunkSize) {
+                const chunk = allProducts.slice(i, i + chunkSize);
 
-        // Add a new page for each chunk (except the first page)
-        if (i > 0) {
-            doc.addPage();
+                // Add a new page for each chunk (except the first page)
+                if (i > 0) {
+                    doc.addPage();
+                }
+
+                // Prepare headers and rows for the current chunk
+                const headers = ["Feature", ...chunk];
+                const rows = features.map(feature => {
+                    return [feature, ...chunk.map(product => products[product][feature])];
+                });
+
+                // Add table to PDF
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 20,
+                    theme: "grid",
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                    margin: { horizontal: 10 },
+                    tableWidth: "auto"
+                });
+            }
+
+            // Save the PDF
+            doc.save("All_Comparison.pdf");
+            toggleLoading(false);
+            showNotification("All comparisons exported successfully!");
         }
 
-        // Prepare headers and rows for the current chunk
-        const headers = ["Feature", ...chunk];
-        const rows = features.map(feature => {
-            return [feature, ...chunk.map(product => products[product][feature])];
-        });
-
-        // Add table to PDF
-        doc.autoTable({
-            head: [headers],
-            body: rows,
-            startY: 20,
-            theme: "grid",
-            styles: { fontSize: 10 },
-            headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-            margin: { horizontal: 10 },
-            tableWidth: "auto"
-        });
-    }
-
-    // Save the PDF
-    doc.save("All_Comparison.pdf");
-}
+        // Initialize dropdowns on page load
+        initializeDropdowns();
     </script>
 </body>
 </html>
