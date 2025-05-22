@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Comparison Tool</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-882ZN6DL7D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-882ZN6DL7D');
+    </script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -110,13 +120,10 @@
             var correctUsername = "Product";
             var correctPassword = "Task$321";
 
-            // Check if the entered username and password are correct
             if (username === correctUsername && password === correctPassword) {
-                // Redirect to another page
                 window.location.href = "page2.html"; // Replace with your target page
                 return false;
             } else {
-                // Show error message
                 errorMessage.textContent = "Please check User name and Password";
                 return false;
             }
