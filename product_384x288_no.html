@@ -9,37 +9,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             text-align: center;
         }
 
         h1 {
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #007bff, #00c4ff);
+            -webkit-background-clip: text;
+            color: transparent;
         }
 
         .dropdowns {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
@@ -50,41 +53,53 @@
 
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
             text-align: left;
         }
 
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #fff;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
 
         .buttons {
-            margin-bottom: 20px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
+            margin-bottom: 25px;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: #007bff;
             color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
+            position: relative;
         }
 
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
         }
 
         button:disabled {
@@ -92,55 +107,116 @@
             cursor: not-allowed;
         }
 
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .comparison-result {
             margin-top: 20px;
             text-align: left;
             overflow-x: auto;
+            max-height: 500px;
         }
 
-        /* Add these styles to your existing CSS */
-table {
-    table-layout: fixed; /* Ensures equal column width */
-    width: 100%;
-}
+        table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
 
-th, td {
-    word-wrap: break-word; /* Allows text to wrap within cells */
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
+        th, td {
+            word-wrap: break-word;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+        }
 
-/* Equal width for all columns */
-th:nth-child(1), td:nth-child(1) {
-    width: 25%; /* Feature column */
-}
+        th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
 
-th:nth-child(n+2), td:nth-child(n+2) {
-    width: 25%; /* Equal width for product columns */
-}
+        th:nth-child(1), td:nth-child(1) {
+            width: 25%;
+        }
+
+        th:nth-child(n+2), td:nth-child(n+2) {
+            width: 25%;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
         .loading {
             display: none;
-            margin: 20px 0;
-            color: #007bff;
-            font-weight: bold;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .error-message {
             color: #dc3545;
             margin: 20px 0;
             font-weight: bold;
+            text-align: center;
+        }
+
+        .notification {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
         }
 
         @media (max-width: 768px) {
             .dropdowns {
                 flex-direction: column;
             }
-            
+
             .dropdown-group {
                 width: 100%;
             }
-            
+
             table {
                 display: block;
                 overflow-x: auto;
@@ -154,50 +230,35 @@ th:nth-child(n+2), td:nth-child(n+2) {
         
         <div class="dropdowns">
             <div class="dropdown-group">
-                <label for="product">Select Product:</label>
-                <select id="product">
-                    <option value="">-- Select Product --</option>
-                    <option value="KT-525">KT-525</option>
-                </select>
+                <label for="product">Select Sonel Product:</label>
+                <select id="product"></select>
             </div>
             <div class="dropdown-group">
                 <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
-                    <option value="">-- Select Competitor --</option>
-                    <option value="Fluke TiS75+">Fluke TiS75+</option>
-                    <option value="Toshniwal TI7">Toshniwal TI7</option>
-                    <option value="Toshniwal TI8">Toshniwal TI8</option>
-                    <option value="Toshniwal TI346A">Toshniwal TI346A</option>
-                    <option value="Thermeye384M">Thermeye384M</option>
-                </select>
+                <select id="competitor1"></select>
             </div>
             <div class="dropdown-group">
                 <label for="competitor2">Select Competitor 2:</label>
-                <select id="competitor2">
-                    <option value="">-- Select Competitor --</option>
-                    <option value="Fluke TiS75+">Fluke TiS75+</option>
-                    <option value="Toshniwal TI7">Toshniwal TI7</option>
-                    <option value="Toshniwal TI8">Toshniwal TI8</option>
-                    <option value="Toshniwal TI346A">Toshniwal TI346A</option>
-                    <option value="Thermeye384M">Thermeye384M</option>
-                </select>
+                <select id="competitor2"></select>
             </div>
         </div>
 
         <div class="buttons">
-            <button id="compareSelectedBtn" onclick="compareSelectedProducts()" disabled>Compare Selected</button>
-            <button id="compareAllBtn" onclick="compareAllProducts()">Compare All</button>
-            <button id="exportSelectedBtn" onclick="exportSelectedToPDF()" disabled>Export Selected to PDF</button>
-            <button id="exportAllBtn" onclick="exportAllToPDF()">Export All to PDF</button>
+            <button id="compareSelectedBtn" class="tooltip" onclick="compareSelectedProducts()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
+            <button id="compareAllBtn" class="tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All</button>
+            <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF" disabled>Export Selected to PDF</button>
+            <button id="exportAllBtn" class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
+            <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
         </div>
 
-        <div id="loading" class="loading">Generating comparison, please wait...</div>
+        <div id="loading" class="loading"></div>
         <div id="errorMessage" class="error-message"></div>
+        <div id="notification" class="notification"></div>
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
     <script>
-        // Product Data - Organized as a constant at the top
+        // Product Data
         const PRODUCTS = {
             "KT-525": {
                 "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
@@ -309,7 +370,10 @@ th:nth-child(n+2), td:nth-child(n+2) {
             }
         };
 
-        // DOM Elements - Cached for better performance
+        // Define Sonel products
+        const sonelProducts = ["KT-525"];
+
+        // DOM Elements
         const domElements = {
             productSelect: document.getElementById("product"),
             competitor1Select: document.getElementById("competitor1"),
@@ -318,38 +382,94 @@ th:nth-child(n+2), td:nth-child(n+2) {
             compareAllBtn: document.getElementById("compareAllBtn"),
             exportSelectedBtn: document.getElementById("exportSelectedBtn"),
             exportAllBtn: document.getElementById("exportAllBtn"),
+            clearSelectionBtn: document.getElementById("clearSelectionBtn"),
             loading: document.getElementById("loading"),
             errorMessage: document.getElementById("errorMessage"),
+            notification: document.getElementById("notification"),
             comparisonResult: document.getElementById("comparisonResult")
         };
 
-        // Initialize the application
-        function init() {
-            setupEventListeners();
-            console.log("Application initialized");
-        }
+        // Initialize dropdowns
+        function initializeDropdowns() {
+            // Populate product dropdown with only Sonel products
+            sonelProducts.forEach(product => {
+                domElements.productSelect.add(new Option(product, product));
+            });
 
-        // Set up event listeners
-        function setupEventListeners() {
-            // Enable/disable buttons based on selection
+            // Populate competitor dropdowns with all products
+            Object.keys(PRODUCTS).forEach(product => {
+                domElements.competitor1Select.add(new Option(product, product));
+                domElements.competitor2Select.add(new Option(product, product));
+            });
+
+            // Add "None" option to competitor2
+            domElements.competitor2Select.add(new Option("None", "None"), 0);
+            domElements.competitor2Select.value = "None";
+
+            // Set up event listeners for dropdown changes
             [domElements.productSelect, domElements.competitor1Select, domElements.competitor2Select].forEach(select => {
-                select.addEventListener('change', validateSelections);
+                select.addEventListener('change', () => {
+                    updateDropdowns();
+                    validateSelections();
+                });
             });
         }
 
-        // Validate selections and enable/disable buttons accordingly
-        function validateSelections() {
-            const productSelected = domElements.productSelect.value !== "";
-            const competitor1Selected = domElements.competitor1Select.value !== "";
-            const competitor2Selected = domElements.competitor2Select.value !== "";
-            
-            domElements.compareSelectedBtn.disabled = !(productSelected && competitor1Selected && competitor2Selected);
-            domElements.exportSelectedBtn.disabled = !(productSelected && competitor1Selected && competitor2Selected);
-            
-            // Clear any previous results if selection changes
-            if (domElements.compareSelectedBtn.disabled) {
-                domElements.comparisonResult.innerHTML = "";
-            }
+        // Update dropdowns to prevent duplicates
+        function updateDropdowns() {
+            const selectedProduct = domElements.productSelect.value;
+            const selectedCompetitor1 = domElements.competitor1Select.value;
+            const selectedCompetitor2 = domElements.competitor2Select.value;
+
+            // Clear dropdowns
+            domElements.productSelect.innerHTML = "";
+            domElements.competitor1Select.innerHTML = "";
+            domElements.competitor2Select.innerHTML = "";
+
+            // Repopulate product dropdown with Sonel products
+            sonelProducts.forEach(product => {
+                if (product !== selectedCompetitor1 && product !== selectedCompetitor2) {
+                    domElements.productSelect.add(new Option(product, product));
+                }
+            });
+
+            // Repopulate competitor dropdowns with all products
+            Object.keys(PRODUCTS).forEach(product => {
+                if (product !== selectedProduct && product !== selectedCompetitor2) {
+                    domElements.competitor1Select.add(new Option(product, product));
+                }
+                if (product !== selectedProduct && product !== selectedCompetitor1) {
+                    domElements.competitor2Select.add(new Option(product, product));
+                }
+            });
+
+            // Restore "None" option for competitor2
+            domElements.competitor2Select.add(new Option("None", "None"), 0);
+
+            // Restore selected values
+            domElements.productSelect.value = selectedProduct;
+            domElements.competitor1Select.value = selectedCompetitor1;
+            domElements.competitor2Select.value = selectedCompetitor2;
+        }
+
+        // Clear selections
+        function clearSelections() {
+            domElements.productSelect.selectedIndex = 0;
+            domElements.competitor1Select.selectedIndex = 0;
+            domElements.competitor2Select.value = "None";
+            domElements.comparisonResult.innerHTML = "";
+            domElements.errorMessage.textContent = "";
+            updateDropdowns();
+            validateSelections();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            domElements.notification.textContent = message;
+            domElements.notification.style.display = "block";
+            setTimeout(() => {
+                domElements.notification.style.display = "none";
+            }, 3000);
         }
 
         // Show loading indicator
@@ -367,6 +487,19 @@ th:nth-child(n+2), td:nth-child(n+2) {
         function showError(message) {
             domElements.errorMessage.textContent = message;
             hideLoading();
+        }
+
+        // Validate selections and enable/disable buttons
+        function validateSelections() {
+            const productSelected = domElements.productSelect.value !== "";
+            const competitor1Selected = domElements.competitor1Select.value !== "";
+            
+            domElements.compareSelectedBtn.disabled = !(productSelected && competitor1Selected);
+            domElements.exportSelectedBtn.disabled = !(productSelected && competitor1Selected);
+            
+            if (domElements.compareSelectedBtn.disabled) {
+                domElements.comparisonResult.innerHTML = "";
+            }
         }
 
         // Get all unique features from selected products
@@ -392,28 +525,26 @@ th:nth-child(n+2), td:nth-child(n+2) {
                 const competitor2 = domElements.competitor2Select.value;
                 
                 // Validate selections
-                if (!product || !competitor1 || !competitor2) {
-                    showError("Please select all products for comparison");
+                if (!product || !competitor1) {
+                    showError("Please select a Sonel product and at least one competitor");
                     return;
                 }
                 
-                if (competitor1 === competitor2) {
+                if (competitor2 !== "None" && competitor1 === competitor2) {
                     showError("Please select different competitors");
                     return;
                 }
                 
-                const selectedProducts = [product, competitor1, competitor2];
+                const selectedProducts = competitor2 === "None" ? [product, competitor1] : [product, competitor1, competitor2];
                 const features = getAllFeatures(selectedProducts);
                 
                 // Generate comparison table
                 let tableHTML = `
-                    <h3>Comparison Result: ${product} vs ${competitor1} vs ${competitor2}</h3>
+                    <h3>Comparison Result: ${selectedProducts.join(" vs ")}</h3>
                     <table>
                         <tr>
                             <th>Feature</th>
-                            <th>${product}</th>
-                            <th>${competitor1}</th>
-                            <th>${competitor2}</th>
+                            ${selectedProducts.map(p => `<th>${p}</th>`).join("")}
                         </tr>
                 `;
                 
@@ -421,9 +552,7 @@ th:nth-child(n+2), td:nth-child(n+2) {
                     tableHTML += `
                         <tr>
                             <td>${feature}</td>
-                            <td>${PRODUCTS[product][feature] || 'N/A'}</td>
-                            <td>${PRODUCTS[competitor1][feature] || 'N/A'}</td>
-                            <td>${PRODUCTS[competitor2][feature] || 'N/A'}</td>
+                            ${selectedProducts.map(product => `<td>${PRODUCTS[product][feature] || 'N/A'}</td>`).join("")}
                         </tr>
                     `;
                 });
@@ -472,194 +601,208 @@ th:nth-child(n+2), td:nth-child(n+2) {
             }
         }
 
-        // Update the export functions to ensure equal column widths
-function exportSelectedToPDF() {
-    try {
-        showLoading();
-        
-        const product = domElements.productSelect.value;
-        const competitor1 = domElements.competitor1Select.value;
-        const competitor2 = domElements.competitor2Select.value;
-        
-        if (!product || !competitor1 || !competitor2) {
-            showError("Please select all products for PDF export");
-            return;
-        }
-        
-        if (competitor1 === competitor2) {
-            showError("Please select different competitors for PDF export");
-            return;
-        }
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('landscape');
-        
-        // Add title
-        doc.setFontSize(16);
-        doc.text('Product Comparison', 14, 15);
-        doc.setFontSize(12);
-        doc.text(`${product} vs ${competitor1} vs ${competitor2}`, 14, 22);
-        
-        // Prepare data
-        const selectedProducts = [product, competitor1, competitor2];
-        const features = getAllFeatures(selectedProducts);
-        const headers = ["Feature", ...selectedProducts];
-        
-        const rows = features.map(feature => {
-            return [feature, ...selectedProducts.map(product => PRODUCTS[product][feature] || 'N/A')];
-        });
-        
-        // Calculate column widths
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 20;
-        const availableWidth = pageWidth - (margin * 2);
-        const columnCount = headers.length;
-        const columnWidth = availableWidth / columnCount;
-        
-        // Add table with equal column widths
-        doc.autoTable({
-            head: [headers],
-            body: rows,
-            startY: 30,
-            theme: "grid",
-            styles: { 
-                fontSize: 8,
-                cellPadding: 3,
-                overflow: 'linebreak',
-                lineWidth: 0.1
-            },
-            headStyles: { 
-                fillColor: [41, 128, 185], 
-                textColor: [255, 255, 255],
-                fontSize: 9,
-                lineWidth: 0.1
-            },
-            margin: { horizontal: margin },
-            columnStyles: {
-                0: { cellWidth: columnWidth },
-                1: { cellWidth: columnWidth },
-                2: { cellWidth: columnWidth },
-                3: { cellWidth: columnWidth }
-            },
-            tableWidth: 'auto'
-        });
-        
-        doc.save(`Comparison_${product}_vs_${competitor1}_vs_${competitor2}.pdf`);
-        hideLoading();
-    } catch (error) {
-        showError(`Error generating PDF: ${error.message}`);
-        console.error("exportSelectedToPDF error:", error);
-    }
-}
-
-function exportAllToPDF() {
-    try {
-        showLoading();
-        const { jsPDF } = window.jspdf;
-        const allProducts = Object.keys(PRODUCTS);
-        const features = getAllFeatures(allProducts);
-        
-        // Create a new PDF document in landscape with larger format
-        const doc = new jsPDF({
-            orientation: 'landscape',
-            unit: 'mm',
-            format: [297, 420] // A3 size for more space
-        });
-
-        // Set document metadata
-        doc.setProperties({
-            title: 'All Products Comparison',
-            subject: 'Technical Specifications Comparison',
-            author: 'Product Comparison Tool'
-        });
-
-        // Prepare data
-        const headers = ["Feature", ...allProducts];
-        const rows = features.map(feature => {
-            return [feature, ...allProducts.map(product => PRODUCTS[product][feature] || 'N/A')];
-        });
-
-        // Calculate dynamic font size based on number of columns
-        const baseFontSize = 8;
-        const minFontSize = 6;
-        const columnCount = headers.length;
-        const fontSize = Math.max(minFontSize, baseFontSize - Math.floor(columnCount / 10));
-        
-        // Calculate column widths - first column wider for features
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 10;
-        const availableWidth = pageWidth - (margin * 2);
-        const firstColWidth = availableWidth * 0.25;
-        const otherColWidth = (availableWidth - firstColWidth) / (columnCount - 1);
-        
-        // Create column styles
-        const columnStyles = {};
-        headers.forEach((_, index) => {
-            columnStyles[index] = { 
-                cellWidth: index === 0 ? firstColWidth : otherColWidth,
-                minCellHeight: 8 // Ensure minimum row height
-            };
-        });
-
-        // Add title on first page
-        doc.setFontSize(16);
-        doc.setTextColor(40);
-        doc.text('Complete Product Comparison Report', margin, 15);
-        doc.setFontSize(12);
-        doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
-
-        // Add the table with automatic page breaks
-        doc.autoTable({
-            head: [headers],
-            body: rows,
-            startY: 30,
-            theme: "grid",
-            styles: { 
-                fontSize: fontSize,
-                cellPadding: 3,
-                overflow: 'linebreak',
-                lineWidth: 0.1,
-                lineColor: 200,
-                textColor: 40,
-                fontStyle: 'normal'
-            },
-            headStyles: { 
-                fillColor: [41, 128, 185], 
-                textColor: [255, 255, 255],
-                fontSize: fontSize + 1,
-                lineWidth: 0.1,
-                fontStyle: 'bold'
-            },
-            bodyStyles: {
-                lineWidth: 0.1
-            },
-            margin: { 
-                horizontal: margin,
-                top: 30
-            },
-            columnStyles: columnStyles,
-            tableWidth: 'auto',
-            showHead: 'everyPage', // Repeat headers on each page
-            pageBreak: 'auto', // Automatic page breaks
-            rowPageBreak: 'avoid', // Try to keep rows together
-            didDrawPage: function(data) {
-                // Footer with page numbers
-                doc.setFontSize(10);
-                doc.setTextColor(100);
-                const pageCount = doc.internal.getNumberOfPages();
-                doc.text(`Page ${data.pageNumber} of ${pageCount}`, margin, doc.internal.pageSize.getHeight() - 10);
+        // Export selected products to PDF
+        function exportSelectedToPDF() {
+            try {
+                showLoading();
+                
+                const product = domElements.productSelect.value;
+                const competitor1 = domElements.competitor1Select.value;
+                const competitor2 = domElements.competitor2Select.value;
+                
+                if (!product || !competitor1) {
+                    showError("Please select a Sonel product and at least one competitor for PDF export");
+                    return;
+                }
+                
+                if (competitor2 !== "None" && competitor1 === competitor2) {
+                    showError("Please select different competitors for PDF export");
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape');
+                
+                // Add title
+                const selectedProducts = competitor2 === "None" ? [product, competitor1] : [product, competitor1, competitor2];
+                doc.setFontSize(16);
+                doc.text('Product Comparison', 14, 15);
+                doc.setFontSize(12);
+                doc.text(`${selectedProducts.join(" vs ")}`, 14, 22);
+                
+                // Prepare data
+                const features = getAllFeatures(selectedProducts);
+                const headers = ["Feature", ...selectedProducts];
+                const rows = features.map(feature => {
+                    return [feature, ...selectedProducts.map(product => PRODUCTS[product][feature] || 'N/A')];
+                });
+                
+                // Calculate column widths
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 20;
+                const availableWidth = pageWidth - (margin * 2);
+                const columnCount = headers.length;
+                const columnWidth = availableWidth / columnCount;
+                
+                // Create column styles
+                const columnStyles = {};
+                headers.forEach((_, index) => {
+                    columnStyles[index] = { cellWidth: columnWidth };
+                });
+                
+                // Add table
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 30,
+                    theme: "grid",
+                    styles: { 
+                        fontSize: 8,
+                        cellPadding: 3,
+                        overflow: 'linebreak',
+                        lineWidth: 0.1
+                    },
+                    headStyles: { 
+                        fillColor: [41, 128, 185], 
+                        textColor: [255, 255, 255],
+                        fontSize: 9,
+                        lineWidth: 0.1
+                    },
+                    margin: { horizontal: margin },
+                    columnStyles: columnStyles,
+                    tableWidth: 'auto'
+                });
+                
+                doc.save(`Comparison_${selectedProducts.join("_vs_")}.pdf`);
+                hideLoading();
+                showNotification("Selected comparison exported successfully!");
+            } catch (error) {
+                showError(`Error generating PDF: ${error.message}`);
+                console.error("exportSelectedToPDF error:", error);
             }
-        });
+        }
 
-        doc.save('All_Products_Comparison.pdf');
-        hideLoading();
-    } catch (error) {
-        showError(`Error generating full PDF: ${error.message}`);
-        console.error("exportAllToPDF error:", error);
-        hideLoading();
-    }
-}
-        // Initialize the application when DOM is loaded
+        // Export all products to PDF
+        function exportAllToPDF() {
+            try {
+                showLoading();
+                const { jsPDF } = window.jspdf;
+                const allProducts = Object.keys(PRODUCTS);
+                const features = getAllFeatures(allProducts);
+                
+                // Create a new PDF document in landscape with larger format
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: [297, 420]
+                });
+
+                // Set document metadata
+                doc.setProperties({
+                    title: 'All Products Comparison',
+                    subject: 'Technical Specifications Comparison',
+                    author: 'Product Comparison Tool'
+                });
+
+                // Prepare data
+                const headers = ["Feature", ...allProducts];
+                const rows = features.map(feature => {
+                    return [feature, ...allProducts.map(product => PRODUCTS[product][feature] || 'N/A')];
+                });
+
+                // Calculate dynamic font size
+                const baseFontSize = 8;
+                const minFontSize = 6;
+                const columnCount = headers.length;
+                const fontSize = Math.max(minFontSize, baseFontSize - Math.floor(columnCount / 10));
+                
+                // Calculate column widths
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 10;
+                const availableWidth = pageWidth - (margin * 2);
+                const firstColWidth = availableWidth * 0.25;
+                const otherColWidth = (availableWidth - firstColWidth) / (columnCount - 1);
+                
+                // Create column styles
+                const columnStyles = {};
+                headers.forEach((_, index) => {
+                    columnStyles[index] = { 
+                        cellWidth: index === 0 ? firstColWidth : otherColWidth,
+                        minCellHeight: 8
+                    };
+                });
+
+                // Add title
+                doc.setFontSize(16);
+                doc.setTextColor(40);
+                doc.text('Complete Product Comparison Report', margin, 15);
+                doc.setFontSize(12);
+                doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                // Add table
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 30,
+                    theme: "grid",
+                    styles: { 
+                        fontSize: fontSize,
+                        cellPadding: 3,
+                        overflow: 'linebreak',
+                        lineWidth: 0.1,
+                        lineColor: 200,
+                        textColor: 40,
+                        fontStyle: 'normal'
+                    },
+                    headStyles: { 
+                        fillColor: [41, 128, 185], 
+                        textColor: [255, 255, 255],
+                        fontSize: fontSize + 1,
+                        lineWidth: 0.1,
+                        fontStyle: 'bold'
+                    },
+                    bodyStyles: {
+                        lineWidth: 0.1
+                    },
+                    margin: { 
+                        horizontal: margin,
+                        top: 30
+                    },
+                    columnStyles: columnStyles,
+                    tableWidth: 'auto',
+                    showHead: 'everyPage',
+                    pageBreak: 'auto',
+                    rowPageBreak: 'avoid',
+                    didDrawPage: function(data) {
+                        doc.setFontSize(10);
+                        doc.setTextColor(100);
+                        const pageCount = doc.internal.getNumberOfPages();
+                        doc.text(`Page ${data.pageNumber} of ${pageCount}`, margin, doc.internal.pageSize.getHeight() - 10);
+                    }
+                });
+
+                doc.save('All_Products_Comparison.pdf');
+                hideLoading();
+                showNotification("All comparisons exported successfully!");
+            } catch (error) {
+                showError(`Error generating full PDF: ${error.message}`);
+                console.error("exportAllToPDF error:", error);
+            }
+        }
+
+        // Initialize the application
+        function init() {
+            initializeDropdowns();
+            setupEventListeners();
+            console.log("Application initialized");
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Already handled in initializeDropdowns
+        }
+
+        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
