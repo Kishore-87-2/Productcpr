@@ -9,91 +9,196 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             text-align: center;
         }
 
         h1 {
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #007bff, #00c4ff);
+            -webkit-background-clip: text;
+            color: transparent;
         }
 
         .dropdowns {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+            text-align: left;
         }
 
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
 
         .buttons {
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: #007bff;
             color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
 
         .comparison-result {
             margin-top: 20px;
             text-align: left;
             overflow-x: auto;
+            max-height: 500px;
         }
 
         table {
+            table-layout: fixed;
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            font-size: 0.9rem;
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            word-wrap: break-word;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
             text-align: left;
         }
 
         th {
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 25%;
+        }
+
+        th:nth-child(n+2), td:nth-child(n+2) {
+            width: 25%;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .notification {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
         }
     </style>
 </head>
@@ -102,24 +207,30 @@
         <h1>Product Comparison Tool</h1>
         <div class="dropdowns">
             <div>
-                <label for="product">Select Product:</label>
-                <select id="product">
-                    <option value="KT-530">Sonel KT-530</option>
-                </select>
+                <label for="product">Select Sonel Product:</label>
+                <select id="product"></select>
             </div>
             <div>
                 <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
-                    <option value="FLIR E86">FLIR E86</option>
-                </select>
+                <select id="competitor1"></select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2"></select>
             </div>
         </div>
 
         <div class="buttons">
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button id="compareSelectedBtn" class="tooltip" onclick="compareSelectedProducts()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
+            <button id="compareAllBtn" class="tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All</button>
+            <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF" disabled>Export Selected to PDF</button>
+            <button id="exportAllBtn" class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
+            <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
         </div>
 
+        <div id="loading" class="loading"></div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="notification" class="notification"></div>
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
@@ -182,12 +293,143 @@
             };
         })();
 
+        // DOM Elements
+        const domElements = {
+            productSelect: document.getElementById("product"),
+            competitor1Select: document.getElementById("competitor1"),
+            competitor2Select: document.getElementById("competitor2"),
+            compareSelectedBtn: document.getElementById("compareSelectedBtn"),
+            compareAllBtn: document.getElementById("compareAllBtn"),
+            exportSelectedBtn: document.getElementById("exportSelectedBtn"),
+            exportAllBtn: document.getElementById("exportAllBtn"),
+            clearSelectionBtn: document.getElementById("clearSelectionBtn"),
+            loading: document.getElementById("loading"),
+            errorMessage: document.getElementById("errorMessage"),
+            notification: document.getElementById("notification"),
+            comparisonResult: document.getElementById("comparisonResult")
+        };
+
+        // Define Sonel products
+        const sonelProducts = ["Sonel KT-530"];
+
+        // Initialize dropdowns
+        function initializeDropdowns() {
+            // Populate product dropdown with only Sonel products
+            sonelProducts.forEach(product => {
+                domElements.productSelect.add(new Option(product, product));
+            });
+
+            // Populate competitor dropdowns with all products
+            ProductData.getProductNames().forEach(product => {
+                domElements.competitor1Select.add(new Option(product, product));
+                domElements.competitor2Select.add(new Option(product, product));
+            });
+
+            // Add "None" option to competitor2
+            domElements.competitor2Select.add(new Option("None", "None"), 0);
+            domElements.competitor2Select.value = "None";
+
+            // Set up event listeners
+            [domElements.productSelect, domElements.competitor1Select, domElements.competitor2Select].forEach(select => {
+                select.addEventListener('change', () => {
+                    updateDropdowns();
+                    validateSelections();
+                });
+            });
+        }
+
+        // Update dropdowns to prevent duplicates
+        function updateDropdowns() {
+            const selectedProduct = domElements.productSelect.value;
+            const selectedCompetitor1 = domElements.competitor1Select.value;
+            const selectedCompetitor2 = domElements.competitor2Select.value;
+
+            // Clear dropdowns
+            domElements.productSelect.innerHTML = "";
+            domElements.competitor1Select.innerHTML = "";
+            domElements.competitor2Select.innerHTML = "";
+
+            // Repopulate product dropdown with Sonel products
+            sonelProducts.forEach(product => {
+                if (product !== selectedCompetitor1 && product !== selectedCompetitor2) {
+                    domElements.productSelect.add(new Option(product, product));
+                }
+            });
+
+            // Repopulate competitor dropdowns
+            ProductData.getProductNames().forEach(product => {
+                if (product !== selectedProduct && product !== selectedCompetitor2) {
+                    domElements.competitor1Select.add(new Option(product, product));
+                }
+                if (product !== selectedProduct && product !== selectedCompetitor1) {
+                    domElements.competitor2Select.add(new Option(product, product));
+                }
+            });
+
+            // Restore "None" option
+            domElements.competitor2Select.add(new Option("None", "None"), 0);
+
+            // Restore selected values
+            domElements.productSelect.value = selectedProduct;
+            domElements.competitor1Select.value = selectedCompetitor1;
+            domElements.competitor2Select.value = selectedCompetitor2;
+        }
+
+        // Clear selections
+        function clearSelections() {
+            domElements.productSelect.selectedIndex = 0;
+            domElements.competitor1Select.selectedIndex = 0;
+            domElements.competitor2Select.value = "None";
+            domElements.comparisonResult.innerHTML = "";
+            domElements.errorMessage.textContent = "";
+            updateDropdowns();
+            validateSelections();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            domElements.notification.textContent = message;
+            domElements.notification.style.display = "block";
+            setTimeout(() => {
+                domElements.notification.style.display = "none";
+            }, 3000);
+        }
+
+        // Show loading
+        function showLoading() {
+            domElements.loading.style.display = "block";
+            domElements.errorMessage.textContent = "";
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = true);
+        }
+
+        // Hide loading
+        function hideLoading() {
+            domElements.loading.style.display = "none";
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = false);
+            validateSelections();
+        }
+
+        // Show error
+        function showError(message) {
+            domElements.errorMessage.textContent = message;
+            hideLoading();
+        }
+
+        // Validate selections
+        function validateSelections() {
+            const productSelected = domElements.productSelect.value !== "";
+            const competitor1Selected = domElements.competitor1Select.value !== "";
+            
+            domElements.compareSelectedBtn.disabled = !(productSelected && competitor1Selected);
+            domElements.exportSelectedBtn.disabled = !(productSelected && competitor1Selected);
+        }
+
         // Comparison Module
         const Comparison = (function() {
             function generateComparisonTable(productsToCompare) {
                 const features = ProductData.getFeatures();
                 let tableHTML = `
-                    <h3>Comparison Result:</h3>
+                    <h3>Comparison Result: ${productsToCompare.join(" vs ")}</h3>
                     <table>
                         <tr>
                             <th>Feature</th>
@@ -213,24 +455,43 @@
 
             function generatePDF(productsToCompare) {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                const doc = new jsPDF('landscape');
                 const products = ProductData.getProducts();
                 const features = ProductData.getFeatures();
+
+                // Add title
+                doc.setFontSize(16);
+                doc.text('Product Comparison', 14, 15);
+                doc.setFontSize(12);
+                doc.text(`${productsToCompare.join(" vs ")}`, 14, 22);
 
                 const headers = ["Feature", ...productsToCompare];
                 const rows = features.map(feature => {
                     return [feature, ...productsToCompare.map(product => products[product][feature])];
                 });
 
+                // Calculate column widths
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 20;
+                const availableWidth = pageWidth - (margin * 2);
+                const columnCount = headers.length;
+                const columnWidth = availableWidth / columnCount;
+
+                const columnStyles = {};
+                headers.forEach((_, index) => {
+                    columnStyles[index] = { cellWidth: columnWidth };
+                });
+
                 doc.autoTable({
                     head: [headers],
                     body: rows,
-                    startY: 20,
+                    startY: 30,
                     theme: "grid",
-                    styles: { fontSize: 10 },
-                    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                    margin: { horizontal: 10 },
-                    tableWidth: "auto"
+                    styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak', lineWidth: 0.1 },
+                    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontSize: 9, lineWidth: 0.1 },
+                    margin: { horizontal: margin },
+                    columnStyles: columnStyles,
+                    tableWidth: 'auto'
                 });
 
                 return doc;
@@ -238,48 +499,94 @@
 
             return {
                 compareSelected: function() {
-                    const product = document.getElementById("product").value;
-                    const competitor1 = document.getElementById("competitor1").value;
-                    const productsToCompare = [product, competitor1];
-                    
-                    const resultDiv = document.getElementById("comparisonResult");
-                    resultDiv.innerHTML = generateComparisonTable(productsToCompare);
+                    const product = domElements.productSelect.value;
+                    const competitor1 = domElements.competitor1Select.value;
+                    const competitor2 = domElements.competitor2Select.value;
+
+                    if (!product || !competitor1) {
+                        showError("Please select a Sonel product and at least one competitor");
+                        return;
+                    }
+
+                    if (competitor2 !== "None" && competitor1 === competitor2) {
+                        showError("Please select different competitors");
+                        return;
+                    }
+
+                    const productsToCompare = competitor2 === "None" ? [product, competitor1] : [product, competitor1, competitor2];
+                    domElements.comparisonResult.innerHTML = generateComparisonTable(productsToCompare);
                 },
                 compareAll: function() {
-                    const resultDiv = document.getElementById("comparisonResult");
-                    resultDiv.innerHTML = generateComparisonTable(ProductData.getProductNames());
+                    domElements.comparisonResult.innerHTML = generateComparisonTable(ProductData.getProductNames());
                 },
                 exportSelectedToPDF: function() {
-                    const product = document.getElementById("product").value;
-                    const competitor1 = document.getElementById("competitor1").value;
-                    const productsToCompare = [product, competitor1];
-                    
+                    const product = domElements.productSelect.value;
+                    const competitor1 = domElements.competitor1Select.value;
+                    const competitor2 = domElements.competitor2Select.value;
+
+                    if (!product || !competitor1) {
+                        showError("Please select a Sonel product and at least one competitor for PDF export");
+                        return;
+                    }
+
+                    if (competitor2 !== "None" && competitor1 === competitor2) {
+                        showError("Please select different competitors for PDF export");
+                        return;
+                    }
+
+                    const productsToCompare = competitor2 === "None" ? [product, competitor1] : [product, competitor1, competitor2];
                     const doc = generatePDF(productsToCompare);
-                    doc.save("Selected_Comparison.pdf");
+                    doc.save(`Comparison_${productsToCompare.join("_vs_")}.pdf`);
+                    showNotification("Selected comparison exported successfully!");
                 },
                 exportAllToPDF: function() {
                     const doc = generatePDF(ProductData.getProductNames());
-                    doc.save("All_Comparison.pdf");
+                    doc.save("All_Products_Comparison.pdf");
+                    showNotification("All comparisons exported successfully!");
                 }
             };
         })();
 
         // Global functions for button clicks
         function compareSelectedProducts() {
-            Comparison.compareSelected();
+            showLoading();
+            setTimeout(() => {
+                Comparison.compareSelected();
+                hideLoading();
+            }, 100);
         }
 
         function compareAllProducts() {
-            Comparison.compareAll();
+            showLoading();
+            setTimeout(() => {
+                Comparison.compareAll();
+                hideLoading();
+            }, 100);
         }
 
         function exportSelectedToPDF() {
-            Comparison.exportSelectedToPDF();
+            showLoading();
+            setTimeout(() => {
+                Comparison.exportSelectedToPDF();
+                hideLoading();
+            }, 100);
         }
 
         function exportAllToPDF() {
-            Comparison.exportAllToPDF();
+            showLoading();
+            setTimeout(() => {
+                Comparison.exportAllToPDF();
+                hideLoading();
+            }, 100);
         }
+
+        // Initialize
+        function init() {
+            initializeDropdowns();
+            console.log("Application initialized");
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
