@@ -3,354 +3,700 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Comparison Tool</title>
-    <!-- Include jsPDF library for PDF export -->
+    <title>Product Comparison</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* CSS Styling */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             text-align: center;
+            position: relative;
         }
 
         h1 {
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #007bff, #00c4ff);
+            -webkit-background-clip: text;
+            color: transparent;
         }
 
         .dropdowns {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+            text-align: left;
         }
 
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
 
         .buttons {
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: #007bff;
             color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
         }
 
-        .comparison-result {
-            margin-top: 20px;
-            text-align: left;
-            overflow-x: auto;
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .compare-all-btn {
+            background-color: #28a745;
+        }
+
+        .compare-all-btn:hover {
+            background-color: #218838;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
 
         table {
+            table-layout: fixed;
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            display: block;
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            word-wrap: break-word;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
             text-align: left;
         }
 
         th {
-            background-color: #f4f4f4;
+            background-color: #fff; /* Matches <td> background */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .notification {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product Comparison Tool</h1>
+        <h1>Product Comparison</h1>
         <div class="dropdowns">
             <div>
-                <label for="product">Select Product:</label>
-                <select id="product">
-                    <option value="Sonel MPI-530">Sonel MPI-530</option>
-                    <option value="Sonel MPI-540">Sonel MPI-540</option>
-                    <option value="Megger MFT-1835">Megger MFT-1835</option>
-                    <option value="Megger MFT-X1">Megger MFT-X1</option>
-                    <option value="Fluke 1664FC">Fluke 1664FC</option>
-                </select>
+                <label for="productSelect">Select Product:</label>
+                <select id="productSelect"></select>
             </div>
             <div>
-                <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
-                    <option value="Sonel MPI-530">Sonel MPI-530</option>
-                    <option value="Sonel MPI-540">Sonel MPI-540</option>
-                    <option value="Megger MFT-1835">Megger MFT-1835</option>
-                    <option value="Megger MFT-X1">Megger MFT-X1</option>
-                    <option value="Fluke 1664FC">Fluke 1664FC</option>
-                </select>
+                <label for="competitorSelect">Select Competitor 1:</label>
+                <select id="competitorSelect"></select>
             </div>
             <div>
-                <label for="competitor2">Select Competitor 2:</label>
-                <select id="competitor2">
-                    <option value="Sonel MPI-530">Sonel MPI-530</option>
-                    <option value="Sonel MPI-540">Sonel MPI-540</option>
-                    <option value="Megger MFT-1835">Megger MFT-1835</option>
-                    <option value="Megger MFT-X1">Megger MFT-X1</option>
-                    <option value="Fluke 1664FC">Fluke 1664FC</option>
-                </select>
+                <label for="competitorSelect2">Select Competitor 2:</label>
+                <select id="competitorSelect2"></select>
             </div>
         </div>
 
         <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button id="compareSelectedBtn" class="tooltip" onclick="loadComparisonTable()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
+            <button id="compareAllBtn" class="compare-all-btn tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All Products</button>
+            <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF" disabled>Export Selected to PDF</button>
+            <button id="exportAllBtn" class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
+            <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
         </div>
 
-        <div id="comparisonResult" class="comparison-result"></div>
+        <div id="loading" class="loading"></div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="notification" class="notification"></div>
+        <table id="comparisonTable"></table>
     </div>
 
     <script>
-        // Product Data
-        const products = {
+        const productComparisonData = {
             "Sonel MPI-530": {
-                "Measurement of current": "Range: 3kA, Resolution: 0.1mA",
-                "Measurement of active power P, reactive power Q and apparent power": "Range [W], [VA], [var]: 1.50M",
-                "Measurement of short circuit loop impedance ZS": "Range: 1999.9",
-                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.01ohm-1999 ohm",
-                "RCD trigger and response time test tA": "Range: 0..500ms, Resolution: 0.5x,1x,2x,5x, Accuracy: 2%",
-                "Measurement of RCD tripping current I": "Range: 3mA to 1000mA, Resolution: 0.1mA",
-                "Earth resistance": "Type: 3P,4P,3P+Clamp,Double Clamp, Range: 0.00 to 1.99k",
-                "Insulation resistance": "Range: 50,100,250V,500V,1000V, s.c: <2mA",
-                "Phase sequence indication": "Phase-To-Phase voltages",
+                "Current Measurement": "Range: 3kA, Resolution: 0.1mA",
+                "Power Measurement (P, Q, S)": "Range: 1.50M [W, VA, var]",
+                "Short Circuit Loop Impedance ZS": "Range: 1999.9 Ω",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 0.01–1999 Ω",
+                "RCD Trigger and Response Time tA": "Range: 0–500ms, Resolution: 0.5x,1x,2x,5x, Accuracy: ±2%",
+                "RCD Tripping Current I": "Range: 3mA–1000mA, Resolution: 0.1mA",
+                "Earth Resistance": "Type: 3P, 4P, 3P+Clamp, Double Clamp, Range: 0.00–1.99kΩ",
+                "Insulation Resistance": "Range: 50V, 100V, 250V, 500V, 1000V, S.C. Current: <2mA",
+                "Phase Sequence Indication": "Phase-To-Phase voltages",
                 "Memory": "50,000 results",
-                "Harmonics": "No of Harmonic: 1…40, Accuracy: 5%, THD: Available",
-                "LUX measurement": "Available",
+                "Harmonics": "No: 1–40, Accuracy: ±5%",
+                "THD": "Available",
+                "LUX Measurement": "Available",
                 "Soil Resistivity": "Available",
-                "Measurement of open circuit DC voltage UOC": "NA",
-                "Measurement of short circuit DC current ISC": "NA"
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
             },
             "Sonel MPI-540": {
-                "Measurement of current": "Range: 3kA, Resolution: 0.01",
-                "Measurement of active power P, reactive power Q and apparent power": "Range [W], [VA], [var]: 1.50M",
-                "Measurement of short circuit loop impedance ZS": "Range: 1999.9",
-                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.01ohm-1999 ohm",
-                "RCD trigger and response time test tA": "Range: 0..500ms, Resolution: 0.5x,1x,2x,5x, Accuracy: 2%",
-                "Measurement of RCD tripping current I": "Range: 3mA to 1000mA, Resolution: 0.1mA",
-                "Earth resistance": "Type: 3P,4P,3P+Clamp,Double Clamp, Range: 0.00 to 1.99k",
-                "Insulation resistance": "Range: 50,100,250V,500V,1000V, s.c: <2mA",
-                "Phase sequence indication": "Phase-To-Phase voltages",
+                "Current Measurement": "Range: 3kA, Resolution: 0.01mA",
+                "Power Measurement (P, Q, S)": "Range: 1.50M [W, VA, var]",
+                "Short Circuit Loop Impedance ZS": "Range: 1999.9 Ω",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 0.01–1999 Ω",
+                "RCD Trigger and Response Time tA": "Range: 0–500ms, Resolution: 0.5x,1x,2x,5x, Accuracy: ±2%",
+                "RCD Tripping Current I": "Range: 3mA–1000mA, Resolution: 0.1mA",
+                "Earth Resistance": "Type: 3P, 4P, 3P+Clamp, Double Clamp, Range: 0.00–1.99kΩ",
+                "Insulation Resistance": "Range: 50V, 100V, 250V, 500V, 1000V, S.C. Current: <2mA",
+                "Phase Sequence Indication": "Phase-To-Phase voltages",
                 "Memory": "50,000 results",
-                "Harmonics": "No of Harmonic: 1…40, Accuracy: 5%, THD: Available",
-                "LUX measurement": "Available",
+                "Harmonics": "No: 1–40, Accuracy: ±5%",
+                "THD": "Available",
+                "LUX Measurement": "Available",
                 "Soil Resistivity": "Available",
-                "Measurement of open circuit DC voltage UOC": "1000V",
-                "Measurement of short circuit DC current ISC": "20A"
-            },
-            "Megger MFT-1835": {
-                "Measurement of current": "Range: 199 A, Resolution: 0.5mA",
-                "Measurement of active power P, reactive power Q and apparent power": "NA",
-                "Measurement of short circuit loop impedance ZS": "Range: 0.01 ohm to 1000 ohm",
-                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.01 ohm to 1000 ohm",
-                "RCD trigger and response time test tA": "Available, Accuracy: 10%",
-                "Measurement of RCD tripping current I": "Range: 10 mA to 1000 mA, Resolution: NM",
-                "Earth resistance": "Type: 2P,3P,3P+clamp,Stakeless, Range: 1.0 ohm to 1.99 kohm",
-                "Insulation resistance": "Range: 100,250V,500V,1000V, s.c: 1.5mA",
-                "Phase sequence indication": "L1-L2-L3 & L1-L3-L2",
-                "Memory": "1000 Results",
-                "Harmonics": "NA",
-                "LUX measurement": "NA",
-                "Soil Resistivity": "NA",
-                "Measurement of open circuit DC voltage UOC": "NA",
-                "Measurement of short circuit DC current ISC": "NA"
+                "Open Circuit DC Voltage UOC": "Range: 1000V",
+                "Short Circuit DC Current ISC": "Range: 20A"
             },
             "Megger MFT-X1": {
-                "Measurement of current": "Range: 300A, Resolution: 1mA",
-                "Measurement of active power P, reactive power Q and apparent power": "NA",
-                "Measurement of short circuit loop impedance ZS": "Range: 0.001ohm-1999 ohm",
-                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "Range: 0.001ohm-1999 ohm",
-                "RCD trigger and response time test tA": "Available, Accuracy: 10%",
-                "Measurement of RCD tripping current I": "Range: 10 mA to 1000 mA, Resolution: NM",
-                "Earth resistance": "Type: 2P,3P,3P+clamp,Stakeless, Range: 1.0 ohm to 1.99 kohm",
-                "Insulation resistance": "Range: 100,250V,500V,1000V, s.c: 1.5mA",
-                "Phase sequence indication": "L1-L2-L3 & L1-L3-L2",
-                "Memory": "1000 Results",
+                "Current Measurement": "Range: 300A, Resolution: 1mA",
+                "Power Measurement (P, Q, S)": "NA",
+                "Short Circuit Loop Impedance ZS": "Range: 0.001–1999 Ω",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 0.001–1999 Ω",
+                "RCD Trigger and Response Time tA": "Available, Resolution: 1x,2x,5x, Accuracy: ±10%",
+                "RCD Tripping Current I": "Range: 10mA–1000mA, Resolution: NA",
+                "Earth Resistance": "Type: 2P, 3P, 3P+Clamp, Stakeless, Range: 1.0–1.99kΩ",
+                "Insulation Resistance": "Range: 100V, 250V, 500V, 1000V, S.C. Current: 1.5mA",
+                "Phase Sequence Indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "1000 results",
                 "Harmonics": "NA",
-                "LUX measurement": "NA",
+                "THD": "NA",
+                "LUX Measurement": "NA",
                 "Soil Resistivity": "NA",
-                "Measurement of open circuit DC voltage UOC": "NA",
-                "Measurement of short circuit DC current ISC": "NA"
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
             },
-            "Fluke 1664FC": {
-                "Measurement of current": "NA",
-                "Measurement of active power P, reactive power Q and apparent power": "NA",
-                "Measurement of short circuit loop impedance ZS": "Range: 2000",
-                "Measurement of short circuit loop impedance ZL-PE RCD (without triggering of RCD)": "NA",
-                "RCD trigger and response time test tA": "Range: 0..510ms, Resolution: 1x,2x,5x, Accuracy: 1%",
-                "Measurement of RCD tripping current I": "Range: 10 mA to 1000 mA, Resolution: NM",
-                "Earth resistance": "Type: 3P, Range: 2000ohm",
-                "Insulation resistance": "Range: 50,100,250V,500V,1000V, s.c: 1mA",
-                "Phase sequence indication": "“1-2-3”: or “3-2-1”",
-                "Memory": "3000 records",
+            "Fluke 1673 FC": {
+                "Current Measurement": "NA",
+                "Power Measurement (P, Q, S)": "NA",
+                "Short Circuit Loop Impedance ZS": "Range: 2000 Ω",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 2000 Ω",
+                "RCD Trigger and Response Time tA": "Available, Resolution: 1x,2x,5x, Accuracy: ±2%",
+                "RCD Tripping Current I": "Range: 10mA–1000mA, Resolution: NA",
+                "Earth Resistance": "Type: 3 Pole, Range: 2000 Ω",
+                "Insulation Resistance": "Range: 100V, 250V, 500V, 1000V, S.C. Current: 1mA",
+                "Phase Sequence Indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "Available",
                 "Harmonics": "NA",
-                "LUX measurement": "NA",
+                "THD": "NA",
+                "LUX Measurement": "NA",
                 "Soil Resistivity": "NA",
-                "Measurement of open circuit DC voltage UOC": "NA",
-                "Measurement of short circuit DC current ISC": "NA"
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
+            },
+            "Fluke 1674 FC": {
+                "Current Measurement": "NA",
+                "Power Measurement (P, Q, S)": "NA",
+                "Short Circuit Loop Impedance ZS": "Range: 2000 Ω",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 2000 Ω",
+                "RCD Trigger and Response Time tA": "Available, Resolution: 1x,2x,5x, Accuracy: ±2%",
+                "RCD Tripping Current I": "Range: 10mA–1000mA, Resolution: NA",
+                "Earth Resistance": "Type: 3 Pole, Range: 2000 Ω",
+                "Insulation Resistance": "Range: 100V, 250V, 500V, 1000V, S.C. Current: 1mA",
+                "Phase Sequence Indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "Available",
+                "Harmonics": "NA",
+                "THD": "NA",
+                "LUX Measurement": "NA",
+                "Soil Resistivity": "NA",
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
+            },
+            "Metrel MI 3155": {
+                "Current Measurement": "Range: 300A, Resolution: 0.01mA",
+                "Power Measurement (P, Q, S)": "NA",
+                "Short Circuit Loop Impedance ZS": "Range: 9.99kΩ",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 9.99kΩ",
+                "RCD Trigger and Response Time tA": "Range: 0–500ms, Resolution: 0.05xI∆N, Accuracy: ±0.1xI∆N",
+                "RCD Tripping Current I": "Range: 10mA–1000mA, Resolution: NA",
+                "Earth Resistance": "Type: 2 Pole, 3 Pole, Range: 9999Ω",
+                "Insulation Resistance": "Range: 50V–2500V, S.C. Current: NA",
+                "Phase Sequence Indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "Available",
+                "Harmonics": "No: 1–12, Accuracy: NA",
+                "THD": "Available",
+                "LUX Measurement": "Available",
+                "Soil Resistivity": "Available",
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
+            },
+            "Metrel MI 3152": {
+                "Current Measurement": "Range: 300A, Resolution: 0.01mA",
+                "Power Measurement (P, Q, S)": "NA",
+                "Short Circuit Loop Impedance ZS": "Range: 9.99kΩ",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 9.99kΩ",
+                "RCD Trigger and Response Time tA": "Range: 0–500ms, Resolution: 0.05xI∆N, Accuracy: ±0.1xI∆N",
+                "RCD Tripping Current I": "Range: 10mA–1000mA, Resolution: NA",
+                "Earth Resistance": "Type: 2 Pole, 3 Pole, Range: 9999Ω",
+                "Insulation Resistance": "Range: 50V–1000V, S.C. Current: NA",
+                "Phase Sequence Indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "Available",
+                "Harmonics": "NA",
+                "THD": "NA",
+                "LUX Measurement": "Available",
+                "Soil Resistivity": "NA",
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
+            },
+            "Metrel MI 3152H": {
+                "Current Measurement": "Range: 300A, Resolution: 0.01mA",
+                "Power Measurement (P, Q, S)": "NA",
+                "Short Circuit Loop Impedance ZS": "Range: 9.99kΩ",
+                "Short Circuit Loop Impedance ZL-PE RCD": "Range: 9.99kΩ",
+                "RCD Trigger and Response Time tA": "Range: 0–500ms, Resolution: 0.05xI∆N, Accuracy: ±0.1xI∆N",
+                "RCD Tripping Current I": "Range: 10mA–1000mA, Resolution: NA",
+                "Earth Resistance": "Type: 2 Pole, 3 Pole, Range: 9999Ω",
+                "Insulation Resistance": "Range: 50V–2500V, S.C. Current: NA",
+                "Phase Sequence Indication": "L1-L2-L3 & L1-L3-L2",
+                "Memory": "Available",
+                "Harmonics": "NA",
+                "THD": "NA",
+                "LUX Measurement": "Available",
+                "Soil Resistivity": "NA",
+                "Open Circuit DC Voltage UOC": "NA",
+                "Short Circuit DC Current ISC": "NA"
             }
         };
 
-        // Function to compare selected products
-        function compareSelectedProducts() {
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+        // DOM Elements
+        const domElements = {
+            productSelect: document.getElementById("productSelect"),
+            competitorSelect: document.getElementById("competitorSelect"),
+            competitorSelect2: document.getElementById("competitorSelect2"),
+            compareSelectedBtn: document.getElementById("compareSelectedBtn"),
+            compareAllBtn: document.getElementById("compareAllBtn"),
+            exportSelectedBtn: document.getElementById("exportSelectedBtn"),
+            exportAllBtn: document.getElementById("exportAllBtn"),
+            clearSelectionBtn: document.getElementById("clearSelectionBtn"),
+            loading: document.getElementById("loading"),
+            errorMessage: document.getElementById("errorMessage"),
+            notification: document.getElementById("notification"),
+            comparisonTable: document.getElementById("comparisonTable")
+        };
 
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
-            `;
-
-            Object.keys(products[product]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
-                `;
+        // Initialize dropdowns
+        function initializeDropdowns() {
+            const products = Object.keys(productComparisonData);
+            products.forEach(product => {
+                domElements.productSelect.add(new Option(product, product));
             });
+            updateCompetitorOptions();
 
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+            [domElements.productSelect, domElements.competitorSelect, domElements.competitorSelect2].forEach(select => {
+                select.addEventListener('change', () => {
+                    updateCompetitorOptions();
+                    validateSelections();
+                });
+            });
         }
 
-        // Function to compare all products
+        // Update competitor dropdowns
+        function updateCompetitorOptions() {
+            const selectedProduct = domElements.productSelect.value;
+            const selectedCompetitor = domElements.competitorSelect.value;
+            const selectedCompetitor2 = domElements.competitorSelect2.value;
+            const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
+
+            domElements.competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            domElements.competitorSelect2.innerHTML = '<option value="None">None</option>' + 
+                competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+
+            domElements.competitorSelect.value = selectedCompetitor && competitors.includes(selectedCompetitor) ? selectedCompetitor : competitors[0] || "";
+            domElements.competitorSelect2.value = selectedCompetitor2 && (selectedCompetitor2 === "None" || competitors.includes(selectedCompetitor2)) ? selectedCompetitor2 : "None";
+        }
+
+        // Clear selections
+        function clearSelections() {
+            domElements.productSelect.selectedIndex = 0;
+            domElements.competitorSelect.selectedIndex = 0;
+            domElements.competitorSelect2.value = "None";
+            domElements.comparisonTable.innerHTML = "";
+            domElements.errorMessage.textContent = "";
+            updateCompetitorOptions();
+            validateSelections();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            domElements.notification.textContent = message;
+            domElements.notification.style.display = "block";
+            setTimeout(() => {
+                domElements.notification.style.display = "none";
+            }, 3000);
+        }
+
+        // Show loading
+        function showLoading() {
+            domElements.loading.style.display = "block";
+            domElements.errorMessage.textContent = "";
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = true);
+        }
+
+        // Hide loading
+        function hideLoading() {
+            domElements.loading.style.display = "none";
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = false);
+            validateSelections();
+        }
+
+        // Show error
+        function showError(message) {
+            domElements.errorMessage.textContent = message;
+            hideLoading();
+        }
+
+        // Validate selections
+        function validateSelections() {
+            const productSelected = domElements.productSelect.value !== "";
+            const competitorSelected = domElements.competitorSelect.value !== "";
+            domElements.compareSelectedBtn.disabled = !(productSelected && competitorSelected);
+            domElements.exportSelectedBtn.disabled = !(productSelected && competitorSelected);
+        }
+
+        // Load comparison table
+        function loadComparisonTable() {
+            try {
+                showLoading();
+                const selectedProduct = domElements.productSelect.value;
+                const selectedCompetitor = domElements.competitorSelect.value;
+                const selectedCompetitor2 = domElements.competitorSelect2.value;
+
+                if (!selectedProduct || !selectedCompetitor) {
+                    showError("Please select a product and at least one competitor");
+                    return;
+                }
+
+                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
+                    showError("Please select different products for comparison");
+                    return;
+                }
+
+                const selectedProducts = selectedCompetitor2 === "None" ? [selectedProduct, selectedCompetitor] : [selectedProduct, selectedCompetitor, selectedCompetitor2];
+                let tableContent = `<tr><th>Feature</th>${selectedProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
+
+                const features = [
+                    "Current Measurement",
+                    "Power Measurement (P, Q, S)",
+                    "Short Circuit Loop Impedance ZS",
+                    "Short Circuit Loop Impedance ZL-PE RCD",
+                    "RCD Trigger and Response Time tA",
+                    "RCD Tripping Current I",
+                    "Earth Resistance",
+                    "Insulation Resistance",
+                    "Phase Sequence Indication",
+                    "Memory",
+                    "Harmonics",
+                    "THD",
+                    "LUX Measurement",
+                    "Soil Resistivity",
+                    "Open Circuit DC Voltage UOC",
+                    "Short Circuit DC Current ISC"
+                ];
+
+                // Dynamically adjust column widths based on number of products
+                const numColumns = selectedProducts.length + 1; // +1 for feature column
+                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+
+                features.forEach(feature => {
+                    tableContent += `<tr>
+                        <td>${feature}</td>
+                        ${selectedProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}
+                    </tr>`;
+                });
+
+                domElements.comparisonTable.innerHTML = tableContent;
+                hideLoading();
+            } catch (error) {
+                showError(`Error during comparison: ${error.message}`);
+                console.error("loadComparisonTable error:", error);
+            }
+        }
+
+        // Compare all products
         function compareAllProducts() {
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
-            `;
+            try {
+                showLoading();
+                const allProducts = Object.keys(productComparisonData);
+                let tableContent = `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
 
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
-                    </tr>
-                `;
-            });
+                const features = [
+                    "Current Measurement",
+                    "Power Measurement (P, Q, S)",
+                    "Short Circuit Loop Impedance ZS",
+                    "Short Circuit Loop Impedance ZL-PE RCD",
+                    "RCD Trigger and Response Time tA",
+                    "RCD Tripping Current I",
+                    "Earth Resistance",
+                    "Insulation Resistance",
+                    "Phase Sequence Indication",
+                    "Memory",
+                    "Harmonics",
+                    "THD",
+                    "LUX Measurement",
+                    "Soil Resistivity",
+                    "Open Circuit DC Voltage UOC",
+                    "Short Circuit DC Current ISC"
+                ];
 
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+                // Dynamically adjust column widths based on number of products
+                const numColumns = allProducts.length + 1; // +1 for feature column
+                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+
+                features.forEach(feature => {
+                    tableContent += `<tr><td>${feature}</td>`;
+                    allProducts.forEach(product => {
+                        tableContent += `<td>${productComparisonData[product][feature] || "NA"}</td>`;
+                    });
+                    tableContent += `</tr>`;
+                });
+
+                domElements.comparisonTable.innerHTML = tableContent;
+                hideLoading();
+            } catch (error) {
+                showError(`Error during full comparison: ${error.message}`);
+                console.error("compareAllProducts error:", error);
+            }
         }
 
-        // Function to export selected comparison to PDF
+        // Export selected products to PDF
         function exportSelectedToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            try {
+                showLoading();
+                const selectedProduct = domElements.productSelect.value;
+                const selectedCompetitor = domElements.competitorSelect.value;
+                const selectedCompetitor2 = domElements.competitorSelect2.value;
 
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+                if (!selectedProduct || !selectedCompetitor) {
+                    showError("Please select a product and at least one competitor for PDF export");
+                    return;
+                }
 
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
+                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
+                    showError("Please select different products for PDF export");
+                    return;
+                }
 
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF("l", "mm", "a4");
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
+                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
+                    let imgData = canvas.toDataURL("image/png");
+                    let imgWidth = 280;
+                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let margin = 10;
 
-            doc.save("Selected_Comparison.pdf");
+                    pdf.setFontSize(16);
+                    pdf.text("Product Comparison", margin, 15);
+                    pdf.setFontSize(12);
+                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+                    pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
+                    hideLoading();
+                    showNotification("Selected comparison exported successfully!");
+                });
+            } catch (error) {
+                showError(`Error generating PDF: ${error.message}`);
+                console.error("exportSelectedToPDF error:", error);
+            }
         }
 
-        // Function to export all comparison to PDF
+        // Export all products to PDF
         function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            try {
+                showLoading();
+                const allProducts = Object.keys(productComparisonData);
+                let tableContent = `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
 
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
+                const features = [
+                    "Current Measurement",
+                    "Power Measurement (P, Q, S)",
+                    "Short Circuit Loop Impedance ZS",
+                    "Short Circuit Loop Impedance ZL-PE RCD",
+                    "RCD Trigger and Response Time tA",
+                    "RCD Tripping Current I",
+                    "Earth Resistance",
+                    "Insulation Resistance",
+                    "Phase Sequence Indication",
+                    "Memory",
+                    "Harmonics",
+                    "THD",
+                    "LUX Measurement",
+                    "Soil Resistivity",
+                    "Open Circuit DC Voltage UOC",
+                    "Short Circuit DC Current ISC"
+                ];
 
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
+                // Dynamically adjust column widths based on number of products
+                const numColumns = allProducts.length + 1; // +1 for feature column
+                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
+                features.forEach(feature => {
+                    tableContent += `<tr><td>${feature}</td>`;
+                    allProducts.forEach(product => {
+                        tableContent += `<td>${productComparisonData[product][feature] || "NA"}</td>`;
+                    });
+                    tableContent += `</tr>`;
+                });
 
-            doc.save("All_Comparison.pdf");
+                domElements.comparisonTable.innerHTML = tableContent;
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF("l", "mm", [297, 420]); // A3 landscape for larger table
+
+                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
+                    let imgData = canvas.toDataURL("image/png");
+                    let imgWidth = 400;
+                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let margin = 10;
+
+                    pdf.setFontSize(16);
+                    pdf.text("Complete Product Comparison Report", margin, 15);
+                    pdf.setFontSize(12);
+                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+                    pdf.save("All_Products_Comparison.pdf");
+                    hideLoading();
+                    showNotification("All comparisons exported successfully!");
+                });
+            } catch (error) {
+                showError(`Error generating PDF: ${error.message}`);
+                console.error("exportAllToPDF error:", error);
+            }
         }
+
+        // Initialize
+        function init() {
+            initializeDropdowns();
+            validateSelections();
+            console.log("Application initialized");
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
