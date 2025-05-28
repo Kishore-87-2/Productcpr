@@ -3,88 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cable Route Tracer Comparison</title>
+    <title>Cable Route Tracer Comparison Tool</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            color: #2d3748;
         }
         .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 1200px;
+            max-width: 1280px;
         }
         h1 {
-            color: #333;
+            color: #1a202c;
             text-align: center;
+            font-size: 2rem;
+            margin-bottom: 24px;
         }
         .dropdowns {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
         .dropdown-group {
             display: flex;
             flex-direction: column;
         }
         label {
-            margin-bottom: 5px;
-            font-weight: bold;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
         }
         select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f7fafc;
+            font-size: 0.875rem;
+            color: #2d3748;
+            transition: border-color 0.2s ease;
+        }
+        select:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
         }
         .buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
-            background-color: #007bff;
+            border-radius: 8px;
+            background-color: #3182ce;
             color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #2b6cb0;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
         }
         .comparison-result {
             overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 16px;
+            font-size: 0.875rem;
         }
         th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
             text-align: left;
         }
         th {
-            background-color: #f4f4f4;
+            background-color: #edf2f7;
+            font-weight: 600;
             position: sticky;
             top: 0;
+            z-index: 10;
         }
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #f7fafc;
+        }
+        tr:hover {
+            background-color: #e6f0fa;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .dropdowns {
+                grid-template-columns: 1fr;
+            }
+            button {
+                padding: 10px 16px;
+                font-size: 0.75rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            table {
+                font-size: 0.75rem;
+            }
+            th, td {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -95,19 +162,16 @@
         <div class="dropdowns">
             <div class="dropdown-group">
                 <label for="product">Select Product:</label>
-                <select id="product">
+                <select id="product" aria-label="Select main product">
+                    <option value="" disabled selected>Select a product</option>
                     <option value="Sonel LKZ-2500">Sonel LKZ-2500</option>
-                    <option value="RD 8200/RD 8200 G">RD 8200/RD 8200 G</option>
-                    <option value="RD7200">RD7200</option>
-                    <option value="Stanlay STLOC5DL/GPS">Stanlay STLOC5DL/GPS</option>
-                    <option value="Stanlay STLOC10/GPS">Stanlay STLOC10/GPS</option>
-                    <option value="Technoac AG-309.15G">Technoac AG-309.15G</option>
-                    <option value="Ridgid SR -20/ST-510">Ridgid SR -20/ST-510</option>
+                    
                 </select>
             </div>
             <div class="dropdown-group">
                 <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
+                <select id="competitor1" aria-label="Select first competitor">
+                    <option value="" disabled selected>Select a competitor</option>
                     <option value="Sonel LKZ-2500">Sonel LKZ-2500</option>
                     <option value="RD 8200/RD 8200 G">RD 8200/RD 8200 G</option>
                     <option value="RD7200">RD7200</option>
@@ -119,7 +183,9 @@
             </div>
             <div class="dropdown-group">
                 <label for="competitor2">Select Competitor 2:</label>
-                <select id="competitor2">
+                <select id="competitor2" aria-label="Select second competitor">
+                    <option value="" disabled selected>Select a competitor</option>
+                    <option value="None">None</option>
                     <option value="Sonel LKZ-2500">Sonel LKZ-2500</option>
                     <option value="RD 8200/RD 8200 G">RD 8200/RD 8200 G</option>
                     <option value="RD7200">RD7200</option>
@@ -136,6 +202,7 @@
             <button onclick="compareAllProducts()">Compare All</button>
             <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
             <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button onclick="clearSelections()">Clear Selections</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
@@ -214,7 +281,7 @@
                 "Detector operating time": "13 hours",
                 "Detector weight": "2.4 kg",
                 "EMC": "EN 61326-1, EN 61326-2-2",
-                "GPS": "X/✔"
+                "GPS": "✔"
             },
             "Stanlay STLOC5DL/GPS": {
                 "Active mode": "✔",
@@ -314,11 +381,59 @@
             }
         };
 
-        // Function to compare selected products
-        function compareSelectedProducts() {
+        // Function to show toast notifications
+        function showToast(message, type = 'success') {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: type === 'success' ? "#48bb78" : "#f56565",
+                stopOnFocus: true
+            }).showToast();
+        }
+
+        // Function to validate dropdown selections
+        function validateSelections() {
             const product = document.getElementById("product").value;
             const competitor1 = document.getElementById("competitor1").value;
             const competitor2 = document.getElementById("competitor2").value;
+
+            // Check if main product is selected
+            if (!product) {
+                showToast("Please select a main product.", "error");
+                return false;
+            }
+
+            // Check if at least one competitor is selected
+            if (!competitor1 && competitor2 === "None") {
+                showToast("Please select at least one competitor.", "error");
+                return false;
+            }
+
+            // Check for duplicate selections (excluding None)
+            const selections = [product, competitor1, competitor2].filter(val => val && val !== "None");
+            const uniqueSelections = new Set(selections);
+            if (selections.length !== uniqueSelections.size) {
+                showToast("Please select different products for comparison.", "error");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            if (!validateSelections()) return;
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Build array of selected products (exclude None)
+            const selectedProducts = [product];
+            if (competitor1) selectedProducts.push(competitor1);
+            if (competitor2 !== "None") selectedProducts.push(competitor2);
 
             const resultDiv = document.getElementById("comparisonResult");
             let tableHTML = `
@@ -326,9 +441,7 @@
                 <table>
                     <tr>
                         <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
+                        ${selectedProducts.map(prod => `<th>${prod}</th>`).join("")}
                     </tr>
             `;
 
@@ -336,15 +449,14 @@
                 tableHTML += `
                     <tr>
                         <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
+                        ${selectedProducts.map(prod => `<td>${products[prod][feature]}</td>`).join("")}
                     </tr>
                 `;
             });
 
             tableHTML += `</table>`;
             resultDiv.innerHTML = tableHTML;
+            showToast("Comparison generated successfully!");
         }
 
         // Function to compare all products
@@ -370,60 +482,105 @@
 
             tableHTML += `</table>`;
             resultDiv.innerHTML = tableHTML;
+            showToast("All products compared successfully!");
         }
 
         // Function to export selected comparison to PDF
         function exportSelectedToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            if (!validateSelections()) return;
 
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+            const button = event.target;
+            button.disabled = true;
+            button.classList.add("loading");
+            button.textContent = "Exporting...";
 
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 5 },
-                tableWidth: "auto"
-            });
+                const product = document.getElementById("product").value;
+                const competitor1 = document.getElementById("competitor1").value;
+                const competitor2 = document.getElementById("competitor2").value;
 
-            doc.save("Selected_Cable_Tracer_Comparison.pdf");
+                // Build array of selected products (exclude None)
+                const selectedProducts = [product];
+                if (competitor1) selectedProducts.push(competitor1);
+                if (competitor2 !== "None") selectedProducts.push(competitor2);
+
+                // Add table to PDF, replacing ✔ with "Yes"
+                const headers = ["Feature", ...selectedProducts];
+                const rows = Object.keys(products[product]).map(feature => {
+                    return [
+                        feature,
+                        ...selectedProducts.map(prod => products[prod][feature] === "✔" ? "Yes" : products[prod][feature])
+                    ];
+                });
+
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 20,
+                    theme: "grid",
+                    styles: { fontSize: 8 },
+                    headStyles: { fillColor: [49, 130, 206], textColor: [255, 255, 255] },
+                    margin: { horizontal: 5 },
+                    tableWidth: "auto"
+                });
+
+                doc.save("Selected_Cable_Tracer_Comparison.pdf");
+                button.disabled = false;
+                button.classList.remove("loading");
+                button.textContent = "Export Selected to PDF";
+                showToast("Selected comparison exported to PDF!");
+            }, 500); // Simulate async operation for UX
         }
 
         // Function to export all comparison to PDF
         function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
+            const button = event.target;
+            button.disabled = true;
+            button.classList.add("loading");
+            button.textContent = "Exporting...";
 
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape');
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 6 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 2 },
-                tableWidth: "auto"
-            });
+                // Add table to PDF, replacing ✔ with "Yes"
+                const headers = ["Feature", ...Object.keys(products)];
+                const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                    return [
+                        feature,
+                        ...Object.keys(products).map(product => products[product][feature] === "✔" ? "Yes" : products[product][feature])
+                    ];
+                });
 
-            doc.save("All_Cable_Tracer_Comparison.pdf");
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 20,
+                    theme: "grid",
+                    styles: { fontSize: 6 },
+                    headStyles: { fillColor: [49, 130, 206], textColor: [255, 255, 255] },
+                    margin: { horizontal: 2 },
+                    tableWidth: "auto"
+                });
+
+                doc.save("All_Cable_Tracer_Comparison.pdf");
+                button.disabled = false;
+                button.classList.remove("loading");
+                button.textContent = "Export All to PDF";
+                showToast("All products comparison exported to PDF!");
+            }, 500); // Simulate async operation for UX
+        }
+
+        // Function to clear selections
+        function clearSelections() {
+            document.getElementById("product").value = "";
+            document.getElementById("competitor1").value = "";
+            document.getElementById("competitor2").value = "";
+            document.getElementById("comparisonResult").innerHTML = "";
+            showToast("Selections cleared!");
         }
     </script>
 </body>
