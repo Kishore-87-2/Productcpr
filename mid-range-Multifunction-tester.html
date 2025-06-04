@@ -153,7 +153,7 @@
         }
 
         th {
-            background-color: #fff; /* Matches <td> background */
+            background-color: #fff;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -196,6 +196,28 @@
             border-radius: 4px;
             text-align: center;
         }
+
+        @media screen and (max-width: 600px) {
+            table {
+                font-size: 0.7rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            th, td {
+                padding: 8px;
+                min-width: 100px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .dropdowns {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -221,6 +243,7 @@
             <button id="compareAllBtn" class="compare-all-btn tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All Products</button>
             <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF" disabled>Export Selected to PDF</button>
             <button id="exportAllBtn" class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
+            <button id="exportCsvBtn" class="tooltip" onclick="exportToCSV()" data-tooltip="Export selected comparison to CSV">Export to CSV</button>
             <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
         </div>
 
@@ -282,6 +305,7 @@
             compareAllBtn: document.getElementById("compareAllBtn"),
             exportSelectedBtn: document.getElementById("exportSelectedBtn"),
             exportAllBtn: document.getElementById("exportAllBtn"),
+            exportCsvBtn: document.getElementById("exportCsvBtn"),
             clearSelectionBtn: document.getElementById("clearSelectionBtn"),
             loading: document.getElementById("loading"),
             errorMessage: document.getElementById("errorMessage"),
@@ -344,13 +368,13 @@
         function showLoading() {
             domElements.loading.style.display = "block";
             domElements.errorMessage.textContent = "";
-            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = true);
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn, domElements.exportCsvBtn].forEach(btn => btn.disabled = true);
         }
 
         // Hide loading
         function hideLoading() {
             domElements.loading.style.display = "none";
-            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = false);
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn, domElements.exportCsvBtn].forEach(btn => btn.disabled = false);
             validateSelections();
         }
 
@@ -366,6 +390,7 @@
             const competitorSelected = domElements.competitorSelect.value !== "";
             domElements.compareSelectedBtn.disabled = !(productSelected && competitorSelected);
             domElements.exportSelectedBtn.disabled = !(productSelected && competitorSelected);
+            domElements.exportCsvBtn.disabled = !(productSelected && competitorSelected);
         }
 
         // Load comparison table
@@ -403,9 +428,8 @@
                     "Measuring Category"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = selectedProducts.length + 1; // +1 for feature column
-                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                const numColumns = selectedProducts.length + 1;
+                const columnWidth = Math.min((100 / numColumns), 25).toFixed(2) + '%';
                 tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
 
                 features.forEach(feature => {
@@ -444,9 +468,8 @@
                     "Measuring Category"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = allProducts.length + 1; // +1 for feature column
-                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                const numColumns = allProducts.length + 1;
+                const columnWidth = Math.min((100 / numColumns), 25).toFixed(2) + '%';
                 tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
 
                 features.forEach(feature => {
@@ -485,23 +508,44 @@
 
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF("l", "mm", "a4");
+                const margin = 10;
+                const pageWidth = 297;
+                const pageHeight = 210;
 
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 280;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
+                setTimeout(() => {
+                    html2canvas(document.getElementById("comparisonTable"), { scale: 1, useCORS: true }).then(canvas => {
+                        console.log("Canvas dimensions:", canvas.width, canvas.height);
+                        let imgData = canvas.toDataURL("image/png");
+                        let imgWidth = pageWidth - 2 * margin;
+                        let imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    pdf.setFontSize(16);
-                    pdf.text("Product Comparison", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+                        let position = 30;
+                        pdf.setFontSize(16);
+                        pdf.text("Product Comparison", margin, 15);
+                        pdf.setFontSize(12);
+                        pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
 
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
-                    hideLoading();
-                    showNotification("Selected comparison exported successfully!");
-                });
+                        if (imgHeight > pageHeight - 40) {
+                            let remainingHeight = imgHeight;
+                            let yOffset = 0;
+                            while (remainingHeight > 0) {
+                                pdf.addImage(imgData, "PNG", margin, position, imgWidth, Math.min(pageHeight - 40, imgHeight), undefined, "FAST");
+                                remainingHeight -= pageHeight - 40;
+                                yOffset += pageHeight - 40;
+                                if (remainingHeight > 0) {
+                                    pdf.addPage();
+                                    position = 10;
+                                }
+                            }
+                        } else {
+                            pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight, undefined, "FAST");
+                        }
+
+                        pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
+                        hideLoading();
+                        showNotification("Selected comparison exported successfully!");
+                    });
+                }, 500);
             } catch (error) {
                 showError(`Error generating PDF: ${error.message}`);
                 console.error("exportSelectedToPDF error:", error);
@@ -529,9 +573,8 @@
                     "Measuring Category"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = allProducts.length + 1; // +1 for feature column
-                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                const numColumns = allProducts.length + 1;
+                const columnWidth = Math.min((100 / numColumns), 25).toFixed(2) + '%';
                 tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
 
                 features.forEach(feature => {
@@ -545,27 +588,103 @@
                 domElements.comparisonTable.innerHTML = tableContent;
 
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF("l", "mm", "a4"); // A4 landscape for 3 products
+                const pdf = new jsPDF("l", "mm", "a4");
+                const margin = 10;
+                const pageWidth = 297;
+                const pageHeight = 210;
 
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 280;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
+                setTimeout(() => {
+                    html2canvas(document.getElementById("comparisonTable"), { scale: 1, useCORS: true }).then(canvas => {
+                        console.log("Canvas dimensions:", canvas.width, canvas.height);
+                        let imgData = canvas.toDataURL("image/png");
+                        let imgWidth = pageWidth - 2 * margin;
+                        let imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    pdf.setFontSize(16);
-                    pdf.text("Complete Product Comparison Report", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+                        let position = 30;
+                        pdf.setFontSize(16);
+                        pdf.text("Complete Product Comparison Report", margin, 15);
+                        pdf.setFontSize(12);
+                        pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
 
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save("All_Products_Comparison.pdf");
-                    hideLoading();
-                    showNotification("All comparisons exported successfully!");
-                });
+                        if (imgHeight > pageHeight - 40) {
+                            let remainingHeight = imgHeight;
+                            let yOffset = 0;
+                            while (remainingHeight > 0) {
+                                pdf.addImage(imgData, "PNG", margin, position, imgWidth, Math.min(pageHeight - 40, imgHeight), undefined, "FAST");
+                                remainingHeight -= pageHeight - 40;
+                                yOffset += pageHeight - 40;
+                                if (remainingHeight > 0) {
+                                    pdf.addPage();
+                                    position = 10;
+                                }
+                            }
+                        } else {
+                            pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight, undefined, "FAST");
+                        }
+
+                        pdf.save("All_Products_Comparison.pdf");
+                        hideLoading();
+                        showNotification("All comparisons exported successfully!");
+                    });
+                }, 500);
             } catch (error) {
                 showError(`Error generating PDF: ${error.message}`);
                 console.error("exportAllToPDF error:", error);
+            }
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            try {
+                showLoading();
+                const selectedProduct = domElements.productSelect.value;
+                const selectedCompetitor = domElements.competitorSelect.value;
+                const selectedCompetitor2 = domElements.competitorSelect2.value;
+
+                if (!selectedProduct || !selectedCompetitor) {
+                    showError("Please select a product and at least one competitor for CSV export");
+                    return;
+                }
+
+                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
+                    showError("Please select different products for CSV export");
+                    return;
+                }
+
+                const selectedProducts = selectedCompetitor2 === "None" ? [selectedProduct, selectedCompetitor] : [selectedProduct, selectedCompetitor, selectedCompetitor2];
+                let csvContent = "Feature," + selectedProducts.join(",") + "\n";
+
+                const features = [
+                    "Short Circuit Loop Impedance ZS",
+                    "Short Circuit Loop Impedance ZL-PE RCD",
+                    "RCD Trigger and Response Time tA",
+                    "RCD Tripping Current I",
+                    "Earth Resistance",
+                    "Soil Resistivity",
+                    "Insulation Resistance",
+                    "Phase Sequence Indication",
+                    "Memory",
+                    "Bluetooth",
+                    "Measuring Category"
+                ];
+
+                features.forEach(feature => {
+                    csvContent += `"${feature}",${selectedProducts.map(product => `"${productComparisonData[product][feature] || "NA"}"`).join(",")}\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                hideLoading();
+                showNotification("Selected comparison exported to CSV successfully!");
+            } catch (error) {
+                showError(`Error generating CSV: ${error.message}`);
+                console.error("exportToCSV error:", error);
             }
         }
 
