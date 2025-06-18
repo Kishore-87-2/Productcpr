@@ -153,7 +153,7 @@
         }
 
         th {
-            background-color: #fff; /* Matches <td> background */
+            background-color: #fff;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -196,6 +196,18 @@
             border-radius: 4px;
             text-align: center;
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            table {
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -227,7 +239,9 @@
         <div id="loading" class="loading"></div>
         <div id="errorMessage" class="error-message"></div>
         <div id="notification" class="notification"></div>
-        <table id="comparisonTable"></table>
+        <div id="tableContainer" style="overflow-x: auto;">
+            <table id="comparisonTable"></table>
+        </div>
     </div>
 
     <script>
@@ -391,13 +405,22 @@
             loading: document.getElementById("loading"),
             errorMessage: document.getElementById("errorMessage"),
             notification: document.getElementById("notification"),
-            comparisonTable: document.getElementById("comparisonTable")
+            comparisonTable: document.getElementById("comparisonTable"),
+            tableContainer: document.getElementById("tableContainer")
         };
 
-        // Initialize dropdowns
+        // Check if jsPDF is loaded
+        function checkJsPDF() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                throw new Error("jsPDF library failed to load. Please check your internet connection or try again later.");
+            }
+            return window.jspdf.jsPDF;
+        }
+
+        // Initialize dropdowns with Sonel products only
         function initializeDropdowns() {
-            const products = Object.keys(productComparisonData);
-            products.forEach(product => {
+            const sonelProducts = Object.keys(productComparisonData).filter(product => product.startsWith("Sonel"));
+            sonelProducts.forEach(product => {
                 domElements.productSelect.add(new Option(product, product));
             });
             updateCompetitorOptions();
@@ -462,6 +485,7 @@
         // Show error
         function showError(message) {
             domElements.errorMessage.textContent = message;
+            console.error(message);
             hideLoading();
         }
 
@@ -474,7 +498,7 @@
         }
 
         // Load comparison table
-        function loadComparisonTable() {
+        async function loadComparisonTable() {
             try {
                 showLoading();
                 const selectedProduct = domElements.productSelect.value;
@@ -513,10 +537,9 @@
                     "Short Circuit DC Current ISC"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = selectedProducts.length + 1; // +1 for feature column
+                const numColumns = selectedProducts.length + 1;
                 const columnWidth = (100 / numColumns).toFixed(2) + '%';
-                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+                tableContent = `<style>th, td { width: ${columnWidth}; font-size: 0.8rem; }</style>` + tableContent;
 
                 features.forEach(feature => {
                     tableContent += `<tr>
@@ -534,7 +557,7 @@
         }
 
         // Compare all products
-        function compareAllProducts() {
+        async function compareAllProducts() {
             try {
                 showLoading();
                 const allProducts = Object.keys(productComparisonData);
@@ -559,10 +582,9 @@
                     "Short Circuit DC Current ISC"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = allProducts.length + 1; // +1 for feature column
+                const numColumns = allProducts.length + 1;
                 const columnWidth = (100 / numColumns).toFixed(2) + '%';
-                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+                tableContent = `<style>th, td { width: ${columnWidth}; font-size: 0.7rem; }</style>` + tableContent;
 
                 features.forEach(feature => {
                     tableContent += `<tr><td>${feature}</td>`;
@@ -581,7 +603,7 @@
         }
 
         // Export selected products to PDF
-        function exportSelectedToPDF() {
+        async function exportSelectedToPDF() {
             try {
                 showLoading();
                 const selectedProduct = domElements.productSelect.value;
@@ -598,25 +620,52 @@
                     return;
                 }
 
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF("l", "mm", "a4");
+                if (!domElements.comparisonTable.innerHTML) {
+                    await loadComparisonTable();
+                }
 
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 280;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
+                const jsPDF = checkJsPDF();
+                const pdf = new jsPDF("p", "mm", "a4");
+                const table = domElements.comparisonTable;
 
-                    pdf.setFontSize(16);
-                    pdf.text("Product Comparison", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+                // Temporarily adjust table for PDF rendering
+                const originalStyle = table.style.cssText;
+                table.style.width = "100%";
+                table.style.fontSize = "8px";
 
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
-                    hideLoading();
-                    showNotification("Selected comparison exported successfully!");
+                const canvas = await html2canvas(table, {
+                    scale: window.devicePixelRatio > 1 ? 2 : 1,
+                    useCORS: true,
+                    windowWidth: domElements.tableContainer.scrollWidth,
+                    windowHeight: domElements.tableContainer.scrollHeight,
+                    backgroundColor: "#ffffff"
                 });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pageWidth = 210;
+                const pageHeight = 297;
+                const margin = 10;
+                let imgWidth = pageWidth - 2 * margin;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                if (imgHeight > pageHeight - 40) {
+                    imgHeight = pageHeight - 40;
+                    imgWidth = (canvas.width * imgHeight) / canvas.height;
+                }
+
+                pdf.setFontSize(16);
+                pdf.text("Product Comparison", margin, 15);
+                pdf.setFontSize(12);
+                pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+                pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
+
+                // Restore original table styles
+                table.style.cssText = originalStyle;
+
+                hideLoading();
+                showNotification("Selected comparison exported successfully!");
             } catch (error) {
                 showError(`Error generating PDF: ${error.message}`);
                 console.error("exportSelectedToPDF error:", error);
@@ -624,12 +673,10 @@
         }
 
         // Export all products to PDF
-        function exportAllToPDF() {
+        async function exportAllToPDF() {
             try {
                 showLoading();
                 const allProducts = Object.keys(productComparisonData);
-                let tableContent = `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
-
                 const features = [
                     "Current Measurement",
                     "Power Measurement (P, Q, S)",
@@ -649,10 +696,10 @@
                     "Short Circuit DC Current ISC"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = allProducts.length + 1; // +1 for feature column
+                const numColumns = allProducts.length + 1;
                 const columnWidth = (100 / numColumns).toFixed(2) + '%';
-                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+                let tableContent = `<style>th, td { width: ${columnWidth}; font-size: 6px; padding: 4px; }</style>`;
+                tableContent += `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
 
                 features.forEach(feature => {
                     tableContent += `<tr><td>${feature}</td>`;
@@ -664,25 +711,39 @@
 
                 domElements.comparisonTable.innerHTML = tableContent;
 
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF("l", "mm", [297, 420]); // A3 landscape for larger table
+                const jsPDF = checkJsPDF();
+                const pdf = new jsPDF("l", "mm", "a4");
+                const table = domElements.comparisonTable;
 
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 400;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
-
-                    pdf.setFontSize(16);
-                    pdf.text("Complete Product Comparison Report", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
-
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save("All_Products_Comparison.pdf");
-                    hideLoading();
-                    showNotification("All comparisons exported successfully!");
+                const canvas = await html2canvas(table, {
+                    scale: window.devicePixelRatio > 1 ? 2 : 1,
+                    useCORS: true,
+                    windowWidth: domElements.tableContainer.scrollWidth,
+                    windowHeight: domElements.tableContainer.scrollHeight,
+                    backgroundColor: "#ffffff"
                 });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pageWidth = 297;
+                const pageHeight = 210;
+                const margin = 10;
+                let imgWidth = pageWidth - 2 * margin;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                if (imgHeight > pageHeight - 40) {
+                    imgHeight = pageHeight - 40;
+                    imgWidth = (canvas.width * imgHeight) / canvas.height;
+                }
+
+                pdf.setFontSize(16);
+                pdf.text("Complete Product Comparison Report", margin, 15);
+                pdf.setFontSize(12);
+                pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+                pdf.save("All_Products_Comparison.pdf");
+                hideLoading();
+                showNotification("All comparisons exported successfully!");
             } catch (error) {
                 showError(`Error generating PDF: ${error.message}`);
                 console.error("exportAllToPDF error:", error);
