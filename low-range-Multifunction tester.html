@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #f5f7fa;
             margin: 0;
             padding: 20px;
@@ -30,7 +30,7 @@
         }
 
         h1 {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #1a1a1a;
             font-size: 2rem;
             background: linear-gradient(90deg, #007bff, #00c4ff);
@@ -96,7 +96,7 @@
         }
 
         button:disabled {
-            background-color: #cccccc;
+            background-color: #ccc;
             cursor: not-allowed;
             transform: none;
         }
@@ -141,8 +141,6 @@
             border-collapse: collapse;
             margin: 20px 0;
             font-size: 0.9rem;
-            overflow-x: auto;
-            display: block;
         }
 
         th, td {
@@ -153,10 +151,10 @@
         }
 
         th {
-            background-color: #fff; /* Matches <td> background */
+            background-color: #fff;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 2;
             font-weight: 600;
         }
 
@@ -189,12 +187,29 @@
 
         .notification {
             display: none;
-            margin-top: 15px;
+            margin-top: 10px;
             padding: 10px;
             background-color: #28a745;
             color: #fff;
             border-radius: 4px;
             text-align: center;
+        }
+
+        #tableContainer {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            table {
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -207,7 +222,7 @@
                 <select id="productSelect"></select>
             </div>
             <div>
-                <label for="competitorSelect">Select Competitor 1:</label>
+                <label for="competitorSelect">Select Competitor :</label>
                 <select id="competitorSelect"></select>
             </div>
             <div>
@@ -217,17 +232,19 @@
         </div>
 
         <div class="buttons">
-            <button id="compareSelectedBtn" class="tooltip" onclick="loadComparisonTable()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
+            <button id="compareSelectedBtn" class="tooltip" onclick="compareSelected()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
             <button id="compareAllBtn" class="compare-all-btn tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All Products</button>
             <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF" disabled>Export Selected to PDF</button>
             <button id="exportAllBtn" class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
             <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
         </div>
 
-        <div id="loading" class="loading"></div>
-        <div id="errorMessage" class="error-message"></div>
-        <div id="notification" class="notification"></div>
-        <table id="comparisonTable"></table>
+        <div id="loading" className="loading"></div>
+        <div id="errorMessage" className="error-message"></div>
+        <div id="notification" className="notification"></div>
+        <div id="tableContainer">
+            <table id="productComparison"></table>
+        </div>
     </div>
 
     <script>
@@ -384,7 +401,6 @@
             }
         };
 
-        // DOM Elements
         const domElements = {
             productSelect: document.getElementById("productSelect"),
             competitorSelect: document.getElementById("competitorSelect"),
@@ -397,10 +413,17 @@
             loading: document.getElementById("loading"),
             errorMessage: document.getElementById("errorMessage"),
             notification: document.getElementById("notification"),
-            comparisonTable: document.getElementById("comparisonTable")
+            comparisonTable: document.getElementById("productComparison"),
+            tableContainer: document.getElementById("tableContainer")
         };
 
-        // Initialize dropdowns
+        function checkJsPDF() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                throw new Error("jsPDF library failed to load. Please check your internet connection or try again later.");
+            }
+            return window.jspdf.jsPDF;
+        }
+
         function initializeDropdowns() {
             const sonelProducts = ["Sonel MPI-520", "Sonel MPI-525"];
             sonelProducts.forEach(product => {
@@ -416,7 +439,6 @@
             });
         }
 
-        // Update competitor dropdowns
         function updateCompetitorOptions() {
             const selectedProduct = domElements.productSelect.value;
             const selectedCompetitor = domElements.competitorSelect.value;
@@ -431,7 +453,6 @@
             domElements.competitorSelect2.value = selectedCompetitor2 && (selectedCompetitor2 === "None" || competitors.includes(selectedCompetitor2)) ? selectedCompetitor2 : "None";
         }
 
-        // Clear selections
         function clearSelections() {
             domElements.productSelect.selectedIndex = 0;
             domElements.competitorSelect.selectedIndex = 0;
@@ -442,36 +463,30 @@
             validateSelections();
         }
 
-        // Show notification
         function showNotification(message) {
             domElements.notification.textContent = message;
             domElements.notification.style.display = "block";
-            setTimeout(() => {
-                domElements.notification.style.display = "none";
-            }, 3000);
+            setTimeout(() => domElements.notification.style.display = "none", 3000);
         }
 
-        // Show loading
         function showLoading() {
             domElements.loading.style.display = "block";
             domElements.errorMessage.textContent = "";
             [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = true);
         }
 
-        // Hide loading
         function hideLoading() {
             domElements.loading.style.display = "none";
             [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = false);
             validateSelections();
         }
 
-        // Show error
         function showError(message) {
             domElements.errorMessage.textContent = message;
+            console.error(message);
             hideLoading();
         }
 
-        // Validate selections
         function validateSelections() {
             const productSelected = domElements.productSelect.value !== "";
             const competitorSelected = domElements.competitorSelect.value !== "";
@@ -479,8 +494,7 @@
             domElements.exportSelectedBtn.disabled = !(productSelected && competitorSelected);
         }
 
-        // Load comparison table
-        function loadComparisonTable() {
+        async function compareSelected() {
             try {
                 showLoading();
                 const selectedProduct = domElements.productSelect.value;
@@ -516,28 +530,22 @@
                     "IP Rating"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = selectedProducts.length + 1; // +1 for feature column
+                const numColumns = selectedProducts.length + 1;
                 const columnWidth = (100 / numColumns).toFixed(2) + '%';
-                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+                tableContent = `<style>th, td { width: ${columnWidth}; font-size: 0.8rem; }</style>` + tableContent;
 
                 features.forEach(feature => {
-                    tableContent += `<tr>
-                        <td>${feature}</td>
-                        ${selectedProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}
-                    </tr>`;
+                    tableContent += `<tr><td>${feature}</td>${selectedProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}</tr>`;
                 });
 
                 domElements.comparisonTable.innerHTML = tableContent;
                 hideLoading();
             } catch (error) {
                 showError(`Error during comparison: ${error.message}`);
-                console.error("loadComparisonTable error:", error);
             }
         }
 
-        // Compare all products
-        function compareAllProducts() {
+        async function compareAllProducts() {
             try {
                 showLoading();
                 const allProducts = Object.keys(productComparisonData);
@@ -559,29 +567,22 @@
                     "IP Rating"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = allProducts.length + 1; // +1 for feature column
+                const numColumns = allProducts.length + 1;
                 const columnWidth = (100 / numColumns).toFixed(2) + '%';
-                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+                tableContent = `<style>th, td { width: ${columnWidth}; font-size: 0.7rem; }</style>` + tableContent;
 
                 features.forEach(feature => {
-                    tableContent += `<tr><td>${feature}</td>`;
-                    allProducts.forEach(product => {
-                        tableContent += `<td>${productComparisonData[product][feature] || "NA"}</td>`;
-                    });
-                    tableContent += `</tr>`;
+                    tableContent += `<tr><td>${feature}</td>${allProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}</tr>`;
                 });
 
                 domElements.comparisonTable.innerHTML = tableContent;
                 hideLoading();
             } catch (error) {
                 showError(`Error during full comparison: ${error.message}`);
-                console.error("compareAllProducts error:", error);
             }
         }
 
-        // Export selected products to PDF
-        function exportSelectedToPDF() {
+        async function exportSelectedToPDF() {
             try {
                 showLoading();
                 const selectedProduct = domElements.productSelect.value;
@@ -598,38 +599,58 @@
                     return;
                 }
 
-                const { jsPDF } = window.jspdf;
+                if (!domElements.comparisonTable.innerHTML) {
+                    await compareSelected();
+                }
+
+                const jsPDF = checkJsPDF();
                 const pdf = new jsPDF("l", "mm", "a4");
+                const table = domElements.comparisonTable;
 
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 280;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
+                const originalStyle = table.style.cssText;
+                table.style.width = "100%";
+                table.style.fontSize = "8px";
 
-                    pdf.setFontSize(16);
-                    pdf.text("Product Comparison", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
-
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
-                    hideLoading();
-                    showNotification("Selected comparison exported successfully!");
+                const canvas = await html2canvas(table, {
+                    scale: window.devicePixelRatio > 1 ? 2 : 1,
+                    useCORS: true,
+                    windowWidth: domElements.tableContainer.scrollWidth,
+                    windowHeight: domElements.tableContainer.scrollHeight,
+                    backgroundColor: "#ffffff"
                 });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pageWidth = 297;
+                const pageHeight = 210;
+                const margin = 10;
+                let imgWidth = pageWidth - 2 * margin;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                if (imgHeight > pageHeight - 40) {
+                    imgHeight = pageHeight - 40;
+                    imgWidth = (canvas.width * imgHeight) / canvas.height;
+                }
+
+                pdf.setFontSize(16);
+                pdf.text("Product Comparison", margin, 15);
+                pdf.setFontSize(12);
+                pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+                pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
+
+                table.style.cssText = originalStyle;
+                hideLoading();
+                showNotification("Selected comparison exported successfully!");
             } catch (error) {
                 showError(`Error generating PDF: ${error.message}`);
-                console.error("exportSelectedToPDF error:", error);
             }
         }
 
-        // Export all products to PDF
-        function exportAllToPDF() {
+        async function exportAllToPDF() {
             try {
                 showLoading();
                 const allProducts = Object.keys(productComparisonData);
-                let tableContent = `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
-
                 const features = [
                     "Current Measurement",
                     "Power Measurement (P, Q, S)",
@@ -646,47 +667,55 @@
                     "IP Rating"
                 ];
 
-                // Dynamically adjust column widths based on number of products
-                const numColumns = allProducts.length + 1; // +1 for feature column
+                const numColumns = allProducts.length + 1;
                 const columnWidth = (100 / numColumns).toFixed(2) + '%';
-                tableContent = `<style>th, td { width: ${columnWidth}; }</style>` + tableContent;
+                let tableContent = `<style>th, td { width: ${columnWidth}; font-size: 6px; padding: 4px; }</style>`;
+                tableContent += `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
 
                 features.forEach(feature => {
-                    tableContent += `<tr><td>${feature}</td>`;
-                    allProducts.forEach(product => {
-                        tableContent += `<td>${productComparisonData[product][feature] || "NA"}</td>`;
-                    });
-                    tableContent += `</tr>`;
+                    tableContent += `<tr><td>${feature}</td>${allProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}</tr>`;
                 });
 
                 domElements.comparisonTable.innerHTML = tableContent;
 
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF("l", "mm", [297, 420]); // A3 landscape for 10 products
+                const jsPDF = checkJsPDF();
+                const pdf = new jsPDF("l", "mm", "a3");
+                const table = domElements.comparisonTable;
 
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 400;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
-
-                    pdf.setFontSize(16);
-                    pdf.text("Complete Product Comparison Report", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
-
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save("All_Products_Comparison.pdf");
-                    hideLoading();
-                    showNotification("All comparisons exported successfully!");
+                const canvas = await html2canvas(table, {
+                    scale: window.devicePixelRatio > 1 ? 2 : 1,
+                    useCORS: true,
+                    windowWidth: domElements.tableContainer.scrollWidth,
+                    windowHeight: domElements.tableContainer.scrollHeight,
+                    backgroundColor: "#ffffff"
                 });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pageWidth = 420;
+                const pageHeight = 297;
+                const margin = 10;
+                let imgWidth = pageWidth - 2 * margin;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                if (imgHeight > pageHeight - 40) {
+                    imgHeight = pageHeight - 40;
+                    imgWidth = (canvas.width * imgHeight) / canvas.height;
+                }
+
+                pdf.setFontSize(16);
+                pdf.text("Complete Product Comparison Report", margin, 15);
+                pdf.setFontSize(12);
+                pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+                pdf.save("All_Products_Comparison.pdf");
+                hideLoading();
+                showNotification("All comparisons exported successfully!");
             } catch (error) {
                 showError(`Error generating PDF: ${error.message}`);
-                console.error("exportAllToPDF error:", error);
             }
         }
 
-        // Initialize
         function init() {
             initializeDropdowns();
             validateSelections();
