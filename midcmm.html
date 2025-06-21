@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1400px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #007bff, #00c4ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .dropdowns {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 0.9rem;
+            color: #333;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .compare-all-btn {
+            background-color: #28a745;
+        }
+
+        .compare-all-btn:hover {
+            background-color: #218838;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            word-wrap: break-word;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .notification {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        #tableContainer {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            table {
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        /* PDF-specific styles */
+        .pdf-export-table th, .pdf-export-table td {
+            font-size: 10px !important;
+            padding: 6px !important;
+            border: 1px solid #000 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="productSelect">Select Product:</label>
+                <select id="productSelect"></select>
+            </div>
+            <div>
+                <label for="competitorSelect">Select Competitor:</label>
+                <select id="competitorSelect"></select>
+            </div>
+            <div>
+                <label for="competitorSelect2">Select Competitor 2:</label>
+                <select id="competitorSelect2"></select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button id="compareSelectedBtn" class="tooltip" onclick="compareSelected()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
+            <button id="compareAllBtn" class="compare-all-btn tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All Products</button>
+            <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected comparison to PDF" disabled>Export Selected to PDF</button>
+            <button id="exportAllBtn" class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all comparisons to PDF">Export All to PDF</button>
+            <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
+        </div>
+
+        <div id="loading" class="loading"></div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="notification" class="notification"></div>
+        <div id="tableContainer">
+            <table id="productComparison"></table>
+        </div>
+    </div>
+
+    <script>
+        const productComparisonData = {
+            "Sonel CMM-30": {
+                "AC Voltage": "1000V",
+                "DC Voltage": "1000V",
+                "DC Current": "10A",
+                "AC Current": "10A",
+                "Resistance": "60.00 MΩ",
+                "Frequency": "9.999 kHz",
+                "Capacity": "6000 µF",
+                "Temperature": "-20…+760ºC",
+                "Continuity / Diode Test": "✓ / ✓",
+                "Counting": "6000"
+            },
+            "Sonel CMM-40": {
+                "AC Voltage": "1000V",
+                "DC Voltage": "1000V",
+                "DC Current": "10A",
+                "AC Current": "10A",
+                "Resistance": "40.00 MΩ",
+                "Frequency": "100.00 MHz",
+                "Capacity": "40.000 mF",
+                "Temperature": "-50.0...+1200.0°C",
+                "Continuity / Diode Test": "✓ / ✓",
+                "Counting": "40000"
+            },
+            "Fluke 17B+": {
+                "AC Voltage": "1000V",
+                "DC Voltage": "1000V",
+                "DC Current": "10A",
+                "AC Current": "10A",
+                "Resistance": "40.00 MΩ",
+                "Frequency": "100.00 KHz",
+                "Capacity": "1000 μF",
+                "Temperature": "50 °C- 400 °C",
+                "Continuity / Diode Test": "✓ / ✓",
+                "Counting": "4000"
+            },
+            "Fluke 15B+": {
+                "AC Voltage": "1000V",
+                "DC Voltage": "1000V",
+                "DC Current": "10A",
+                "AC Current": "10A",
+                "Resistance": "40.00 MΩ",
+                "Frequency": "100.00 KHz",
+                "Capacity": "1000 μF",
+                "Temperature": "-55.0 °C to 400.0 °C",
+                "Continuity / Diode Test": "✓ / ✓",
+                "Counting": "4000"
+            },
+            "Rishmulti 15 S": {
+                "AC Voltage": "1000V",
+                "DC Voltage": "1000V",
+                "DC Current": "10A",
+                "AC Current": "10A",
+                "Resistance": "30.00 MΩ",
+                "Frequency": "100.00 KHz",
+                "Capacity": "30 μF",
+                "Temperature": "-200 °C- 850 °C",
+                "Continuity / Diode Test": "✓ / ✓",
+                "Counting": "3100"
+            },
+            "Rishmulti 616": {
+                "AC Voltage": "1000V",
+                "DC Voltage": "1000V",
+                "DC Current": "10A",
+                "AC Current": "10A",
+                "Resistance": "66.00 MΩ",
+                "Frequency": "10MHz",
+                "Capacity": "40.000 mF",
+                "Temperature": "0…1300°C",
+                "Continuity / Diode Test": "✓ / ✓",
+                "Counting": "6600"
+            }
+        };
+
+        const domElements = {
+            productSelect: document.getElementById("productSelect"),
+            competitorSelect: document.getElementById("competitorSelect"),
+            competitorSelect2: document.getElementById("competitorSelect2"),
+            compareSelectedBtn: document.getElementById("compareSelectedBtn"),
+            compareAllBtn: document.getElementById("compareAllBtn"),
+            exportSelectedBtn: document.getElementById("exportSelectedBtn"),
+            exportAllBtn: document.getElementById("exportAllBtn"),
+            clearSelectionBtn: document.getElementById("clearSelectionBtn"),
+            loading: document.getElementById("loading"),
+            errorMessage: document.getElementById("errorMessage"),
+            notification: document.getElementById("notification"),
+            comparisonTable: document.getElementById("productComparison"),
+            tableContainer: document.getElementById("tableContainer")
+        };
+
+        function checkJsPDF() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                throw new Error("jsPDF library failed to load. Please check your internet connection or try again later.");
+            }
+            return window.jspdf.jsPDF;
+        }
+
+        function initializeDropdowns() {
+            const sonelProducts = ["Sonel CMM-30", "Sonel CMM-40"];
+            sonelProducts.forEach(product => {
+                domElements.productSelect.add(new Option(product, product));
+            });
+            updateCompetitorOptions();
+
+            [domElements.productSelect, domElements.competitorSelect, domElements.competitorSelect2].forEach(select => {
+                select.addEventListener('change', () => {
+                    updateCompetitorOptions();
+                    validateSelections();
+                });
+            });
+        }
+
+        function updateCompetitorOptions() {
+            const selectedProduct = domElements.productSelect.value;
+            const selectedCompetitor = domElements.competitorSelect.value;
+            const selectedCompetitor2 = domElements.competitorSelect2.value;
+            const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
+
+            domElements.competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            domElements.competitorSelect2.innerHTML = '<option value="None">None</option>' + 
+                competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+
+            domElements.competitorSelect.value = selectedCompetitor && competitors.includes(selectedCompetitor) ? selectedCompetitor : competitors[0] || "";
+            domElements.competitorSelect2.value = selectedCompetitor2 && (selectedCompetitor2 === "None" || competitors.includes(selectedCompetitor2)) ? selectedCompetitor2 : "None";
+        }
+
+        function clearSelections() {
+            domElements.productSelect.selectedIndex = 0;
+            domElements.competitorSelect.selectedIndex = 0;
+            domElements.competitorSelect2.value = "None";
+            domElements.comparisonTable.innerHTML = "";
+            domElements.errorMessage.textContent = "";
+            updateCompetitorOptions();
+            validateSelections();
+        }
+
+        function showNotification(message) {
+            domElements.notification.textContent = message;
+            domElements.notification.style.display = "block";
+            setTimeout(() => domElements.notification.style.display = "none", 3000);
+        }
+
+        function showLoading() {
+            domElements.loading.style.display = "block";
+            domElements.errorMessage.textContent = "";
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = true);
+        }
+
+        function hideLoading() {
+            domElements.loading.style.display = "none";
+            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportSelectedBtn, domElements.exportAllBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = false);
+            validateSelections();
+        }
+
+        function showError(message) {
+            domElements.errorMessage.textContent = message;
+            console.error(message);
+            hideLoading();
+        }
+
+        function validateSelections() {
+            const productSelected = domElements.productSelect.value !== "";
+            const competitorSelected = domElements.competitorSelect.value !== "";
+            domElements.compareSelectedBtn.disabled = !(productSelected && competitorSelected);
+            domElements.exportSelectedBtn.disabled = !(productSelected && competitorSelected);
+        }
+
+        async function compareSelected() {
+            try {
+                showLoading();
+                const selectedProduct = domElements.productSelect.value;
+                const selectedCompetitor = domElements.competitorSelect.value;
+                const selectedCompetitor2 = domElements.competitorSelect2.value;
+
+                if (!selectedProduct || !selectedCompetitor) {
+                    showError("Please select a product and at least one competitor");
+                    return;
+                }
+
+                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
+                    showError("Please select different products for comparison");
+                    return;
+                }
+
+                const selectedProducts = selectedCompetitor2 === "None" ? [selectedProduct, selectedCompetitor] : [selectedProduct, selectedCompetitor, selectedCompetitor2];
+                let tableContent = `<tr><th>Feature</th>${selectedProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
+
+                const features = [
+                    "AC Voltage",
+                    "DC Voltage",
+                    "DC Current",
+                    "AC Current",
+                    "Resistance",
+                    "Frequency",
+                    "Capacity",
+                    "Temperature",
+                    "Continuity / Diode Test",
+                    "Counting"
+                ];
+
+                const numColumns = selectedProducts.length + 1;
+                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                tableContent = `<style>th, td { width: ${columnWidth}; font-size: 0.8rem; }</style>` + tableContent;
+
+                features.forEach(feature => {
+                    tableContent += `<tr><td>${feature}</td>${selectedProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}</tr>`;
+                });
+
+                domElements.comparisonTable.innerHTML = tableContent;
+                hideLoading();
+            } catch (error) {
+                showError(`Error during comparison: ${error.message}`);
+            }
+        }
+
+        async function compareAllProducts() {
+            try {
+                showLoading();
+                const allProducts = Object.keys(productComparisonData);
+                let tableContent = `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
+
+                const features = [
+                    "AC Voltage",
+                    "DC Voltage",
+                    "DC Current",
+                    "AC Current",
+                    "Resistance",
+                    "Frequency",
+                    "Capacity",
+                    "Temperature",
+                    "Continuity / Diode Test",
+                    "Counting"
+                ];
+
+                const numColumns = allProducts.length + 1;
+                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                tableContent = `<style>th, td { width: ${columnWidth}; font-size: 0.7rem; }</style>` + tableContent;
+
+                features.forEach(feature => {
+                    tableContent += `<tr><td>${feature}</td>${allProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}</tr>`;
+                });
+
+                domElements.comparisonTable.innerHTML = tableContent;
+                hideLoading();
+            } catch (error) {
+                showError(`Error during full comparison: ${error.message}`);
+            }
+        }
+
+        async function exportSelectedToPDF() {
+            try {
+                showLoading();
+                const selectedProduct = domElements.productSelect.value;
+                const selectedCompetitor = domElements.competitorSelect.value;
+                const selectedCompetitor2 = domElements.competitorSelect2.value;
+
+                if (!selectedProduct || !selectedCompetitor) {
+                    showError("Please select a product and at least one competitor for PDF export");
+                    return;
+                }
+
+                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
+                    showError("Please select different products for PDF export");
+                    return;
+                }
+
+                if (!domElements.comparisonTable.innerHTML) {
+                    await compareSelected();
+                }
+
+                const jsPDF = checkJsPDF();
+                const pdf = new jsPDF("l", "mm", "a4");
+                const table = domElements.comparisonTable;
+
+                // Apply PDF-specific styles
+                const originalClass = table.className;
+                table.className = originalClass + " pdf-export-table";
+                const originalStyle = table.style.cssText;
+                table.style.width = "100%";
+                table.style.fontFamily = "Arial, sans-serif";
+
+                const scale = Math.min(4, window.devicePixelRatio * 2); // Increase scale for better quality
+                const canvas = await html2canvas(table, {
+                    scale: scale,
+                    useCORS: true,
+                    windowWidth: domElements.tableContainer.scrollWidth * scale,
+                    windowHeight: domElements.tableContainer.scrollHeight * scale,
+                    backgroundColor: "#ffffff",
+                    logging: false
+                });
+
+                const imgData = canvas.toDataURL("image/jpeg", 0.95); // Use JPEG with high quality
+                const pageWidth = 297;
+                const pageHeight = 210;
+                const margin = 10;
+                let imgWidth = pageWidth - 2 * margin;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                if (imgHeight > pageHeight - 40) {
+                    imgHeight = pageHeight - 40;
+                    imgWidth = (canvas.width * imgHeight) / canvas.height;
+                }
+
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(16);
+                pdf.text("Product Comparison", margin, 15);
+                pdf.setFontSize(12);
+                pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                pdf.addImage(imgData, "JPEG", margin, 30, imgWidth, imgHeight, undefined, "SLOW"); // SLOW compression for better quality
+                pdf.save(`Comparison_${selectedProduct}_vs_${selectedCompetitor}${selectedCompetitor2 !== "None" ? "_vs_" + selectedCompetitor2 : ""}.pdf`);
+
+                // Restore original table styles
+                table.className = originalClass;
+                table.style.cssText = originalStyle;
+                hideLoading();
+                showNotification("Selected comparison exported successfully!");
+            } catch (error) {
+                showError(`Error generating PDF: ${error.message}`);
+            }
+        }
+
+        async function exportAllToPDF() {
+            try {
+                showLoading();
+                const allProducts = Object.keys(productComparisonData);
+                const features = [
+                    "AC Voltage",
+                    "DC Voltage",
+                    "DC Current",
+                    "AC Current",
+                    "Resistance",
+                    "Frequency",
+                    "Capacity",
+                    "Temperature",
+                    "Continuity / Diode Test",
+                    "Counting"
+                ];
+
+                const numColumns = allProducts.length + 1;
+                const columnWidth = (100 / numColumns).toFixed(2) + '%';
+                let tableContent = `<style>th, td { width: ${columnWidth}; font-size: 10px; padding: 4px; }</style>`;
+                tableContent += `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
+
+                features.forEach(feature => {
+                    tableContent += `<tr><td>${feature}</td>${allProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}</tr>`;
+                });
+
+                domElements.comparisonTable.innerHTML = tableContent;
+
+                const jsPDF = checkJsPDF();
+                const pdf = new jsPDF("l", "mm", "a3");
+                const table = domElements.comparisonTable;
+
+                // Apply PDF-specific styles
+                const originalClass = table.className;
+                table.className = originalClass + " pdf-export-table";
+                const originalStyle = table.style.cssText;
+                table.style.width = "100%";
+                table.style.fontFamily = "Arial, sans-serif";
+
+                const scale = Math.min(4, window.devicePixelRatio * 2); // Increase scale for better quality
+                const canvas = await html2canvas(table, {
+                    scale: scale,
+                    useCORS: true,
+                    windowWidth: domElements.tableContainer.scrollWidth * scale,
+                    windowHeight: domElements.tableContainer.scrollHeight * scale,
+                    backgroundColor: "#ffffff",
+                    logging: false
+                });
+
+                const imgData = canvas.toDataURL("image/jpeg", 0.95); // Use JPEG with high quality
+                const pageWidth = 420;
+                const pageHeight = 297;
+                const margin = 10;
+                let imgWidth = pageWidth - 2 * margin;
+                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                if (imgHeight > pageHeight - 40) {
+                    imgHeight = pageHeight - 40;
+                    imgWidth = (canvas.width * imgHeight) / canvas.height;
+                }
+
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(16);
+                pdf.text("Complete Product Comparison Report", margin, 15);
+                pdf.setFontSize(12);
+                pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
+
+                pdf.addImage(imgData, "JPEG", margin, 30, imgWidth, imgHeight, undefined, "SLOW"); // SLOW compression for better quality
+                pdf.save("All_Products_Comparison.pdf");
+
+                // Restore original table styles
+                table.className = originalClass;
+                table.style.cssText = originalStyle;
+                hideLoading();
+                showNotification("All comparisons exported successfully!");
+            } catch (error) {
+                showError(`Error generating PDF: ${error.message}`);
+            }
+        }
+
+        function init() {
+            initializeDropdowns();
+            validateSelections();
+            console.log("Application initialized");
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
