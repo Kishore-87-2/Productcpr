@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product" onchange="updateDropdowns()">
+                    <option value="Sonel CMP-2000">Sonel CMP-2000</option>
+                    <option value="Megger DCM1500">Megger DCM1500</option>
+                    <option value="Megger DCM340">Megger DCM340</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1" onchange="updateDropdowns()">
+                    <option value="Sonel CMP-2000">Sonel CMP-2000</option>
+                    <option value="Megger DCM1500">Megger DCM1500</option>
+                    <option value="Megger DCM340">Megger DCM340</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2" onchange="updateDropdowns()">
+                    <option value="None">None</option>
+                    <option value="Sonel CMP-2000">Sonel CMP-2000</option>
+                    <option value="Megger DCM1500">Megger DCM1500</option>
+                    <option value="Megger DCM340">Megger DCM340</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel CMP-2000": {
+                "AC current Range": "1500 A",
+                "DC current Range": "2000 A",
+                "AC voltage Range": "750 V",
+                "DC voltage Range": "1000 V",
+                "Resistance Range": "66.00 Mohm",
+                "Frequency Range": "1 MHz",
+                "Capacitance Range": "6.599 mF",
+                "Duty cycle (%) Range": "95%",
+                "Temperature measurement Range": "1000°C",
+                "Continuity / Diode test": "Available",
+                "Counting": "6600",
+                "Current and voltage measurements downstream the inverter, frequency converter or in the VFD system": "Available",
+                "Inrush current": "Available",
+                "Relative measurement REL": "Available",
+                "Non-contact voltage detector": "Available",
+                "Ingress protection": "IP-20"
+            },
+            "Megger DCM1500": {
+                "AC current Range": "1500 A",
+                "DC current Range": "1500 A",
+                "AC voltage Range": "750 V",
+                "DC voltage Range": "1000 V",
+                "Resistance Range": "400 ohm",
+                "Frequency Range": "400 Hz",
+                "Capacitance Range": "NA",
+                "Duty cycle (%) Range": "NA",
+                "Temperature measurement Range": "NA",
+                "Continuity / Diode test": "Available",
+                "Counting": "4000",
+                "Current and voltage measurements downstream the inverter, frequency converter or in the VFD system": "NA",
+                "Inrush current": "NA",
+                "Relative measurement REL": "Available",
+                "Non-contact voltage detector": "Available",
+                "Ingress protection": "NA"
+            },
+            "Megger DCM340": {
+                "AC current Range": "600 A",
+                "DC current Range": "600 A",
+                "AC voltage Range": "600 V",
+                "DC voltage Range": "600 V",
+                "Resistance Range": "400.0 ohm",
+                "Frequency Range": "400 Hz",
+                "Capacitance Range": "NA",
+                "Duty cycle (%) Range": "NA",
+                "Temperature measurement Range": "NA",
+                "Continuity / Diode test": "Available",
+                "Counting": "4000",
+                "Current and voltage measurements downstream the inverter, frequency converter or in the VFD system": "NA",
+                "Inrush current": "NA",
+                "Relative measurement REL": "Available",
+                "Non-contact voltage detector": "NA",
+                "Ingress protection": "NA"
+            }
+        };
+
+        // Function to update dropdowns to prevent duplicate selections
+        function updateDropdowns() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const productSelect = document.getElementById("product");
+            const competitor1Select = document.getElementById("competitor1");
+            const competitor2Select = document.getElementById("competitor2");
+
+            // Reset options
+            const allProducts = ["Sonel CMP-2000", "Megger DCM1500", "Megger DCM340"];
+            productSelect.innerHTML = allProducts.map(p => `<option value="${p}">${p}</option>`).join("");
+            competitor1Select.innerHTML = allProducts.map(p => `<option value="${p}">${p}</option>`).join("");
+            competitor2Select.innerHTML = `<option value="None">None</option>` + allProducts.map(p => `<option value="${p}">${p}</option>`).join("");
+
+            // Restore selected values if they don't conflict
+            productSelect.value = product;
+            competitor1Select.value = competitor1;
+            competitor2Select.value = competitor2;
+
+            // Disable selected product in competitor dropdowns
+            competitor1Select.querySelector(`option[value="${product}"]`).disabled = true;
+            competitor2Select.querySelector(`option[value="${product}"]`).disabled = true;
+
+            // Disable competitor1 in product and competitor2 dropdowns
+            productSelect.querySelector(`option[value="${competitor1}"]`).disabled = true;
+            competitor2Select.querySelector(`option[value="${competitor1}"]`).disabled = true;
+
+            // Disable competitor2 in product and competitor1 dropdowns (if not None)
+            if (competitor2 !== "None") {
+                productSelect.querySelector(`option[value="${competitor2}"]`).disabled = true;
+                competitor1Select.querySelector(`option[value="${competitor2}"]`).disabled = true;
+            }
+        }
+
+        // Initialize dropdowns on page load
+        updateDropdowns();
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            console.log("Comparing selected products...");
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        ${competitor2 !== "None" ? `<th>${competitor2}</th>` : ""}
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature] || "N/A"}</td>
+                        ${competitor2 !== "None" ? `<td>${products[competitor2][feature] || "N/A"}</td>` : ""}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            console.log("Comparing all products...");
+            const resultDiv = document.getElementById("comparisonResult");
+            if (!Object.keys(products).length) {
+                resultDiv.innerHTML = "<h3>No products available for comparison.</h3>";
+                return;
+            }
+
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            const firstProduct = Object.keys(products)[0];
+            Object.keys(products[firstProduct]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature] || "N/A"}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            console.log("Exporting selected to PDF...");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add title
+            doc.setFontSize(16);
+            doc.text("Selected Product Comparison", 14, 15);
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, ...(competitor2 !== "None" ? [competitor2] : [])];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [
+                    feature,
+                    products[product][feature],
+                    products[competitor1][feature] || "N/A",
+                    ...(competitor2 !== "None" ? [products[competitor2][feature] || "N/A"] : [])
+                ];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 25,
+                theme: "grid",
+                styles: { fontSize: 10, cellPadding: 2 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto",
+                columnStyles: { 0: { cellWidth: 50 } }
+            });
+
+            // Add footer with date
+            doc.setFontSize(10);
+            doc.text(`Generated on ${new Date().toLocaleString()}`, 14, doc.internal.pageSize.height - 10);
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            console.log("Exporting all to PDF...");
+            // Display comparison table first
+            compareAllProducts();
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title
+            doc.setFontSize(16);
+            doc.text("Overall Product Comparison", 14, 15);
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature] || "N/A")];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 25,
+                theme: "grid",
+                styles: { fontSize: 10, cellPadding: 2 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto",
+                columnStyles: { 0: { cellWidth: 50 } }
+            });
+
+            // Add footer with date
+            doc.setFontSize(10);
+            doc.text(`Generated on ${new Date().toLocaleString()}`, 14, doc.internal.pageSize.height - 10);
+
+            doc.save("Overall_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>

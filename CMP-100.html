@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product (Sonel):</label>
+                <select id="product">
+                    <option value="Sonel CMP-100">Sonel CMP-100</option>
+                    <option value="Sonel CMP-200">Sonel CMP-200</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="Sonel CMP-100">Sonel CMP-100</option>
+                    <option value="Sonel CMP-200">Sonel CMP-200</option>
+                    <option value="Megger DCM300E">Megger DCM300E</option>
+                    <option value="Fluke 368/368 FC">Fluke 368/368 FC</option>
+                    <option value="Fluke 369/369 FC">Fluke 369/369 FC</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="None">None</option>
+                    <option value="Sonel CMP-100">Sonel CMP-100</option>
+                    <option value="Sonel CMP-200">Sonel CMP-200</option>
+                    <option value="Megger DCM300E">Megger DCM300E</option>
+                    <option value="Fluke 368/368 FC">Fluke 368/368 FC</option>
+                    <option value="Fluke 369/369 FC">Fluke 369/369 FC</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel CMP-100": {
+                "AC current Range": "100 A",
+                "AC current Resolution": "0.001 mA",
+                "AC current Accuracy": "1.5%",
+                "Jaw Size": "32 mm",
+                "Data Hold Indication": "Available",
+                "Auto Power Off": "Available"
+            },
+            "Sonel CMP-200": {
+                "AC current Range": "200 A",
+                "AC current Resolution": "0.1 mA",
+                "AC current Accuracy": "2.5%",
+                "Jaw Size": "30 mm",
+                "Data Hold Indication": "Available",
+                "Auto Power Off": "Available"
+            },
+            "Megger DCM300E": {
+                "AC current Range": "300 A",
+                "AC current Resolution": "0.01 mA",
+                "AC current Accuracy": "±1.2% rdg ±5 dgt",
+                "Jaw Size": "40 mm",
+                "Data Hold Indication": "Available",
+                "Auto Power Off": "Available"
+            },
+            "Fluke 368/368 FC": {
+                "AC current Range": "60 A",
+                "AC current Resolution": "0.001 mA",
+                "AC current Accuracy": "1%",
+                "Jaw Size": "40 mm",
+                "Data Hold Indication": "Available",
+                "Auto Power Off": "Available"
+            },
+            "Fluke 369/369 FC": {
+                "AC current Range": "60 A",
+                "AC current Resolution": "0.001 mA",
+                "AC current Accuracy": "1%",
+                "Jaw Size": "61 mm",
+                "Data Hold Indication": "Available",
+                "Auto Power Off": "Available"
+            }
+        };
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+                        <th>${competitor1}</th>
+                        ${competitor2 !== "None" ? `<th>${competitor2}</th>` : ""}
+                    </tr>
+            `;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                        <td>${products[competitor1][feature]}</td>
+                        ${competitor2 !== "None" ? `<td>${products[competitor2][feature]}</td>` : ""}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Add title
+            doc.setFontSize(16);
+            doc.text("Selected Product Comparison", 14, 15);
+
+            // Add table to PDF
+            const headers = ["Feature", product, competitor1, ...(competitor2 !== "None" ? [competitor2] : [])];
+            const rows = Object.keys(products[product]).map(feature => {
+                return [
+                    feature,
+                    products[product][feature],
+                    products[competitor1][feature],
+                    ...(competitor2 !== "None" ? [products[competitor2][feature]] : [])
+                ];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 25,
+                theme: "grid",
+                styles: { fontSize: 10, cellPadding: 2 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto",
+                columnStyles: { 0: { cellWidth: 50 } } // Wider feature column for readability
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title
+            doc.setFontSize(16);
+            doc.text("Overall Product Comparison", 14, 15);
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 25,
+                theme: "grid",
+                styles: { fontSize: 10, cellPadding: 2 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto",
+                columnStyles: { 0: { cellWidth: 50 } } // Wider feature column for readability
+            });
+
+            // Add footer with date
+            doc.setFontSize(10);
+            doc.text(`Generated on ${new Date().toLocaleString()}`, 14, doc.internal.pageSize.height - 10);
+
+            doc.save("Overall_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>
