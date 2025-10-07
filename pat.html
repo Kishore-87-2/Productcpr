@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Comparison</title>
+    <!-- Include jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dropdowns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .comparison-result {
+            margin-top: 20px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Comparison Tool</h1>
+        <div class="dropdowns">
+            <div>
+                <label for="product">Select Product:</label>
+                <select id="product">
+                    <option value="Sonel PAT 95">Sonel PAT 95</option>
+                    <option value="Sonel PAT 96">Sonel PAT 96</option>
+                    <option value="Sonel PAT -10">Sonel PAT -10</option>
+                    <option value="Sonel PAT -2E">Sonel PAT -2E</option>
+                    <option value="Sonel PAT -2">Sonel PAT -2</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor1">Select Competitor 1:</label>
+                <select id="competitor1">
+                    <option value="None">None</option>
+                    <option value="Sonel PAT 95">Sonel PAT 95</option>
+                    <option value="Sonel PAT 96">Sonel PAT 96</option>
+                    <option value="Sonel PAT -10">Sonel PAT -10</option>
+                    <option value="Sonel PAT -2E">Sonel PAT -2E</option>
+                    <option value="Sonel PAT -2">Sonel PAT -2</option>
+                    <option value="Fluke 6500-2">Fluke 6500-2</option>
+                    <option value="Fluke 6200">Fluke 6200</option>
+                    <option value="Megger PAT 250">Megger PAT 250</option>
+                    <option value="Megger PAT 120">Megger PAT 120</option>
+                    <option value="Megger PAT 150">Megger PAT 150</option>
+                    <option value="Megger PAT 300">Megger PAT 300</option>
+                    <option value="Megger PAT 450">Megger PAT 450</option>
+                </select>
+            </div>
+            <div>
+                <label for="competitor2">Select Competitor 2:</label>
+                <select id="competitor2">
+                    <option value="None">None</option>
+                    <option value="Sonel PAT 95">Sonel PAT 95</option>
+                    <option value="Sonel PAT 96">Sonel PAT 96</option>
+                    <option value="Sonel PAT -10">Sonel PAT -10</option>
+                    <option value="Sonel PAT -2E">Sonel PAT -2E</option>
+                    <option value="Sonel PAT -2">Sonel PAT -2</option>
+                    <option value="Fluke 6500-2">Fluke 6500-2</option>
+                    <option value="Fluke 6200">Fluke 6200</option>
+                    <option value="Megger PAT 250">Megger PAT 250</option>
+                    <option value="Megger PAT 120">Megger PAT 120</option>
+                    <option value="Megger PAT 150">Megger PAT 150</option>
+                    <option value="Megger PAT 300">Megger PAT 300</option>
+                    <option value="Megger PAT 450">Megger PAT 450</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="compareSelectedProducts()">Compare Selected</button>
+            <button onclick="compareAllProducts()">Compare All</button>
+            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
+            <button onclick="exportAllToPDF()">Export All to PDF</button>
+        </div>
+
+        <div id="comparisonResult" class="comparison-result"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            "Sonel PAT 95": {
+                "Earth-bond test currents": "I = 200 mA / 10 A / 25 A up to 19.99 ohm from 1 mohm from ±(3% m.v. + 4 digits)",
+                "Insulation test voltages": "1000 V / 599.9 Mohm / 1 kohm / ±(5% m.v. + 8 digits)",
+                "Leakage test method & ranges": "19.9 mA / 0.01 mA / ±(5% m.v. + 2 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±(2% m.v. + 2 digits) Tripping current: 30 mA / 0.1 mA / ±5% Iδn",
+                "Voltage Measurement": "265 V / 0.1 V / ±(2% m.v. + 2 digits)",
+                "Frequency Measurement": "65.0 Hz / 0.1 Hz / ±(2% m.v. + 2 digits)",
+                "Display": "LCD 5” 1280 x 720 px",
+                "Memory / Connectivity": "9999 results / USB-B, Bluetooth, Wi-Fi, LAN",
+                "Standards": "EN 50678, EN 50699, ISO 9001, ISO 14001, ISO 45001, EN IEC 61326-1",
+                "Apparent power S": "3.99 kVA / 1 VA / ±(5% m.v. + 3 digits)",
+                "Active power P": "3.99 kW / 1 W / ±(5% m.v. + 3 digits)",
+                "Reactive power Q": "3.99 kvar / 1 var / ±(5% m.v. + 3 digits)",
+                "Welding machine testing": "No"
+            },
+            "Sonel PAT 96": {
+                "Earth-bond test currents": "I = 200 mA / 10 A / 25 A up to 19.99 ohm from 1 mohm from ±(3% m.v. + 4 digits)",
+                "Insulation test voltages": "1000 V / 599.9 Mohm / 1 kohm / ±(5% m.v. + 8 digits)",
+                "Leakage test method & ranges": "19.9 mA / 0.01 mA / ±(5% m.v. + 2 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±(2% m.v. + 2 digits) Tripping current: 30 mA / 0.1 mA / ±5% Iδn",
+                "Voltage Measurement": "265 V / 0.1 V / ±(2% m.v. + 2 digits)",
+                "Frequency Measurement": "65.0 Hz / 0.1 Hz / ±(2% m.v. + 2 digits)",
+                "Display": "LCD 5” 1280 x 720 px",
+                "Memory / Connectivity": "9999 results / USB-B, Bluetooth, Wi-Fi, LAN",
+                "Standards": "EN 50678, EN 50699, ISO 9001, ISO 14001, ISO 45001, EN IEC 61326-1",
+                "Apparent power S": "3.99 kVA / 1 VA / ±(5% m.v. + 3 digits)",
+                "Active power P": "3.99 kW / 1 W / ±(5% m.v. + 3 digits)",
+                "Reactive power Q": "3.99 kvar / 1 var / ±(5% m.v. + 3 digits)",
+                "Welding machine testing": "Yes"
+            },
+            "Sonel PAT -10": {
+                "Earth-bond test currents": "NA",
+                "Insulation test voltages": "500 V / 99.9 Mohm / 0.01 Mohm / ±(5% m.v. + 8 digits)",
+                "Leakage test method & ranges": "4.999 mA / 0.001 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±(2% m.v. + 2 digits)",
+                "Voltage Measurement": "265 V / 0.1 V / ±(2% m.v. + 2 digits)",
+                "Frequency Measurement": "65.0 Hz / 0.1 Hz / ±(2% m.v. + 2 digits)",
+                "Display": "LCD 3.5 inch",
+                "Memory / Connectivity": "990 Cells / USB, WI-FI",
+                "Standards": "EN 50678, EN 50699, ISO 9001, ISO 14001, ISO 45001, EN IEC 61326-1",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Sonel PAT -2E": {
+                "Earth-bond test currents": "NA",
+                "Insulation test voltages": "500 V / 99.9 Mohm / 0.01 Mohm / ±(5% m.v. + 8 digits)",
+                "Leakage test method & ranges": "4.999 mA / 0.001 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±(2% m.v. + 2 digits)",
+                "Voltage Measurement": "265 V / 0.1 V / ±(2% m.v. + 2 digits)",
+                "Frequency Measurement": "65.0 Hz / 0.1 Hz / ±(2% m.v. + 2 digits)",
+                "Display": "LCD 3.5 inch",
+                "Memory / Connectivity": "990 Cells / USB, WI-FI",
+                "Standards": "EN 50678, EN 50699, ISO 9001, ISO 14001, ISO 45001, EN IEC 61326-1",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Sonel PAT -2": {
+                "Earth-bond test currents": "NA",
+                "Insulation test voltages": "NA",
+                "Leakage test method & ranges": "4.999 mA / 0.001 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±(2% m.v. + 2 digits)",
+                "Voltage Measurement": "NA",
+                "Frequency Measurement": "NA",
+                "Display": "LCD 3.5 inch",
+                "Memory / Connectivity": "990 Cells / USB, WI-FI",
+                "Standards": "EN 50678, EN 50699, ISO 9001, ISO 14001, ISO 45001, EN IEC 61326-1",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Fluke 6500-2": {
+                "Earth-bond test currents": "I=200 mA / 10 A / 25 A Upto 19.99 ohm ±(5% + 4 counts)",
+                "Insulation test voltages": "500 V / 299 Mohm / From ±(5% + 2 counts) to ±(10% + 2 counts)",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(4% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±(10%) Tripping current: 30 mA / NA / ±5%",
+                "Voltage Measurement": "NA",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "EN61010, IEC 60529, IEC 61326-1, IEC 61326-2-2, IEC 61557",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Fluke 6200": {
+                "Earth-bond test currents": "I=200 mA / 25 A Upto 19.99 ohm ±(5% + 4 counts)",
+                "Insulation test voltages": "500 V / 299 Mohm / From ±(5% + 2 counts) to ±(10% + 2 counts)",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(4% m.v. + 3 digits)",
+                "RCD / PRCD testing": "NA",
+                "Voltage Measurement": "NA",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "EN61557-1: 1997, EN61557-2: 1997, EN61557-4: 1997, EN61557-6: 1997",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Megger PAT 250": {
+                "Earth-bond test currents": "I= 200 mA / 50 mA Up to 19.99 ohm from 10 m ohm",
+                "Insulation test voltages": "1000 V / 99.99 M ohm / 0.1M ohm / 3%",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 200 ms / 1 ms / ±9%",
+                "Voltage Measurement": "300 V AC / 0.1 V / 3%",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "IEC 61326-1, IEC 61326-2-2, EN 50678, EN 50699",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Megger PAT 120": {
+                "Earth-bond test currents": "I= 200 mA / 50 mA Up to 19.99 ohm from 10 m ohm",
+                "Insulation test voltages": "500 V / 99.99 M ohm / 0.1M ohm / 3%",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "NA",
+                "Voltage Measurement": "300 V AC / 0.1 V / 3%",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "IEC 61326-1, IEC 61326-2-2, EN 50678, EN 50699",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Megger PAT 150": {
+                "Earth-bond test currents": "I= 200 mA / 50 mA Up to 19.99 ohm from 10 m ohm",
+                "Insulation test voltages": "500 V / 99.99 M ohm / 0.1M ohm / 3%",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 200 ms / 1 ms / ±9%",
+                "Voltage Measurement": "300 V AC / 0.1 V / 3%",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "IEC 61326-1, IEC 61326-2-2, EN 50678, EN 50699",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Megger PAT 300": {
+                "Earth-bond test currents": "19.99 ohm",
+                "Insulation test voltages": "500 V / 99.99 M ohm / 0.1M ohm / 3%",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "Tripping time: 300 ms / 1 ms / ±9%",
+                "Voltage Measurement": "NA",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "IEC 61326-1, IEC 61326-2-2, EN 50678, EN 50699",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "NA"
+            },
+            "Megger PAT 450": {
+                "Earth-bond test currents": "19.99 ohm",
+                "Insulation test voltages": "Tripping time: 200 ms / 1 ms / ±9%",
+                "Leakage test method & ranges": "19.99 mA / 0.01 mA / ±(5% m.v. + 3 digits)",
+                "RCD / PRCD testing": "NA",
+                "Voltage Measurement": "NA",
+                "Frequency Measurement": "NA",
+                "Display": "LCD",
+                "Memory / Connectivity": "Available",
+                "Standards": "IEC 61010-1, IEC 61326-1, IEC 61326-2-2",
+                "Apparent power S": "NA",
+                "Active power P": "NA",
+                "Reactive power Q": "NA",
+                "Welding machine testing": "Tripping time: 300 ms / 1 ms / ±(2% m.v. + 2 digits) Tripping current: 30 mA / 0.1 mA / ±5% "
+            }
+        };
+
+        // Function to compare selected products
+        function compareSelectedProducts() {
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>${product}</th>
+            `;
+
+            // Add competitor columns only if not "None"
+            if (competitor1 !== "None") {
+                tableHTML += `<th>${competitor1}</th>`;
+            }
+            if (competitor2 !== "None") {
+                tableHTML += `<th>${competitor2}</th>`;
+            }
+
+            tableHTML += `</tr>`;
+
+            Object.keys(products[product]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        <td>${products[product][feature]}</td>
+                `;
+                
+                // Add competitor data only if not "None"
+                if (competitor1 !== "None") {
+                    tableHTML += `<td>${products[competitor1][feature]}</td>`;
+                }
+                if (competitor2 !== "None") {
+                    tableHTML += `<td>${products[competitor2][feature]}</td>`;
+                }
+                
+                tableHTML += `</tr>`;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to compare all products
+        function compareAllProducts() {
+            const resultDiv = document.getElementById("comparisonResult");
+            let tableHTML = `
+                <h3>Comparison Result:</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
+                    </tr>
+            `;
+
+            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
+                tableHTML += `
+                    <tr>
+                        <td>${feature}</td>
+                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</table>`;
+            resultDiv.innerHTML = tableHTML;
+        }
+
+        // Function to export selected comparison to PDF
+        function exportSelectedToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const product = document.getElementById("product").value;
+            const competitor1 = document.getElementById("competitor1").value;
+            const competitor2 = document.getElementById("competitor2").value;
+
+            // Prepare headers and rows
+            const headers = ["Feature", product];
+            const rows = Object.keys(products[product]).map(feature => {
+                const row = [feature, products[product][feature]];
+                
+                // Add competitor data only if not "None"
+                if (competitor1 !== "None") {
+                    row.push(products[competitor1][feature]);
+                }
+                if (competitor2 !== "None") {
+                    row.push(products[competitor2][feature]);
+                }
+                
+                return row;
+            });
+
+            // Add competitor headers only if not "None"
+            if (competitor1 !== "None") {
+                headers.push(competitor1);
+            }
+            if (competitor2 !== "None") {
+                headers.push(competitor2);
+            }
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+                margin: { horizontal: 10 },
+                tableWidth: "auto"
+            });
+
+            doc.save("Selected_Comparison.pdf");
+        }
+
+        // Function to export all comparison to PDF
+        function exportAllToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape'); // Use landscape orientation for more width
+
+            // Add table to PDF
+            const headers = ["Feature", ...Object.keys(products)];
+            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
+                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+            });
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: "grid",
+                styles: { 
+                    fontSize: 6, // Further reduced font size
+                    cellPadding: 2, // Reduced padding
+                    overflow: 'linebreak', // Handle long text
+                    minCellHeight: 5 // Reduced minimum cell height
+                },
+                headStyles: { 
+                    fillColor: [41, 128, 185], 
+                    textColor: [255, 255, 255],
+                    fontSize: 7 // Slightly larger font for headers
+                },
+                margin: { horizontal: 5 }, // Reduced margins
+                tableWidth: "auto"
+            });
+
+            doc.save("All_Comparison.pdf");
+        }
+    </script>
+</body>
+</html>
