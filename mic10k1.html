@@ -9,6 +9,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 20px;
             position: relative;
         }
         
@@ -33,21 +34,26 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            font-size: 14px;
         }
 
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
+            vertical-align: top;
         }
 
         th {
             background-color: #f4f4f4;
+            font-weight: bold;
         }
 
         select {
             padding: 8px;
-            margin: 10px;
+            margin: 10px 5px;
+            font-size: 14px;
+            min-width: 200px;
         }
         
         .compare-all-btn {
@@ -64,28 +70,61 @@
         .compare-all-btn:hover {
             background-color: #218838;
         }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-    <button class="export-btn" onclick="exportToPDF()">Export</button>
+    <div class="container">
+        <button class="export-btn" onclick="exportToPDF()">Export to PDF</button>
 
-    <h1>Product Comparison</h1>
+        <h1>Product Comparison</h1>
 
-    <label for="productSelect">Select Product:</label>
-    <select id="productSelect" onchange="updateCompetitorOptions()">
-        <option value="Sonel MIC-10K1">Sonel MIC-10K1</option>
-        
-    </select>
+        <div class="controls">
+            <div>
+                <label for="productSelect">Main Product:</label>
+                <select id="productSelect" onchange="updateCompetitorOptions()">
+                    <option value="Sonel MIC-10K1">Sonel MIC-10K1</option>
+                </select>
+            </div>
 
-    <label for="competitorSelect">Select Competitor 1:</label>
-    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+            <div>
+                <label for="competitorSelect">Competitor 1:</label>
+                <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+            </div>
 
-    <label for="competitorSelect2">Select Competitor 2:</label>
-    <select id="competitorSelect2" onchange="loadComparisonTable()"></select>
+            <div>
+                <label for="competitorSelect2">Competitor 2:</label>
+                <select id="competitorSelect2" onchange="loadComparisonTable()">
+                    <option value="none">None</option>
+                </select>
+            </div>
 
-    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
+            <button class="compare-all-btn" onclick="compareAllProducts()">Compare All</button>
+        </div>
 
-    <table id="comparisonTable"></table>
+        <table id="comparisonTable"></table>
+    </div>
 
     <script>
         const productComparisonData = {
@@ -180,11 +219,15 @@
             const selectedCompetitor = document.getElementById("competitorSelect").value;
             const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
 
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th><th>${selectedCompetitor2}</th></tr>`;
-
             const productData = productComparisonData[selectedProduct];
-            const competitor1Data = productComparisonData[selectedCompetitor] || {};
-            const competitor2Data = productComparisonData[selectedCompetitor2] || {};
+            const competitor1Data = selectedCompetitor && selectedCompetitor !== "none" ? productComparisonData[selectedCompetitor] : null;
+            const competitor2Data = selectedCompetitor2 !== "none" ? productComparisonData[selectedCompetitor2] : null;
+
+            // Header
+            let tableContent = `<tr><th style="width: 30%;">Feature</th><th>${selectedProduct}</th>`;
+            if (competitor1Data) tableContent += `<th>${selectedCompetitor}</th>`;
+            if (competitor2Data) tableContent += `<th>${selectedCompetitor2}</th>`;
+            tableContent += `</tr>`;
 
             const features = [
                 "Measuring Voltage",
@@ -203,11 +246,11 @@
 
             features.forEach(feature => {
                 tableContent += `<tr>
-                    <td>${feature}</td>
-                    <td>${productData[feature] || "NA"}</td>
-                    <td>${competitor1Data[feature] || "NA"}</td>
-                    <td>${competitor2Data[feature] || "NA"}</td>
-                </tr>`;
+                    <td><strong>${feature}</strong></td>
+                    <td>${productData[feature] || "NA"}</td>`;
+                if (competitor1Data) tableContent += `<td>${competitor1Data[feature] || "NA"}</td>`;
+                if (competitor2Data) tableContent += `<td>${competitor2Data[feature] || "NA"}</td>`;
+                tableContent += `</tr>`;
             });
 
             document.getElementById("comparisonTable").innerHTML = tableContent;
@@ -215,12 +258,27 @@
 
         function updateCompetitorOptions() {
             const selectedProduct = document.getElementById("productSelect").value;
-            const competitorSelect = document.getElementById("competitorSelect");
-            const competitorSelect2 = document.getElementById("competitorSelect2");
             const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
 
-            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-            competitorSelect2.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
+            const competitorSelect = document.getElementById("competitorSelect");
+            const competitorSelect2 = document.getElementById("competitorSelect2");
+
+            // Competitor 1
+            competitorSelect.innerHTML = competitors.map(comp => 
+                `<option value="${comp}">${comp}</option>`
+            ).join("");
+
+            // Competitor 2: None + others
+            competitorSelect2.innerHTML = `<option value="none">None</option>` + 
+                competitors.map(comp => 
+                    `<option value="${comp}">${comp}</option>`
+                ).join("");
+
+            // Auto-select first competitor if none selected
+            if (!competitorSelect.value) competitorSelect.selectedIndex = 0;
+            if (competitorSelect2.value === "none" && competitorSelect2.options.length > 1) {
+                // default: none
+            }
 
             loadComparisonTable();
         }
@@ -228,16 +286,14 @@
         function compareAllProducts() {
             const allProducts = Object.keys(productComparisonData);
             let tableContent = `<tr><th>Feature</th>`;
-            allProducts.forEach(product => {
-                tableContent += `<th>${product}</th>`;
-            });
+            allProducts.forEach(p => tableContent += `<th>${p}</th>`);
             tableContent += `</tr>`;
 
             const firstProduct = allProducts[0];
             for (let feature in productComparisonData[firstProduct]) {
-                tableContent += `<tr><td>${feature}</td>`;
-                allProducts.forEach(product => {
-                    tableContent += `<td>${productComparisonData[product][feature]}</td>`;
+                tableContent += `<tr><td><strong>${feature}</strong></td>`;
+                allProducts.forEach(p => {
+                    tableContent += `<td>${productComparisonData[p][feature] || "NA"}</td>`;
                 });
                 tableContent += `</tr>`;
             }
@@ -247,21 +303,35 @@
 
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
+            const table = document.getElementById("comparisonTable");
 
-            html2canvas(document.getElementById("comparisonTable")).then(canvas => {
-                let pdf = new jsPDF("l", "mm", "a4");
-                let imgData = canvas.toDataURL("image/png");
+            html2canvas(table, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL("image/png");
+                const pdf = new jsPDF("l", "mm", "a4");
+                const imgWidth = 280;
+                const pageHeight = 295;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
 
-                let imgWidth = 280;
-                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let position = 20;
+                pdf.setFontSize(16);
+                pdf.text("Product Comparison Report", 14, 15);
 
-                pdf.text("Product Comparison", 14, 10);
-                pdf.addImage(imgData, "PNG", 10, 15, imgWidth, imgHeight);
+                pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
                 pdf.save("product-comparison.pdf");
             });
         }
 
-        // Initial setup
+        // Initialize
         updateCompetitorOptions();
     </script>
 </body>
