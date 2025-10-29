@@ -4,71 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Comparison</title>
-    <!-- Include jsPDF library for PDF export -->
+    <!-- jsPDF + autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* CSS Styling */
+        :root {
+            --blue: #007bff;
+            --light-blue: #e7f3ff;
+            --white: #ffffff;
+            --border-blue: #cce5ff;
+            --text: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f8fbff;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            color: var(--text);
         }
 
         .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1);
             width: 100%;
-            max-width: 1200px;
-            text-align: center;
+            max-width: 1400px;
+            border: 1px solid var(--border-blue);
         }
 
         h1 {
-            margin-bottom: 20px;
-            color: #333;
+            margin: 0 0 25px 0;
+            color: var(--blue);
+            font-size: 26px;
+            text-align: center;
+            font-weight: 600;
         }
 
         .dropdowns {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 8px 0 6px;
             font-weight: bold;
+            color: var(--blue);
+            font-size: 15px;
         }
 
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 11px;
+            border: 1.5px solid var(--blue);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: var(--white);
+            color: var(--text);
+            transition: border 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
         }
 
         .buttons {
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 11px 20px;
             border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: #fff;
+            border-radius: 8px;
+            background-color: var(--blue);
+            color: var(--white);
             cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s;
         }
 
         button:hover {
@@ -77,62 +107,74 @@
 
         .comparison-result {
             margin-top: 20px;
-            text-align: left;
             overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid var(--border-blue);
+            background-color: var(--light-blue);
+            padding: 12px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            font-size: 14px;
+            background-color: var(--white);
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 14px;
+            border: 1px solid var(--border-blue);
             text-align: left;
+            vertical-align: top;
         }
 
         th {
-            background-color: #f4f4f4;
+            background-color: var(--blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f5fbff;
+        }
+
+        h3 {
+            margin: 0 0 15px 0;
+            color: var(--blue);
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .dropdowns { grid-template-columns: 1fr; }
+            .buttons { flex-direction: column; align-items: center; }
+            button { width: 100%; max-width: 300px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product Comparison Tool</h1>
+        <h1>Grounding & TFR Comparison</h1>
+
         <div class="dropdowns">
             <div>
-                <label for="product">Select Product:</label>
-                <select id="product">
+                <label for="product">Main Product:</label>
+                <select id="product" onchange="updateCompetitorOptions()">
                     <option value="Sonel MRU-200">Sonel MRU-200</option>
                     <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
                 </select>
             </div>
+
             <div>
-                <label for="competitor1">Select Competitor 1:</label>
-                <select id="competitor1">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                    <option value="Taurus TFR 54 HF">Taurus TFR 54 HF</option>
-                    <option value="Metrel MI 3290 GX">Metrel MI 3290 GX</option>
-                    <option value="Metrel MI 3290 GF">Metrel MI 3290 GF</option>
-                    <option value="Metrel MI 3290 GL">Metrel MI 3290 GL</option>
-                    <option value="Metrel MI 3290 GP">Metrel MI 3290 GP</option>
-                    <option value="Scope -MegaBras Tm 25 t">Scope -MegaBras Tm 25 t</option>
-                </select>
+                <label for="competitor1">Competitor 1:</label>
+                <select id="competitor1" onchange="compareSelectedProducts()"></select>
             </div>
+
             <div>
-                <label for="competitor2">Select Competitor 2:</label>
-                <select id="competitor2">
-                    <option value="Sonel MRU-200">Sonel MRU-200</option>
-                    <option value="Sonel MRU-200 GPS">Sonel MRU-200 GPS</option>
-                    <option value="Taurus TFR 54 HF">Taurus TFR 54 HF</option>
-                    <option value="Metrel MI 3290 GX">Metrel MI 3290 GX</option>
-                    <option value="Metrel MI 3290 GF">Metrel MI 3290 GF</option>
-                    <option value="Metrel MI 3290 GL">Metrel MI 3290 GL</option>
-                    <option value="Metrel MI 3290 GP">Metrel MI 3290 GP</option>
-                    <option value="Scope -MegaBras Tm 25 t">Scope -MegaBras Tm 25 t</option>
+                <label for="competitor2">Competitor 2:</label>
+                <select id="competitor2" onchange="compareSelectedProducts()">
+                    <option value="none">None</option>
                 </select>
             </div>
         </div>
@@ -148,7 +190,6 @@
     </div>
 
     <script>
-        // Product Data
         const products = {
             "Sonel MRU-200": {
                 "3p Method": "Available",
@@ -192,7 +233,6 @@
                 "TFR OUTPUT": "250V &20mA",
                 "impulse method": "NA",
                 "Memory": "Available",
-                "Measurement of leakage": "NA",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             },
@@ -216,14 +256,13 @@
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Leakage current measurement": "NA",
+                "Measurement of leakage": "NA",
                 "Frequency of the measurement current": "15 kHz",
                 "Measurement current": "> 220 mA",
                 "TFR": "Yes",
                 "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "NA",
                 "Memory": "Available",
-                "Measurement of leakage": "NA",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             },
@@ -232,14 +271,13 @@
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
+                "Measurement of leakage": "49.9 A",
                 "Frequency of the measurement current": "25 kHz",
                 "Measurement current": "> 220 mA",
                 "TFR": "Yes",
                 "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "Available",
                 "Memory": "Available",
-                "Measurement of leakage": "49.9 A",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             },
@@ -248,14 +286,13 @@
                 "4p Method": "Available",
                 "3p + clamps Method": "Available",
                 "Double Clamp Method": "Available",
-                "Leakage current measurement": "Available",
+                "Measurement of leakage": "NA",
                 "Frequency of the measurement current": "15 kHz",
                 "Measurement current": "> 220 mA",
                 "TFR": "Yes",
                 "TFR OUTPUT": "40 VAC &>220 mA",
                 "impulse method": "NA",
                 "Memory": "Available",
-                "Measurement of leakage": "NA",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             },
@@ -264,130 +301,157 @@
                 "4p Method": "NA",
                 "3p + clamps Method": "NA",
                 "Double Clamp Method": "NA",
-                "Leakage current measurement": "NA",
+                "Measurement of leakage": "NA",
                 "Frequency of the measurement current": "25 kHz",
                 "Measurement current": "20 mA",
                 "TFR": "Yes",
                 "TFR OUTPUT": "Yes",
                 "impulse method": "NA",
                 "Memory": "Yes",
-                "Measurement of leakage": "NA",
                 "GPS function": "NA",
                 "Battery": "Rechargeable battery"
             }
         };
 
-        // Function to compare selected products
+        function updateCompetitorOptions() {
+            const mainProduct = document.getElementById("product").value;
+            const comp1 = document.getElementById("competitor1");
+            const comp2 = document.getElementById("competitor2");
+
+            const available = Object.keys(products).filter(p => p !== mainProduct);
+
+            comp1.innerHTML = available.map(p => `<option value="${p}">${p}</option>`).join("");
+            if (!comp1.value && available.length > 0) comp1.selectedIndex = 0;
+
+            comp2.innerHTML = `<option value="none">None</option>` + 
+                available.map(p => `<option value="${p}">${p}</option>`).join("");
+
+            compareSelectedProducts();
+        }
+
         function compareSelectedProducts() {
             const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+            const comp1 = document.getElementById("competitor1").value;
+            const comp2 = document.getElementById("competitor2").value;
+            const hasComp2 = comp2 !== "none";
 
             const resultDiv = document.getElementById("comparisonResult");
+
+            let headers = [`<th>Feature</th><th>${product}</th>`];
+            if (hasComp2) {
+                headers.push(`<th>${comp1}</th><th>${comp2}</th>`);
+            } else {
+                headers.push(`<th>${comp1}</th>`);
+            }
+
             let tableHTML = `
-                <h3>Comparison Result:</h3>
+                <h3>Comparison Result</h3>
                 <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
+                    <tr>${headers.join("")}</tr>
             `;
 
             Object.keys(products[product]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
-                `;
+                tableHTML += `<tr>
+                    <td><strong>${feature}</strong></td>
+                    <td>${products[product][feature]}</td>
+                    <td>${products[comp1][feature]}</td>`;
+                if (hasComp2) tableHTML += `<td>${products[comp2][feature]}</td>`;
+                tableHTML += `</tr>`;
             });
 
             tableHTML += `</table>`;
             resultDiv.innerHTML = tableHTML;
         }
 
-        // Function to compare all products
         function compareAllProducts() {
             const resultDiv = document.getElementById("comparisonResult");
+            const allProducts = Object.keys(products);
+
             let tableHTML = `
-                <h3>Comparison Result:</h3>
+                <h3>All Products Comparison</h3>
                 <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
+                    <tr><th>Feature</th>${allProducts.map(p => `<th>${p}</th>`).join("")}</tr>
             `;
 
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
-                    </tr>
-                `;
+            const firstProduct = allProducts[0];
+            Object.keys(products[firstProduct]).forEach(feature => {
+                tableHTML += `<tr>
+                    <td><strong>${feature}</strong></td>
+                    ${allProducts.map(p => `<td>${products[p][feature]}</td>`).join("")}
+                </tr>`;
             });
 
             tableHTML += `</table>`;
             resultDiv.innerHTML = tableHTML;
         }
 
-        // Function to export selected comparison to PDF
         function exportSelectedToPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF('l', 'mm', 'a4');
 
             const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
+            const comp1 = document.getElementById("competitor1").value;
+            const comp2 = document.getElementById("competitor2").value;
+            const hasComp2 = comp2 !== "none";
 
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
+            const headers = ["Feature", product, comp1];
+            const rows = [];
+
+            if (hasComp2) headers.push(comp2);
+
+            Object.keys(products[product]).forEach(feature => {
+                const row = [feature, products[product][feature], products[comp1][feature]];
+                if (hasComp2) row.push(products[comp2][feature]);
+                rows.push(row);
             });
+
+            doc.setFontSize(18);
+            doc.setTextColor(0, 123, 255);
+            doc.text("Selected Product Comparison", 14, 15);
 
             doc.autoTable({
                 head: [headers],
                 body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
+                startY: 25,
+                theme: 'grid',
+                styles: { fontSize: 10, cellPadding: 5 },
+                headStyles: { fillColor: [0, 123, 255], textColor: 255, fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [240, 248, 255] },
+                columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } }
             });
 
-            doc.save("Selected_Comparison.pdf");
+            doc.save(`Selected_${product.replace(/ /g, '_')}.pdf`);
         }
 
-        // Function to export all comparison to PDF
         function exportAllToPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF('l', 'mm', 'a4');
 
-            // Add table to PDF
             const headers = ["Feature", ...Object.keys(products)];
             const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
+                return [feature, ...Object.keys(products).map(p => products[p][feature])];
             });
+
+            doc.setFontSize(18);
+            doc.setTextColor(0, 123, 255);
+            doc.text("All Products Comparison", 14, 15);
 
             doc.autoTable({
                 head: [headers],
                 body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
+                startY: 25,
+                theme: 'grid',
+                styles: { fontSize: 8.5, cellPadding: 3.5 },
+                headStyles: { fillColor: [0, 123, 255], textColor: 255 },
+                alternateRowStyles: { fillColor: [240, 248, 255] },
+                columnStyles: { 0: { fontStyle: 'bold' } }
             });
 
             doc.save("All_Comparison.pdf");
         }
+
+        // Initialize
+        window.onload = updateCompetitorOptions;
     </script>
 </body>
 </html>
