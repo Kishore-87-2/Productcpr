@@ -37,7 +37,7 @@ function initTimer() {
     });
 
     // Check idle time every 2 seconds for testing
-    setInterval(checkIdleTime, 10000);
+    setInterval(checkIdleTime, 100000);
 }
 
 // Start the timer when the page loads
