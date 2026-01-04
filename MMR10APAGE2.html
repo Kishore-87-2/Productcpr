@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Selection Page</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .floating-btn {
+            width: 200px;
+            height: 140px;
+            background-color: #005baa;
+            border: 2px solid #003b75;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+            transition: all 0.3s ease;
+        }
+
+        .floating-btn:hover {
+            background-color: #004a8f;
+            transform: translateY(-3px) scale(1.03);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+        }
+
+        .modal-content {
+            background: #fff;
+            margin: 6% auto;
+            padding: 25px;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .options-container {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .option-btn {
+            height: 55px;
+            background-color: #005baa;
+            border: 2px solid #003b75;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .option-btn:hover {
+            background-color: #004a8f;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="button-container">
+        <button class="floating-btn" id="comparisonBtn">
+            Product Comparison
+        </button>
+
+        <button class="floating-btn" id="lockingBtn">
+            Locking Spec
+        </button>
+    </div>
+
+    <!-- Locking Spec Modal -->
+    <div id="lockingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Locking Specification</h2>
+
+            <div class="options-container">
+                <button class="option-btn" data-pdf="MMR-620.pdf">Sonel MMR-620</button>
+                <button class="option-btn" data-pdf="MMR-630.pdf">Sonel MMR-630</button>
+                <button class="option-btn" data-pdf="MMR-640.pdf">Sonel MMR-640</button>
+                <button class="option-btn" data-pdf="MMR-650.pdf">Sonel MMR-650</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const comparisonBtn = document.getElementById("comparisonBtn");
+        const lockingBtn = document.getElementById("lockingBtn");
+        const lockingModal = document.getElementById("lockingModal");
+        const closeBtn = document.querySelector(".close");
+        const optionButtons = document.querySelectorAll(".option-btn");
+
+        // Redirect to comparison page
+        comparisonBtn.addEventListener("click", () => {
+            window.location.href = "Micro Ohm Meter 10A.html";
+        });
+
+        // Open modal
+        lockingBtn.addEventListener("click", () => {
+            lockingModal.style.display = "block";
+        });
+
+        // Open PDF dynamically
+        optionButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const pdfFile = btn.getAttribute("data-pdf");
+                window.open(pdfFile, "_blank");
+            });
+        });
+
+        // Close modal
+        closeBtn.addEventListener("click", () => {
+            lockingModal.style.display = "none";
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === lockingModal) {
+                lockingModal.style.display = "none";
+            }
+        });
+    </script>
+
+</body>
+</html>
