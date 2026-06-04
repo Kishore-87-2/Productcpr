@@ -3,263 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Comparison</title>
+    <title>Sonel Sonel vs Competitors</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+   
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #4EC0E0, #2A9BC9);
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
             position: relative;
         }
-        
-        .export-btn {
+        .home-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.95);
+            color: #2A9BC9;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
         }
+        .home-btn:hover { background: white; }
 
-        .export-btn:hover {
-            background-color: #0056b3;
+        h1 { font-size: 28px; font-weight: 600; margin: 0; }
+        .controls { padding: 30px; display: flex; flex-wrap: wrap; gap: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .select-group { flex: 1; min-width: 280px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        select { width: 100%; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .buttons { padding: 25px 30px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; background: white; }
+        button {
+            padding: 12px 24px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px;
+            cursor: pointer; min-width: 160px;
         }
+        .btn-compare { background: #4EC0E0; color: white; }
+        .btn-all { background: #28a745; color: white; }
+        .btn-export { background: #4EC0E0; color: white; }
+        .btn-clear { background: #6c757d; color: white; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        select {
-            padding: 8px;
-            margin: 10px;
-        }
-        
-        .compare-all-btn {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 15px;
-            border-radius: 5px;
-        }
-
-        .compare-all-btn:hover {
-            background-color: #218838;
-        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f1f3f5; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        #loading { padding: 40px; text-align: center; color: #666; font-size: 16px; }
     </style>
 </head>
 <body>
-    <button class="export-btn" onclick="exportToPDF()">Export</button>
+    <div class="container">
+        <header>
+            <a href="page2.html" class="home-btn">← Home</a>
+            <h1>Sonel vs Competitors</h1>
+        </header>
 
-    <h1>Product Comparison</h1>
+        <div class="controls">
+            <div class="select-group">
+                <label>Select Sonel Product:</label>
+                <select id="productSelect" onchange="updateCompetitorOptions()"></select>
+            </div>
+            <div class="select-group">
+                <label>Competitor 1:</label>
+                <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+            </div>
+            <div class="select-group">
+                <label>Competitor 2:</label>
+                <select id="competitorSelect2" onchange="loadComparisonTable()">
+                    <option value="None">None</option>
+                </select>
+            </div>
+        </div>
 
-    <label for="productSelect">Select Product:</label>
-    <select id="productSelect" onchange="updateCompetitorOptions()">
-        <option value="Sonel MIC-5005">Sonel MIC-5005</option>
-        <option value="Sonel MIC-5010">Sonel MIC-5010</option>
-    </select>
+        <div class="buttons">
+            <button class="btn-compare" onclick="loadComparisonTable()">Compare Selected</button>
+            <button class="btn-all" onclick="compareAllProducts()">Compare All</button>
+            <button class="btn-export" onclick="exportToPDF()">Export Selected</button>
+            <button class="btn-export" onclick="exportAllToPDF()">Export All</button>
+            <button class="btn-clear" onclick="clearSelection()">Clear Selection</button>
+        </div>
 
-    <label for="competitorSelect">Select Competitor 1:</label>
-    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
-
-    <label for="competitorSelect2">Select Competitor 2:</label>
-    <select id="competitorSelect2" onchange="loadComparisonTable()">
-        <option value="None">None</option>
-    </select>
-
-    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
-
-    <table id="comparisonTable"></table>
+        <div id="loading">Loading product data...</div>
+        <table id="comparisonTable"></table>
+    </div>
 
     <script>
-        const productComparisonData = {
-            "Sonel MIC-5005": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.2mA, 3mA",
-                "Resistance Range": "15.0 TΩ",
-                "Floors and walls Resistance measurement": "Available",
-                "Standard": "EN 61557, EN 61326-1",
-                "Capacitance measurement range": "49.99 μF",
-                "Measurement of leakage current range": "9.99mA",
-                "IP": "IP67",
-                "Remote control by phone": "Available",
-                "Data transmission": "USB, Bluetooth"
-            },
-            "Sonel MIC-5010": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.2mA, 3mA",
-                "Resistance Range": "15.0 TΩ",
-                "Floors and walls Resistance measurement": "Available",
-                "Standard": "EN 61557, EN 61326-1",
-                "Capacitance measurement range": "49.99 μF",
-                "Measurement of leakage current range": "9.99mA",
-                "IP": "IP67",
-                "Remote control by phone": "Available",
-                "Data transmission": "USB, Bluetooth"
-            },
-            "Fluke 1550C": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "2 mA",
-                "Resistance Range": "> 2 TΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "Available",
-                "Capacitance measurement range": "20.00 μF",
-                "Measurement of leakage current range": "2mA",
-                "IP": "IP40",
-                "Remote control by phone": "NA",
-                "Data transmission": "USB"
-            },
-            "Megger MIT515": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "3 mA",
-                "Resistance Range": "10 TΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "Capacitance measurement range": "10nF to 25μF",
-                "Measurement of leakage current range": "NA",
-                "IP": "IP65",
-                "Remote control by phone": "NA",
-                "Data transmission": "NA"
-            },
-            "Megger MIT525": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "3 mA",
-                "Resistance Range": "10 TΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "Capacitance measurement range": "10nF to 25μF",
-                "Measurement of leakage current range": "NA",
-                "IP": "IP65",
-                "Remote control by phone": "NA",
-                "Data transmission": "Available"
-            },
-            "Rishabh Insu 5Dt": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.2mA, 3mA",
-                "Resistance Range": "2 TΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "Available",
-                "Capacitance measurement range": "50μF",
-                "Measurement of leakage current range": "3mA",
-                "IP": "IP52",
-                "Remote control by phone": "NA",
-                "Data transmission": "USB, Bluetooth"
+        const DATA_URL = "https://script.google.com/macros/s/AKfycbzLaoWvcgb50lWuI0IG-o_d8EJIIcCQdlpxcg2bQXDg48pNENc64V63VBFH9TCCILHwkQ/exec";
+       
+        let productComparisonData = {};
+        let featuresOrder = [];
+        let sonelProducts = [];
+        let allProducts = [];
+
+        async function loadData() {
+            try {
+                const res = await fetch(DATA_URL);
+                const data = await res.json();
+                productComparisonData = data.products || {};
+                featuresOrder = data.features || [];
+                allProducts = Object.keys(productComparisonData);
+
+                sonelProducts = allProducts.filter(p => p.toLowerCase().includes("sonel"));
+                if (sonelProducts.length === 0) sonelProducts = allProducts;
+
+                populateSonelDropdown();
+                document.getElementById("loading").style.display = "none";
+            } catch (e) {
+                document.getElementById("loading").innerHTML = "❌ Failed to load data";
             }
-        };
+        }
 
-        function loadComparisonTable() {
-            const selectedProduct = document.getElementById("productSelect").value;
-            const selectedCompetitor = document.getElementById("competitorSelect").value;
-            const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
-
-            let tableContent = `<tr><th>Feature</th><th>${selectedProduct}</th><th>${selectedCompetitor}</th>`;
-            
-            if (selectedCompetitor2 !== "None") {
-                tableContent += `<th>${selectedCompetitor2}</th>`;
-            }
-            
-            tableContent += `</tr>`;
-
-            const features = [
-                "Measuring Voltage",
-                "Short Circuit Current",
-                "Resistance Range",
-                "Floors and walls Resistance measurement",
-                "Standard",
-                "Capacitance measurement range",
-                "Measurement of leakage current range",
-                "IP",
-                "Remote control by phone",
-                "Data transmission"
-            ];
-
-            features.forEach(feature => {
-                tableContent += `<tr>
-                    <td>${feature}</td>
-                    <td>${productComparisonData[selectedProduct][feature] || "NA"}</td>
-                    <td>${productComparisonData[selectedCompetitor][feature] || "NA"}</td>`;
-                
-                if (selectedCompetitor2 !== "None") {
-                    tableContent += `<td>${productComparisonData[selectedCompetitor2][feature] || "NA"}</td>`;
-                }
-                
-                tableContent += `</tr>`;
-            });
-
-            document.getElementById("comparisonTable").innerHTML = tableContent;
+        function populateSonelDropdown() {
+            const select = document.getElementById("productSelect");
+            select.innerHTML = sonelProducts.map(p => `<option value="${p}">${p}</option>`).join("");
+            updateCompetitorOptions();
         }
 
         function updateCompetitorOptions() {
-            const selectedProduct = document.getElementById("productSelect").value;
-            const competitorSelect = document.getElementById("competitorSelect");
-            const competitorSelect2 = document.getElementById("competitorSelect2");
-            const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
-
-            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-            
-            // Keep the "None" option and add other competitors
-            competitorSelect2.innerHTML = '<option value="None">None</option>' + 
-                competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-
+            const selectedMain = document.getElementById("productSelect").value;
+            const available = allProducts.filter(p => p !== selectedMain);
+            document.getElementById("competitorSelect").innerHTML = available.map(c => `<option value="${c}">${c}</option>`).join("");
+            document.getElementById("competitorSelect2").innerHTML = '<option value="None">None</option>' + available.map(c => `<option value="${c}">${c}</option>`).join("");
             loadComparisonTable();
         }
 
-        function compareAllProducts() {
-            const allProducts = Object.keys(productComparisonData);
-            let tableContent = `<tr><th>Feature</th>`;
-            allProducts.forEach(product => {
-                tableContent += `<th>${product}</th>`;
-            });
-            tableContent += `</tr>`;
+        function loadComparisonTable() {
+            const main = document.getElementById("productSelect").value;
+            const c1 = document.getElementById("competitorSelect").value;
+            const c2 = document.getElementById("competitorSelect2").value;
+            if (!main) return;
 
-            const firstProduct = allProducts[0];
-            for (let feature in productComparisonData[firstProduct]) {
-                tableContent += `<tr><td>${feature}</td>`;
-                allProducts.forEach(product => {
-                    tableContent += `<td>${productComparisonData[product][feature]}</td>`;
-                });
-                tableContent += `</tr>`;
+            let html = `<tr><th>Feature</th><th>${main}</th><th>${c1}</th>`;
+            if (c2 !== "None") html += `<th>${c2}</th>`;
+            html += `</tr>`;
+
+            featuresOrder.forEach(f => {
+                html += `<tr>
+                    <td><strong>${f}</strong></td>
+                    <td>${productComparisonData[main]?.[f] || "NA"}</td>
+                    <td>${productComparisonData[c1]?.[f] || "NA"}</td>`;
+                if (c2 !== "None") html += `<td>${productComparisonData[c2]?.[f] || "NA"}</td>`;
+                html += `</tr>`;
+            });
+            document.getElementById("comparisonTable").innerHTML = html;
+        }
+
+        function compareAllProducts() {
+            const products = Object.keys(productComparisonData);
+            let html = `<tr><th>Feature</th>`;
+            products.forEach(p => html += `<th>${p}</th>`);
+            html += `</tr>`;
+
+            featuresOrder.forEach(f => {
+                html += `<tr><td><strong>${f}</strong></td>`;
+                products.forEach(p => html += `<td>${productComparisonData[p]?.[f] || "NA"}</td>`);
+                html += `</tr>`;
+            });
+            document.getElementById("comparisonTable").innerHTML = html;
+        }
+
+        // ==================== UPDATED PDF - REDUCED CELL SIZE ====================
+        function exportToPDF() {
+            const table = document.getElementById("comparisonTable");
+            if (table.rows.length < 2) {
+                alert("Please generate a comparison first!");
+                return;
             }
 
-            document.getElementById("comparisonTable").innerHTML = tableContent;
-        }
-
-        function exportToPDF() {
             const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("l", "mm", "a4");
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const margin = 12;
+            let y = 20;
 
-            html2canvas(document.getElementById("comparisonTable")).then(canvas => {
-                let pdf = new jsPDF("l", "mm", "a4");
-                let imgData = canvas.toDataURL("image/png");
+            // Title
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(18);
+            pdf.text("Sonel Product Comparison", pageWidth / 2, y, { align: "center" });
+            y += 18;
 
-                let imgWidth = 280;
-                let imgHeight = (canvas.height * imgWidth) / canvas.width;
+            // Extract data
+            const headers = [];
+            const rows = [];
 
-                pdf.text("Product Comparison", 14, 10);
-                pdf.addImage(imgData, "PNG", 10, 15, imgWidth, imgHeight);
-                pdf.save("product-comparison.pdf");
+            for (let i = 0; i < table.rows[0].cells.length; i++) {
+                headers.push(table.rows[0].cells[i].textContent.trim());
+            }
+
+            for (let i = 1; i < table.rows.length; i++) {
+                const row = [];
+                for (let j = 0; j < table.rows[i].cells.length; j++) {
+                    let text = table.rows[i].cells[j].textContent.trim();
+                    text = text.replace(/Ω/g, "Ohm");
+                    row.push(text);
+                }
+                rows.push(row);
+            }
+
+            // ==================== REDUCED CELL SIZE ====================
+            const numCols = headers.length;
+            const featureWidth = pageWidth * 0.24;        // ← Further reduced (was 0.29)
+            const otherWidth = (pageWidth - margin * 2 - featureWidth) / (numCols - 1);
+            const colWidths = [featureWidth];
+            for (let i = 1; i < numCols; i++) colWidths.push(otherWidth);
+
+            // Header row (Model names) with wrapping
+            pdf.setFillColor(78, 192, 224);
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(10);
+
+            let maxHeaderLines = 1;
+            const headerLinesArray = [];
+
+            headers.forEach((header, i) => {
+                const maxW = colWidths[i] - 8;
+                const lines = pdf.splitTextToSize(header, maxW);
+                headerLinesArray.push(lines);
+                maxHeaderLines = Math.max(maxHeaderLines, lines.length);
             });
+
+            const headerHeight = 8 + (maxHeaderLines * 7);
+            let x = margin;
+
+            headers.forEach((_, i) => {
+                pdf.rect(x, y, colWidths[i], headerHeight, "F");
+                x += colWidths[i];
+            });
+
+            x = margin;
+            headers.forEach((_, i) => {
+                const lines = headerLinesArray[i];
+                lines.forEach((line, idx) => {
+                    pdf.text(line, x + colWidths[i]/2, y + 8 + (idx * 7), { align: "center" });
+                });
+                x += colWidths[i];
+            });
+
+            y += headerHeight + 2;
+
+            // Data rows with wrapping
+            pdf.setTextColor(40, 40, 40);
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(10);
+
+            rows.forEach(row => {
+                let maxLines = 1;
+                const cellLinesArray = [];
+
+                row.forEach((text, i) => {
+                    const maxW = colWidths[i] - 8;
+                    const lines = pdf.splitTextToSize(text, maxW);
+                    cellLinesArray.push(lines);
+                    maxLines = Math.max(maxLines, lines.length);
+                });
+
+                const lineHeight = 7;
+                const rowHeight = 8 + (maxLines * lineHeight);
+
+                if (y + rowHeight > 200) {
+                    pdf.addPage();
+                    y = 20;
+                }
+
+                x = margin;
+                row.forEach((_, i) => {
+                    pdf.rect(x, y, colWidths[i], rowHeight);
+                    x += colWidths[i];
+                });
+
+                x = margin;
+                row.forEach((_, i) => {
+                    const lines = cellLinesArray[i];
+                    lines.forEach((line, idx) => {
+                        pdf.text(line, x + 4, y + 8 + (idx * lineHeight));
+                    });
+                    x += colWidths[i];
+                });
+
+                y += rowHeight;
+            });
+
+            pdf.save("Sonel_Comparison.pdf");
+            alert("✅ PDF downloaded successfully!");
         }
 
-        // Initial setup
-        updateCompetitorOptions();
+        function exportAllToPDF() {
+            compareAllProducts();
+            setTimeout(exportToPDF, 600);
+        }
+
+        function clearSelection() {
+            document.getElementById("competitorSelect2").value = "None";
+            loadComparisonTable();
+        }
+
+        // Initialize
+        loadData();
     </script>
 </body>
 </html>
