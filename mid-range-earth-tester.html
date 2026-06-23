@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonel Sonel vs Competitors</title>
+    <title>Sonel Product Comparison</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-   
+  
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -43,7 +43,6 @@
             font-size: 15px;
         }
         .home-btn:hover { background: white; }
-
         h1 { font-size: 28px; font-weight: 600; margin: 0; }
         .controls { padding: 30px; display: flex; flex-wrap: wrap; gap: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; }
         .select-group { flex: 1; min-width: 280px; }
@@ -58,7 +57,6 @@
         .btn-all { background: #28a745; color: white; }
         .btn-export { background: #4EC0E0; color: white; }
         .btn-clear { background: #6c757d; color: white; }
-
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f1f3f5; font-weight: 600; }
@@ -72,7 +70,6 @@
             <a href="page2.html" class="home-btn">← Home</a>
             <h1>Sonel vs Competitors</h1>
         </header>
-
         <div class="controls">
             <div class="select-group">
                 <label>Select Sonel Product:</label>
@@ -89,7 +86,6 @@
                 </select>
             </div>
         </div>
-
         <div class="buttons">
             <button class="btn-compare" onclick="loadComparisonTable()">Compare Selected</button>
             <button class="btn-all" onclick="compareAllProducts()">Compare All</button>
@@ -97,14 +93,13 @@
             <button class="btn-export" onclick="exportAllToPDF()">Export All</button>
             <button class="btn-clear" onclick="clearSelection()">Clear Selection</button>
         </div>
-
         <div id="loading">Loading product data...</div>
         <table id="comparisonTable"></table>
     </div>
 
     <script>
         const DATA_URL = "https://script.google.com/macros/s/AKfycbzBkuqtA71lzFlrWe6V5u6SEp21J54Slw3wDE4f_nOGIOQPKoOOoWqirr0NJMRlu1TQ/exec";
-       
+      
         let productComparisonData = {};
         let featuresOrder = [];
         let sonelProducts = [];
@@ -117,10 +112,8 @@
                 productComparisonData = data.products || {};
                 featuresOrder = data.features || [];
                 allProducts = Object.keys(productComparisonData);
-
                 sonelProducts = allProducts.filter(p => p.toLowerCase().includes("sonel"));
                 if (sonelProducts.length === 0) sonelProducts = allProducts;
-
                 populateSonelDropdown();
                 document.getElementById("loading").style.display = "none";
             } catch (e) {
@@ -177,7 +170,7 @@
             document.getElementById("comparisonTable").innerHTML = html;
         }
 
-        // ==================== UPDATED PDF - REDUCED CELL SIZE ====================
+        // ==================== IMPROVED PDF EXPORT FUNCTION ====================
         function exportToPDF() {
             const table = document.getElementById("comparisonTable");
             if (table.rows.length < 2) {
@@ -188,7 +181,8 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF("l", "mm", "a4");
             const pageWidth = pdf.internal.pageSize.getWidth();
-            const margin = 12;
+            const margin = 10;
+
             let y = 20;
 
             // Title
@@ -197,14 +191,12 @@
             pdf.text("Sonel Product Comparison", pageWidth / 2, y, { align: "center" });
             y += 18;
 
-            // Extract data
+            // Extract table data
             const headers = [];
             const rows = [];
-
             for (let i = 0; i < table.rows[0].cells.length; i++) {
                 headers.push(table.rows[0].cells[i].textContent.trim());
             }
-
             for (let i = 1; i < table.rows.length; i++) {
                 const row = [];
                 for (let j = 0; j < table.rows[i].cells.length; j++) {
@@ -215,18 +207,28 @@
                 rows.push(row);
             }
 
-            // ==================== REDUCED CELL SIZE ====================
             const numCols = headers.length;
-            const featureWidth = pageWidth * 0.24;        // ← Further reduced (was 0.29)
-            const otherWidth = (pageWidth - margin * 2 - featureWidth) / (numCols - 1);
-            const colWidths = [featureWidth];
-            for (let i = 1; i < numCols; i++) colWidths.push(otherWidth);
+            const isAllComparison = numCols > 6;
 
-            // Header row (Model names) with wrapping
+            // Dynamic column widths
+            let featureWidth = isAllComparison ? pageWidth * 0.22 : pageWidth * 0.28;
+            const remainingWidth = pageWidth - margin * 2 - featureWidth;
+            const otherColWidth = remainingWidth / (numCols - 1);
+
+            const colWidths = [featureWidth];
+            for (let i = 1; i < numCols; i++) {
+                colWidths.push(otherColWidth);
+            }
+
+            // Font sizes
+            const headerFontSize = isAllComparison ? 8 : 10;
+            const dataFontSize = isAllComparison ? 8 : 9;
+
+            // Header
             pdf.setFillColor(78, 192, 224);
             pdf.setTextColor(255, 255, 255);
             pdf.setFont("helvetica", "bold");
-            pdf.setFontSize(10);
+            pdf.setFontSize(headerFontSize);
 
             let maxHeaderLines = 1;
             const headerLinesArray = [];
@@ -238,7 +240,7 @@
                 maxHeaderLines = Math.max(maxHeaderLines, lines.length);
             });
 
-            const headerHeight = 8 + (maxHeaderLines * 7);
+            const headerHeight = 12 + (maxHeaderLines * 5);
             let x = margin;
 
             headers.forEach((_, i) => {
@@ -250,17 +252,17 @@
             headers.forEach((_, i) => {
                 const lines = headerLinesArray[i];
                 lines.forEach((line, idx) => {
-                    pdf.text(line, x + colWidths[i]/2, y + 8 + (idx * 7), { align: "center" });
+                    pdf.text(line, x + colWidths[i]/2, y + 9 + (idx * 5), { align: "center" });
                 });
                 x += colWidths[i];
             });
 
-            y += headerHeight + 2;
+            y += headerHeight + 4;
 
-            // Data rows with wrapping
+            // Data rows
             pdf.setTextColor(40, 40, 40);
             pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(10);
+            pdf.setFontSize(dataFontSize);
 
             rows.forEach(row => {
                 let maxLines = 1;
@@ -273,8 +275,8 @@
                     maxLines = Math.max(maxLines, lines.length);
                 });
 
-                const lineHeight = 7;
-                const rowHeight = 8 + (maxLines * lineHeight);
+                const lineHeight = 5;
+                const rowHeight = 10 + (maxLines * lineHeight);
 
                 if (y + rowHeight > 200) {
                     pdf.addPage();
@@ -305,7 +307,7 @@
 
         function exportAllToPDF() {
             compareAllProducts();
-            setTimeout(exportToPDF, 600);
+            setTimeout(exportToPDF, 400);
         }
 
         function clearSelection() {
