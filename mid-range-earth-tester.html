@@ -3,457 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Comparison</title>
-    <!-- jsPDF + autoTable -->
+    <title>Sonel Sonel vs Competitors</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+   
     <style>
-        :root {
-            --blue: #007bff;
-            --light-blue: #e7f3ff;
-            --white: #ffffff;
-            --border-blue: #cce5ff;
-            --text: #333;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8fbff;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            color: var(--text);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px 20px;
+            color: #333;
         }
-
         .container {
-            background-color: var(--white);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1);
-            width: 100%;
-            max-width: 1400px;
-            border: 1px solid var(--border-blue);
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-
-        h1 {
-            margin: 0 0 25px 0;
-            color: var(--blue);
-            font-size: 26px;
+        header {
+            background: linear-gradient(135deg, #4EC0E0, #2A9BC9);
+            color: white;
+            padding: 20px 25px;
             text-align: center;
+            position: relative;
+        }
+        .home-btn {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.95);
+            color: #2A9BC9;
             font-weight: 600;
-        }
-
-        .dropdowns {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 18px;
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin: 8px 0 6px;
-            font-weight: bold;
-            color: var(--blue);
+            text-decoration: none;
+            border-radius: 8px;
             font-size: 15px;
         }
+        .home-btn:hover { background: white; }
 
-        select {
-            width: 100%;
-            padding: 11px;
-            border: 1.5px solid var(--blue);
-            border-radius: 8px;
-            font-size: 14px;
-            background-color: var(--white);
-            color: var(--text);
-            transition: border 0.3s;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #0056b3;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-        }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
+        h1 { font-size: 28px; font-weight: 600; margin: 0; }
+        .controls { padding: 30px; display: flex; flex-wrap: wrap; gap: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .select-group { flex: 1; min-width: 280px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        select { width: 100%; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .buttons { padding: 25px 30px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; background: white; }
         button {
-            padding: 11px 20px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--blue);
-            color: var(--white);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.3s;
+            padding: 12px 24px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px;
+            cursor: pointer; min-width: 160px;
         }
+        .btn-compare { background: #4EC0E0; color: white; }
+        .btn-all { background: #28a745; color: white; }
+        .btn-export { background: #4EC0E0; color: white; }
+        .btn-clear { background: #6c757d; color: white; }
 
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .comparison-result {
-            margin-top: 20px;
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid var(--border-blue);
-            background-color: var(--light-blue);
-            padding: 12px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            background-color: var(--white);
-        }
-
-        th, td {
-            padding: 14px;
-            border: 1px solid var(--border-blue);
-            text-align: left;
-            vertical-align: top;
-        }
-
-        th {
-            background-color: var(--blue);
-            color: var(--white);
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) td {
-            background-color: #f5fbff;
-        }
-
-        h3 {
-            margin: 0 0 15px 0;
-            color: var(--blue);
-            font-size: 18px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .dropdowns { grid-template-columns: 1fr; }
-            .buttons { flex-direction: column; align-items: center; }
-            button { width: 100%; max-width: 300px; }
-        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f1f3f5; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        #loading { padding: 40px; text-align: center; color: #666; font-size: 16px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Earth Resistance Tester Comparison</h1>
+        <header>
+            <a href="page2.html" class="home-btn">← Home</a>
+            <h1>Sonel vs Competitors</h1>
+        </header>
 
-        <div class="dropdowns">
-            <div>
-                <label for="product">Main Product:</label>
-                <select id="product" onchange="updateCompetitorOptions()">
-                    <option value="Sonel MRU-12">Sonel MRU-12</option>
-                    <option value="Sonel MRU-30">Sonel MRU-30</option>
-                    <option value="Sonel MRU-120">Sonel MRU-120</option>
-                    <option value="Sonel MRU-120HD">Sonel MRU-120HD</option>
-                </select>
+        <div class="controls">
+            <div class="select-group">
+                <label>Select Sonel Product:</label>
+                <select id="productSelect" onchange="updateCompetitorOptions()"></select>
             </div>
-
-            <div>
-                <label for="competitor1">Competitor 1:</label>
-                <select id="competitor1" onchange="compareSelectedProducts()"></select>
+            <div class="select-group">
+                <label>Competitor 1:</label>
+                <select id="competitorSelect" onchange="loadComparisonTable()"></select>
             </div>
-
-            <div>
-                <label for="competitor2">Competitor 2:</label>
-                <select id="competitor2" onchange="compareSelectedProducts()">
-                    <option value="none">None</option>
+            <div class="select-group">
+                <label>Competitor 2:</label>
+                <select id="competitorSelect2" onchange="loadComparisonTable()">
+                    <option value="None">None</option>
                 </select>
             </div>
         </div>
 
         <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportToPDF()">Export Selected</button>
-            <button onclick="exportAllToPDF()">Export All</button>
+            <button class="btn-compare" onclick="loadComparisonTable()">Compare Selected</button>
+            <button class="btn-all" onclick="compareAllProducts()">Compare All</button>
+            <button class="btn-export" onclick="exportToPDF()">Export Selected</button>
+            <button class="btn-export" onclick="exportAllToPDF()">Export All</button>
+            <button class="btn-clear" onclick="clearSelection()">Clear Selection</button>
         </div>
 
-        <div id="comparisonResult" class="comparison-result"></div>
+        <div id="loading">Loading product data...</div>
+        <table id="comparisonTable"></table>
     </div>
 
     <script>
-        const products = {
-            "Sonel MRU-12": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "NA",
-                "Double Clamp Method": "NA",
-                "Accuracy": "3%",
-                "Frequency of the Measurement Current": "125 Hz",
-                "Measurement Current": ">20mA",
-                "Memory": "990",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-65"
-            },
-            "Sonel MRU-30": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "3%",
-                "Frequency of the Measurement Current": "125 Hz",
-                "Measurement Current": ">200mA",
-                "Memory": "990",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-54"
-            },
-            "Sonel MRU-120": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "125 Hz",
-                "Measurement Current": ">200mA",
-                "Memory": "990",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-54"
-            },
-            "Sonel MRU-120HD": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "125 Hz",
-                "Measurement Current": ">200mA",
-                "Memory": "990",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-65"
-            },
-            "Megger DET2/3": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "10 Hz to 200 Hz",
-                "Measurement Current": "50mA",
-                "Memory": "Yes",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-65"
-            },
-            "Megger DET4TC2": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "94, 105, 111, 128 Hz",
-                "Measurement Current": "4.5mA (0.45)",
-                "Memory": "NA",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-54"
-            },
-            "Megger DET4TC2R": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "94, 105, 111, 128 Hz",
-                "Measurement Current": "4.5mA (0.45)",
-                "Memory": "NA",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-54"
-            },
-            "Megger DET4TD2 & DET4TR2": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "NA",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "128 Hz",
-                "Measurement Current": "4.5mA (0.45)",
-                "Memory": "Yes",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-54"
-            },
-            "Fluke 1623-2": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "128 Hz",
-                "Measurement Current": ">50mA",
-                "Memory": "Yes",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-56"
-            },
-            "Fluke 1625-2": {
-                "3p Method": "Available",
-                "4p Method": "Available",
-                "3p + clamps Method": "Available",
-                "Double Clamp Method": "Available",
-                "Accuracy": "2%",
-                "Frequency of the Measurement Current": "94/105/111/128 Hz",
-                "Measurement Current": "250mA",
-                "Memory": "NA",
-                "Battery": "Rechargeable battery",
-                "IP": "IP-56"
+        const DATA_URL = "https://script.google.com/macros/s/AKfycbwI-J4m-_j3xqNwZuan13sGvt8F-U9274hvxK7yCLAeTJRGIZl2CNohir1Za14VKO_f-A/exec";
+       
+        let productComparisonData = {};
+        let featuresOrder = [];
+        let sonelProducts = [];
+        let allProducts = [];
+
+        async function loadData() {
+            try {
+                const res = await fetch(DATA_URL);
+                const data = await res.json();
+                productComparisonData = data.products || {};
+                featuresOrder = data.features || [];
+                allProducts = Object.keys(productComparisonData);
+
+                sonelProducts = allProducts.filter(p => p.toLowerCase().includes("sonel"));
+                if (sonelProducts.length === 0) sonelProducts = allProducts;
+
+                populateSonelDropdown();
+                document.getElementById("loading").style.display = "none";
+            } catch (e) {
+                document.getElementById("loading").innerHTML = "❌ Failed to load data";
             }
-        };
-
-        function updateCompetitorOptions() {
-            const mainProduct = document.getElementById("product").value;
-            const comp1 = document.getElementById("competitor1");
-            const comp2 = document.getElementById("competitor2");
-
-            const available = Object.keys(products).filter(p => p !== mainProduct);
-
-            comp1.innerHTML = available.map(p => `<option value="${p}">${p}</option>`).join("");
-            if (!comp1.value && available.length > 0) comp1.selectedIndex = 0;
-
-            comp2.innerHTML = `<option value="none">None</option>` + 
-                available.map(p => `<option value="${p}">${p}</option>`).join("");
-
-            compareSelectedProducts();
         }
 
-        function compareSelectedProducts() {
-            const product = document.getElementById("product").value;
-            const comp1 = document.getElementById("competitor1").value;
-            const comp2 = document.getElementById("competitor2").value;
-            const hasComp2 = comp2 !== "none";
+        function populateSonelDropdown() {
+            const select = document.getElementById("productSelect");
+            select.innerHTML = sonelProducts.map(p => `<option value="${p}">${p}</option>`).join("");
+            updateCompetitorOptions();
+        }
 
-            const resultDiv = document.getElementById("comparisonResult");
+        function updateCompetitorOptions() {
+            const selectedMain = document.getElementById("productSelect").value;
+            const available = allProducts.filter(p => p !== selectedMain);
+            document.getElementById("competitorSelect").innerHTML = available.map(c => `<option value="${c}">${c}</option>`).join("");
+            document.getElementById("competitorSelect2").innerHTML = '<option value="None">None</option>' + available.map(c => `<option value="${c}">${c}</option>`).join("");
+            loadComparisonTable();
+        }
 
-            let headers = [`<th>Feature</th><th>${product}</th>`];
-            if (hasComp2) {
-                headers.push(`<th>${comp1}</th><th>${comp2}</th>`);
-            } else {
-                headers.push(`<th>${comp1}</th>`);
-            }
+        function loadComparisonTable() {
+            const main = document.getElementById("productSelect").value;
+            const c1 = document.getElementById("competitorSelect").value;
+            const c2 = document.getElementById("competitorSelect2").value;
+            if (!main) return;
 
-            let tableHTML = `
-                <h3>Comparison Result</h3>
-                <table>
-                    <tr>${headers.join("")}</tr>
-            `;
+            let html = `<tr><th>Feature</th><th>${main}</th><th>${c1}</th>`;
+            if (c2 !== "None") html += `<th>${c2}</th>`;
+            html += `</tr>`;
 
-            Object.keys(products[product]).forEach(feature => {
-                tableHTML += `<tr>
-                    <td><strong>${feature}</strong></td>
-                    <td>${products[product][feature]}</td>
-                    <td>${products[comp1][feature]}</td>`;
-                if (hasComp2) tableHTML += `<td>${products[comp2][feature]}</td>`;
-                tableHTML += `</tr>`;
+            featuresOrder.forEach(f => {
+                html += `<tr>
+                    <td><strong>${f}</strong></td>
+                    <td>${productComparisonData[main]?.[f] || "NA"}</td>
+                    <td>${productComparisonData[c1]?.[f] || "NA"}</td>`;
+                if (c2 !== "None") html += `<td>${productComparisonData[c2]?.[f] || "NA"}</td>`;
+                html += `</tr>`;
             });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+            document.getElementById("comparisonTable").innerHTML = html;
         }
 
         function compareAllProducts() {
-            const resultDiv = document.getElementById("comparisonResult");
-            const allProducts = Object.keys(products);
+            const products = Object.keys(productComparisonData);
+            let html = `<tr><th>Feature</th>`;
+            products.forEach(p => html += `<th>${p}</th>`);
+            html += `</tr>`;
 
-            let tableHTML = `
-                <h3>All Products Comparison</h3>
-                <table>
-                    <tr><th>Feature</th>${allProducts.map(p => `<th>${p}</th>`).join("")}</tr>
-            `;
-
-            const firstProduct = allProducts[0];
-            Object.keys(products[firstProduct]).forEach(feature => {
-                tableHTML += `<tr>
-                    <td><strong>${feature}</strong></td>
-                    ${allProducts.map(p => `<td>${products[p][feature]}</td>`).join("")}
-                </tr>`;
+            featuresOrder.forEach(f => {
+                html += `<tr><td><strong>${f}</strong></td>`;
+                products.forEach(p => html += `<td>${productComparisonData[p]?.[f] || "NA"}</td>`);
+                html += `</tr>`;
             });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
+            document.getElementById("comparisonTable").innerHTML = html;
         }
 
+        // ==================== UPDATED PDF - REDUCED CELL SIZE ====================
         function exportToPDF() {
+            const table = document.getElementById("comparisonTable");
+            if (table.rows.length < 2) {
+                alert("Please generate a comparison first!");
+                return;
+            }
+
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
+            const pdf = new jsPDF("l", "mm", "a4");
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const margin = 12;
+            let y = 20;
 
-            const product = document.getElementById("product").value;
-            const comp1 = document.getElementById("competitor1").value;
-            const comp2 = document.getElementById("competitor2").value;
-            const hasComp2 = comp2 !== "none";
+            // Title
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(18);
+            pdf.text("Sonel Product Comparison", pageWidth / 2, y, { align: "center" });
+            y += 18;
 
-            const headers = ["Feature", product, comp1];
+            // Extract data
+            const headers = [];
             const rows = [];
 
-            if (hasComp2) headers.push(comp2);
+            for (let i = 0; i < table.rows[0].cells.length; i++) {
+                headers.push(table.rows[0].cells[i].textContent.trim());
+            }
 
-            Object.keys(products[product]).forEach(feature => {
-                const row = [feature, products[product][feature], products[comp1][feature]];
-                if (hasComp2) row.push(products[comp2][feature]);
+            for (let i = 1; i < table.rows.length; i++) {
+                const row = [];
+                for (let j = 0; j < table.rows[i].cells.length; j++) {
+                    let text = table.rows[i].cells[j].textContent.trim();
+                    text = text.replace(/Ω/g, "Ohm");
+                    row.push(text);
+                }
                 rows.push(row);
+            }
+
+            // ==================== REDUCED CELL SIZE ====================
+            const numCols = headers.length;
+            const featureWidth = pageWidth * 0.24;        // ← Further reduced (was 0.29)
+            const otherWidth = (pageWidth - margin * 2 - featureWidth) / (numCols - 1);
+            const colWidths = [featureWidth];
+            for (let i = 1; i < numCols; i++) colWidths.push(otherWidth);
+
+            // Header row (Model names) with wrapping
+            pdf.setFillColor(78, 192, 224);
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(10);
+
+            let maxHeaderLines = 1;
+            const headerLinesArray = [];
+
+            headers.forEach((header, i) => {
+                const maxW = colWidths[i] - 8;
+                const lines = pdf.splitTextToSize(header, maxW);
+                headerLinesArray.push(lines);
+                maxHeaderLines = Math.max(maxHeaderLines, lines.length);
             });
 
-            doc.setFontSize(18);
-            doc.setTextColor(0, 123, 255);
-            doc.text("Product Comparison", 14, 15);
+            const headerHeight = 8 + (maxHeaderLines * 7);
+            let x = margin;
 
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 25,
-                theme: 'grid',
-                styles: { fontSize: 10, cellPadding: 5 },
-                headStyles: { fillColor: [0, 123, 255], textColor: 255, fontStyle: 'bold' },
-                alternateRowStyles: { fillColor: [240, 248, 255] },
-                columnStyles: { 0: { fontStyle: 'bold', cellWidth: 55 } }
+            headers.forEach((_, i) => {
+                pdf.rect(x, y, colWidths[i], headerHeight, "F");
+                x += colWidths[i];
             });
 
-            doc.save(`Comparison_${product.replace(/ /g, '_')}.pdf`);
+            x = margin;
+            headers.forEach((_, i) => {
+                const lines = headerLinesArray[i];
+                lines.forEach((line, idx) => {
+                    pdf.text(line, x + colWidths[i]/2, y + 8 + (idx * 7), { align: "center" });
+                });
+                x += colWidths[i];
+            });
+
+            y += headerHeight + 2;
+
+            // Data rows with wrapping
+            pdf.setTextColor(40, 40, 40);
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(10);
+
+            rows.forEach(row => {
+                let maxLines = 1;
+                const cellLinesArray = [];
+
+                row.forEach((text, i) => {
+                    const maxW = colWidths[i] - 8;
+                    const lines = pdf.splitTextToSize(text, maxW);
+                    cellLinesArray.push(lines);
+                    maxLines = Math.max(maxLines, lines.length);
+                });
+
+                const lineHeight = 7;
+                const rowHeight = 8 + (maxLines * lineHeight);
+
+                if (y + rowHeight > 200) {
+                    pdf.addPage();
+                    y = 20;
+                }
+
+                x = margin;
+                row.forEach((_, i) => {
+                    pdf.rect(x, y, colWidths[i], rowHeight);
+                    x += colWidths[i];
+                });
+
+                x = margin;
+                row.forEach((_, i) => {
+                    const lines = cellLinesArray[i];
+                    lines.forEach((line, idx) => {
+                        pdf.text(line, x + 4, y + 8 + (idx * lineHeight));
+                    });
+                    x += colWidths[i];
+                });
+
+                y += rowHeight;
+            });
+
+            pdf.save("Sonel_Comparison.pdf");
+            alert("✅ PDF downloaded successfully!");
         }
 
         function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
+            compareAllProducts();
+            setTimeout(exportToPDF, 600);
+        }
 
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(p => products[p][feature])];
-            });
-
-            doc.setFontSize(18);
-            doc.setTextColor(0, 123, 255);
-            doc.text("All Products Comparison", 14, 15);
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 25,
-                theme: 'grid',
-                styles: { fontSize: 8.5, cellPadding: 3.5 },
-                headStyles: { fillColor: [0, 123, 255], textColor: 255 },
-                alternateRowStyles: { fillColor: [240, 248, 255] },
-                columnStyles: { 0: { fontStyle: 'bold' } }
-            });
-
-            doc.save("All_Products_Comparison.pdf");
+        function clearSelection() {
+            document.getElementById("competitorSelect2").value = "None";
+            loadComparisonTable();
         }
 
         // Initialize
-        window.onload = updateCompetitorOptions;
+        loadData();
     </script>
 </body>
 </html>
