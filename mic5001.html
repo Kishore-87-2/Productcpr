@@ -3,546 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Comparison</title>
+    <title>Sonel Product Comparison</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f5f7fa;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 1400px;
-            text-align: center;
-            position: relative;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            color: #1a1a1a;
-            font-size: 2rem;
-            background: linear-gradient(90deg, #007bff, #00c4ff);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        .dropdowns {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px 20px;
             color: #333;
-            font-size: 0.9rem;
-            text-align: left;
         }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-
-        select:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-        }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .compare-all-btn {
-            background-color: #28a745;
-        }
-
-        .compare-all-btn:hover {
-            background-color: #218838;
-        }
-
-        .tooltip {
+        header {
+            background: linear-gradient(135deg, #4EC0E0, #2A9BC9);
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
             position: relative;
         }
-
-        .tooltip::after {
-            content: attr(data-tooltip);
+        .home-btn {
             position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s;
-        }
-
-        .tooltip:hover::after {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        table {
-            table-layout: fixed;
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            word-wrap: break-word;
-            border: 1px solid #e0e0e0;
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #fff; /* Matches <td> background */
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.95);
+            color: #2A9BC9;
             font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
         }
-
-        th:nth-child(1), td:nth-child(1) {
-            width: 25%;
+        .home-btn:hover { background: white; }
+        h1 { font-size: 28px; font-weight: 600; margin: 0; }
+        .controls { padding: 30px; display: flex; flex-wrap: wrap; gap: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .select-group { flex: 1; min-width: 280px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        select { width: 100%; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .buttons { padding: 25px 30px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; background: white; }
+        button {
+            padding: 12px 24px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px;
+            cursor: pointer; min-width: 160px;
         }
-
-        th:nth-child(n+2), td:nth-child(n+2) {
-            width: 25%;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .loading {
-            display: none;
-            margin: 20px auto;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error-message {
-            color: #dc3545;
-            margin: 20px 0;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .notification {
-            display: none;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #28a745;
-            color: #fff;
-            border-radius: 4px;
-            text-align: center;
-        }
+        .btn-compare { background: #4EC0E0; color: white; }
+        .btn-all { background: #28a745; color: white; }
+        .btn-export { background: #4EC0E0; color: white; }
+        .btn-clear { background: #6c757d; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f1f3f5; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        #loading { padding: 40px; text-align: center; color: #666; font-size: 16px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product Comparison</h1>
-        <div class="dropdowns">
-            <div>
-                <label for="productSelect">Select Product:</label>
-                <select id="productSelect"></select>
+        <header>
+            <a href="page2.html" class="home-btn">← Home</a>
+            <h1>Sonel vs Competitors</h1>
+        </header>
+        <div class="controls">
+            <div class="select-group">
+                <label>Select Sonel Product:</label>
+                <select id="productSelect" onchange="updateCompetitorOptions()"></select>
             </div>
-            <div>
-                <label for="competitorSelect">Select Competitor 1:</label>
-                <select id="competitorSelect"></select>
+            <div class="select-group">
+                <label>Competitor 1:</label>
+                <select id="competitorSelect" onchange="loadComparisonTable()"></select>
             </div>
-            <div>
-                <label for="competitorSelect2">Select Competitor 2:</label>
-                <select id="competitorSelect2"></select>
+            <div class="select-group">
+                <label>Competitor 2:</label>
+                <select id="competitorSelect2" onchange="loadComparisonTable()">
+                    <option value="None">None</option>
+                </select>
             </div>
         </div>
-
         <div class="buttons">
-            <button id="compareSelectedBtn" class="tooltip" onclick="loadComparisonTable()" data-tooltip="Compare the selected products" disabled>Compare Selected</button>
-            <button id="compareAllBtn" class="compare-all-btn tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All Products</button>
-            <button id="exportBtn" class="tooltip" onclick="exportToPDF()" data-tooltip="Export comparison to PDF" disabled>Export to PDF</button>
-            <button id="clearSelectionBtn" class="tooltip" onclick="clearSelections()" data-tooltip="Clear all dropdown selections">Clear Selection</button>
+            <button class="btn-compare" onclick="loadComparisonTable()">Compare Selected</button>
+            <button class="btn-all" onclick="compareAllProducts()">Compare All</button>
+            <button class="btn-export" onclick="exportToPDF()">Export Selected</button>
+            <button class="btn-export" onclick="exportAllToPDF()">Export All</button>
+            <button class="btn-clear" onclick="clearSelection()">Clear Selection</button>
         </div>
-
-        <div id="loading" class="loading"></div>
-        <div id="errorMessage" class="error-message"></div>
-        <div id="notification" class="notification"></div>
+        <div id="loading">Loading product data...</div>
         <table id="comparisonTable"></table>
     </div>
 
     <script>
-        const productComparisonData = {
-            "Sonel MIC-5001": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.5mA",
-                "Resistance Range": "5.000 TΩ",
-                "Resolution": "0.1 KΩ",
-                "Accuracy": "± (3% m.v. + 20 digits)",
-                "Floors and walls Resistance measurement": "Available",
-                "Standard": "EN 61557, EN 61326-1",
-                "DC and AC voltage measurement Range": "750 V",
-                "Measurement of leakage current": "Available",
-                "IP": "IP65",
-                "Memory": "Available",
-                "Data transmission": "USB"
-            },
-            "Megger BM 5200": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.4 mA ±0.5 mA",
-                "Resistance Range": "1 TΩ",
-                "Resolution": "NA",
-                "Accuracy": "±5% ±0.8% per GΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "DC and AC voltage measurement Range": "600 V",
-                "Measurement of leakage current": "Available",
-                "IP": "IP40",
-                "Memory": "NA",
-                "Data transmission": "NA"
-            },
-            "Megger BM 5500": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.4 mA ±0.5 mA",
-                "Resistance Range": "1 TΩ",
-                "Resolution": "NA",
-                "Accuracy": "±5% ±0.8% per GΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "DC and AC voltage measurement Range": "600 V",
-                "Measurement of leakage current": "Available",
-                "IP": "IP40",
-                "Memory": "NA",
-                "Data transmission": "NA"
-            },
-            "Motwane IT-51": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.4 mA ± 0.5 mA",
-                "Resistance Range": "1 TΩ",
-                "Resolution": "1 KΩ",
-                "Accuracy": "±5% ±0.8% per GΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "DC and AC voltage measurement Range": "600V",
-                "Measurement of leakage current": "Available",
-                "IP": "IP54",
-                "Memory": "NA",
-                "Data transmission": "NA"
-            },
-            "Motwane IT-250G": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.4 mA ± 0.5 mA",
-                "Resistance Range": "250GΩ",
-                "Resolution": "1 KΩ",
-                "Accuracy": "±(5% + 5)",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "DC and AC voltage measurement Range": "NA",
-                "Measurement of leakage current": "NA",
-                "IP": "IP54",
-                "Memory": "NA",
-                "Data transmission": "NA"
-            },
-            "Rishabh AIT 501": {
-                "Measuring Voltage": "5000V",
-                "Short Circuit Current": "1.8 mA",
-                "Resistance Range": "1000GOhm",
-                "Resolution": "1 KΩ",
-                "Accuracy": "± 3%+5",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "DC and AC voltage measurement Range": "600V",
-                "Measurement of leakage current": "NA",
-                "IP": "NA",
-                "Memory": "NA",
-                "Data transmission": "USB"
+        const DATA_URL = "https://script.google.com/macros/s/AKfycbzC7PUuKHgirXOTwIdutPElyzctlwQAaTsBshNnvQXatswO0lRGJqmf_rQtmLZpqSTtlQ/exec";
+      
+        let productComparisonData = {};
+        let featuresOrder = [];
+        let sonelProducts = [];
+        let allProducts = [];
+
+        async function loadData() {
+            try {
+                const res = await fetch(DATA_URL);
+                const data = await res.json();
+                productComparisonData = data.products || {};
+                featuresOrder = data.features || [];
+                allProducts = Object.keys(productComparisonData);
+                sonelProducts = allProducts.filter(p => p.toLowerCase().includes("sonel"));
+                if (sonelProducts.length === 0) sonelProducts = allProducts;
+                populateSonelDropdown();
+                document.getElementById("loading").style.display = "none";
+            } catch (e) {
+                document.getElementById("loading").innerHTML = "❌ Failed to load data";
             }
-        };
-
-        // DOM Elements
-        const domElements = {
-            productSelect: document.getElementById("productSelect"),
-            competitorSelect: document.getElementById("competitorSelect"),
-            competitorSelect2: document.getElementById("competitorSelect2"),
-            compareSelectedBtn: document.getElementById("compareSelectedBtn"),
-            compareAllBtn: document.getElementById("compareAllBtn"),
-            exportBtn: document.getElementById("exportBtn"),
-            clearSelectionBtn: document.getElementById("clearSelectionBtn"),
-            loading: document.getElementById("loading"),
-            errorMessage: document.getElementById("errorMessage"),
-            notification: document.getElementById("notification"),
-            comparisonTable: document.getElementById("comparisonTable")
-        };
-
-        // Initialize dropdowns
-        function initializeDropdowns() {
-            const products = Object.keys(productComparisonData);
-            products.forEach(product => {
-                domElements.productSelect.add(new Option(product, product));
-            });
-            updateCompetitorOptions();
-
-            [domElements.productSelect, domElements.competitorSelect, domElements.competitorSelect2].forEach(select => {
-                select.addEventListener('change', () => {
-                    updateCompetitorOptions();
-                    validateSelections();
-                });
-            });
         }
 
-        // Update competitor dropdowns
+        function populateSonelDropdown() {
+            const select = document.getElementById("productSelect");
+            select.innerHTML = sonelProducts.map(p => `<option value="${p}">${p}</option>`).join("");
+            updateCompetitorOptions();
+        }
+
         function updateCompetitorOptions() {
-            const selectedProduct = domElements.productSelect.value;
-            const selectedCompetitor = domElements.competitorSelect.value;
-            const selectedCompetitor2 = domElements.competitorSelect2.value;
-            const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
-
-            domElements.competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-            domElements.competitorSelect2.innerHTML = '<option value="None">None</option>' + 
-                competitors.map(comp => `<option value="${comp}">${comp}</option>`).join("");
-
-            domElements.competitorSelect.value = selectedCompetitor && competitors.includes(selectedCompetitor) ? selectedCompetitor : competitors[0] || "";
-            domElements.competitorSelect2.value = selectedCompetitor2 && (selectedCompetitor2 === "None" || competitors.includes(selectedCompetitor2)) ? selectedCompetitor2 : "None";
+            const selectedMain = document.getElementById("productSelect").value;
+            const available = allProducts.filter(p => p !== selectedMain);
+            document.getElementById("competitorSelect").innerHTML = available.map(c => `<option value="${c}">${c}</option>`).join("");
+            document.getElementById("competitorSelect2").innerHTML = '<option value="None">None</option>' + available.map(c => `<option value="${c}">${c}</option>`).join("");
+            loadComparisonTable();
         }
 
-        // Clear selections
-        function clearSelections() {
-            domElements.productSelect.selectedIndex = 0;
-            domElements.competitorSelect.selectedIndex = 0;
-            domElements.competitorSelect2.value = "None";
-            domElements.comparisonTable.innerHTML = "";
-            domElements.errorMessage.textContent = "";
-            updateCompetitorOptions();
-            validateSelections();
-        }
-
-        // Show notification
-        function showNotification(message) {
-            domElements.notification.textContent = message;
-            domElements.notification.style.display = "block";
-            setTimeout(() => {
-                domElements.notification.style.display = "none";
-            }, 3000);
-        }
-
-        // Show loading
-        function showLoading() {
-            domElements.loading.style.display = "block";
-            domElements.errorMessage.textContent = "";
-            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = true);
-        }
-
-        // Hide loading
-        function hideLoading() {
-            domElements.loading.style.display = "none";
-            [domElements.compareSelectedBtn, domElements.compareAllBtn, domElements.exportBtn, domElements.clearSelectionBtn].forEach(btn => btn.disabled = false);
-            validateSelections();
-        }
-
-        // Show error
-        function showError(message) {
-            domElements.errorMessage.textContent = message;
-            hideLoading();
-        }
-
-        // Validate selections
-        function validateSelections() {
-            const productSelected = domElements.productSelect.value !== "";
-            const competitorSelected = domElements.competitorSelect.value !== "";
-            domElements.compareSelectedBtn.disabled = !(productSelected && competitorSelected);
-            domElements.exportBtn.disabled = !(productSelected && competitorSelected);
-        }
-
-        // Load comparison table
         function loadComparisonTable() {
-            try {
-                showLoading();
-                const selectedProduct = domElements.productSelect.value;
-                const selectedCompetitor = domElements.competitorSelect.value;
-                const selectedCompetitor2 = domElements.competitorSelect2.value;
+            const main = document.getElementById("productSelect").value;
+            const c1 = document.getElementById("competitorSelect").value;
+            const c2 = document.getElementById("competitorSelect2").value;
+            if (!main) return;
 
-                if (!selectedProduct || !selectedCompetitor) {
-                    showError("Please select a product and at least one competitor");
-                    return;
-                }
+            let html = `<tr><th>Feature</th><th>${main}</th><th>${c1}</th>`;
+            if (c2 !== "None") html += `<th>${c2}</th>`;
+            html += `</tr>`;
 
-                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
-                    showError("Please select different products for comparison");
-                    return;
-                }
-
-                const selectedProducts = selectedCompetitor2 === "None" ? [selectedProduct, selectedCompetitor] : [selectedProduct, selectedCompetitor, selectedCompetitor2];
-                let tableContent = `<tr><th>Feature</th>${selectedProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
-
-                const features = [
-                    "Measuring Voltage",
-                    "Short Circuit Current",
-                    "Resistance Range",
-                    "Resolution",
-                    "Accuracy",
-                    "Floors and walls Resistance measurement",
-                    "Standard",
-                    "DC and AC voltage measurement Range",
-                    "Measurement of leakage current",
-                    "IP",
-                    "Memory",
-                    "Data transmission"
-                ];
-
-                features.forEach(feature => {
-                    tableContent += `<tr>
-                        <td>${feature}</td>
-                        ${selectedProducts.map(product => `<td>${productComparisonData[product][feature] || "NA"}</td>`).join("")}
-                    </tr>`;
-                });
-
-                domElements.comparisonTable.innerHTML = tableContent;
-                hideLoading();
-            } catch (error) {
-                showError(`Error during comparison: ${error.message}`);
-                console.error("loadComparisonTable error:", error);
-            }
+            featuresOrder.forEach(f => {
+                html += `<tr>
+                    <td><strong>${f}</strong></td>
+                    <td>${productComparisonData[main]?.[f] || "NA"}</td>
+                    <td>${productComparisonData[c1]?.[f] || "NA"}</td>`;
+                if (c2 !== "None") html += `<td>${productComparisonData[c2]?.[f] || "NA"}</td>`;
+                html += `</tr>`;
+            });
+            document.getElementById("comparisonTable").innerHTML = html;
         }
 
-        // Compare all products
         function compareAllProducts() {
-            try {
-                showLoading();
-                const allProducts = Object.keys(productComparisonData);
-                let tableContent = `<tr><th>Feature</th>${allProducts.map(product => `<th>${product}</th>`).join("")}</tr>`;
+            const products = Object.keys(productComparisonData);
+            let html = `<tr><th>Feature</th>`;
+            products.forEach(p => html += `<th>${p}</th>`);
+            html += `</tr>`;
 
-                const firstProduct = allProducts[0];
-                for (let feature in productComparisonData[firstProduct]) {
-                    tableContent += `<tr><td>${feature}</td>`;
-                    allProducts.forEach(product => {
-                        tableContent += `<td>${productComparisonData[product][feature] || "NA"}</td>`;
-                    });
-                    tableContent += `</tr>`;
-                }
-
-                domElements.comparisonTable.innerHTML = tableContent;
-                hideLoading();
-            } catch (error) {
-                showError(`Error during full comparison: ${error.message}`);
-                console.error("compareAllProducts error:", error);
-            }
+            featuresOrder.forEach(f => {
+                html += `<tr><td><strong>${f}</strong></td>`;
+                products.forEach(p => html += `<td>${productComparisonData[p]?.[f] || "NA"}</td>`);
+                html += `</tr>`;
+            });
+            document.getElementById("comparisonTable").innerHTML = html;
         }
 
-        // Export to PDF
+        // ==================== IMPROVED PDF EXPORT FUNCTION ====================
         function exportToPDF() {
-            try {
-                showLoading();
-                const selectedProduct = domElements.productSelect.value;
-                const selectedCompetitor = domElements.competitorSelect.value;
-                const selectedCompetitor2 = domElements.competitorSelect2.value;
-
-                if (!selectedProduct || !selectedCompetitor) {
-                    showError("Please select a product and at least one competitor for PDF export");
-                    return;
-                }
-
-                if (selectedCompetitor2 !== "None" && (selectedCompetitor === selectedCompetitor2 || selectedProduct === selectedCompetitor2)) {
-                    showError("Please select different products for PDF export");
-                    return;
-                }
-
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF("l", "mm", "a4");
-
-                html2canvas(document.getElementById("comparisonTable"), { scale: 2 }).then(canvas => {
-                    let imgData = canvas.toDataURL("image/png");
-                    let imgWidth = 280;
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let margin = 10;
-
-                    pdf.setFontSize(16);
-                    pdf.text("Product Comparison", margin, 15);
-                    pdf.setFontSize(12);
-                    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 22);
-
-                    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
-                    pdf.save("product-comparison.pdf");
-                    hideLoading();
-                    showNotification("Comparison exported successfully!");
-                });
-            } catch (error) {
-                showError(`Error generating PDF: ${error.message}`);
-                console.error("exportToPDF error:", error);
+            const table = document.getElementById("comparisonTable");
+            if (table.rows.length < 2) {
+                alert("Please generate a comparison first!");
+                return;
             }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("l", "mm", "a4");
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const margin = 10;
+
+            let y = 20;
+
+            // Title
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(18);
+            pdf.text("Sonel Product Comparison", pageWidth / 2, y, { align: "center" });
+            y += 18;
+
+            // Extract table data
+            const headers = [];
+            const rows = [];
+            for (let i = 0; i < table.rows[0].cells.length; i++) {
+                headers.push(table.rows[0].cells[i].textContent.trim());
+            }
+            for (let i = 1; i < table.rows.length; i++) {
+                const row = [];
+                for (let j = 0; j < table.rows[i].cells.length; j++) {
+                    let text = table.rows[i].cells[j].textContent.trim();
+                    text = text.replace(/Ω/g, "Ohm");
+                    row.push(text);
+                }
+                rows.push(row);
+            }
+
+            const numCols = headers.length;
+            const isAllComparison = numCols > 6;
+
+            // Dynamic column widths
+            let featureWidth = isAllComparison ? pageWidth * 0.22 : pageWidth * 0.28;
+            const remainingWidth = pageWidth - margin * 2 - featureWidth;
+            const otherColWidth = remainingWidth / (numCols - 1);
+
+            const colWidths = [featureWidth];
+            for (let i = 1; i < numCols; i++) {
+                colWidths.push(otherColWidth);
+            }
+
+            // Font sizes
+            const headerFontSize = isAllComparison ? 8 : 10;
+            const dataFontSize = isAllComparison ? 8 : 9;
+
+            // Header
+            pdf.setFillColor(78, 192, 224);
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(headerFontSize);
+
+            let maxHeaderLines = 1;
+            const headerLinesArray = [];
+
+            headers.forEach((header, i) => {
+                const maxW = colWidths[i] - 8;
+                const lines = pdf.splitTextToSize(header, maxW);
+                headerLinesArray.push(lines);
+                maxHeaderLines = Math.max(maxHeaderLines, lines.length);
+            });
+
+            const headerHeight = 12 + (maxHeaderLines * 5);
+            let x = margin;
+
+            headers.forEach((_, i) => {
+                pdf.rect(x, y, colWidths[i], headerHeight, "F");
+                x += colWidths[i];
+            });
+
+            x = margin;
+            headers.forEach((_, i) => {
+                const lines = headerLinesArray[i];
+                lines.forEach((line, idx) => {
+                    pdf.text(line, x + colWidths[i]/2, y + 9 + (idx * 5), { align: "center" });
+                });
+                x += colWidths[i];
+            });
+
+            y += headerHeight + 4;
+
+            // Data rows
+            pdf.setTextColor(40, 40, 40);
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(dataFontSize);
+
+            rows.forEach(row => {
+                let maxLines = 1;
+                const cellLinesArray = [];
+
+                row.forEach((text, i) => {
+                    const maxW = colWidths[i] - 8;
+                    const lines = pdf.splitTextToSize(text, maxW);
+                    cellLinesArray.push(lines);
+                    maxLines = Math.max(maxLines, lines.length);
+                });
+
+                const lineHeight = 5;
+                const rowHeight = 10 + (maxLines * lineHeight);
+
+                if (y + rowHeight > 200) {
+                    pdf.addPage();
+                    y = 20;
+                }
+
+                x = margin;
+                row.forEach((_, i) => {
+                    pdf.rect(x, y, colWidths[i], rowHeight);
+                    x += colWidths[i];
+                });
+
+                x = margin;
+                row.forEach((_, i) => {
+                    const lines = cellLinesArray[i];
+                    lines.forEach((line, idx) => {
+                        pdf.text(line, x + 4, y + 8 + (idx * lineHeight));
+                    });
+                    x += colWidths[i];
+                });
+
+                y += rowHeight;
+            });
+
+            pdf.save("Sonel_Comparison.pdf");
+            alert("✅ PDF downloaded successfully!");
+        }
+
+        function exportAllToPDF() {
+            compareAllProducts();
+            setTimeout(exportToPDF, 400);
+        }
+
+        function clearSelection() {
+            document.getElementById("competitorSelect2").value = "None";
+            loadComparisonTable();
         }
 
         // Initialize
-        function init() {
-            initializeDropdowns();
-            validateSelections();
-            console.log("Application initialized");
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        loadData();
     </script>
 </body>
 </html>
