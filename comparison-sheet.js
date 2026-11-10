@@ -208,8 +208,6 @@
             for (let i = 0; i < models.length; i += 4) {
                 if (i) pdf.addPage();
                 const group = models.slice(i, i + 4);
-                const comparisonTitle = document.querySelector('h1')?.textContent.trim() ||
-                    document.title || 'Product Comparison';
                 pdf.autoTable({
                     head: [['Feature', ...group.map(pdfText)]],
                     body: data.features.map(f => [pdfText(f), ...group.map(n => pdfText(data.products[n][f]))]),
@@ -222,7 +220,6 @@
                         pdf.setFont('helvetica', 'bold');
                         pdf.setFontSize(14);
                         pdf.setTextColor(30, 58, 95);
-                        pdf.text(comparisonTitle, 12, 14, { maxWidth: pdf.internal.pageSize.getWidth() - 24 });
                         pdf.setFont('helvetica', 'normal');
                         pdf.setFontSize(8);
                         pdf.setTextColor(100, 110, 120);
