@@ -32,7 +32,7 @@
 
     if (isHome) return;
 
-    var deadline = Date.now() + 60 * 1000;
+    var deadline = Date.now() + 180 * 1000;
     var redirected = false;
     var interval;
     var badge;
@@ -66,7 +66,7 @@
         document.head.appendChild(style);
 
         interval = window.setInterval(update, 1000);
-        window.setTimeout(update, 60 * 1000);
+        window.setTimeout(update, 180 * 1000);
         document.addEventListener('visibilitychange', update);
         window.addEventListener('pageshow', update);
         window.addEventListener('focus', update);
