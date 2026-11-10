@@ -1,4 +1,4 @@
-// Each page gets five minutes, regardless of mouse or keyboard activity.
+// Each page gets one minute, regardless of mouse or keyboard activity.
 (function () {
     'use strict';
     if (window.productPageTimerStarted) return;
@@ -9,10 +9,7 @@
     if (window.location.pathname === home.pathname ||
         window.location.pathname === home.pathname.replace(/index\.html$/, '')) return;
 
-    var configuredSeconds = Number(document.currentScript.getAttribute('data-timeout-seconds'));
-    var duration = Number.isFinite(configuredSeconds) && configuredSeconds > 0
-        ? configuredSeconds * 1000 : 5 * 60 * 1000;
-    var deadline = Date.now() + duration;
+    var deadline = Date.now() + 60 * 1000;
     var redirected = false;
     var interval;
     var badge;
