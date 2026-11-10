@@ -1,0 +1,64 @@
+{
+  "products": {
+    "Sonel MRU 10": {
+      "2P,3P,4P Method": "2P,3P",
+      "3p + clamps Method": "NA",
+      "Ground resistivity measurements": "NA",
+      "Frequency of the measurement current": "125 Hz",
+      "Measurement current": ">20mA",
+      "Measurements of continuity": "Yes",
+      "Memory": "NA",
+      "Battery": "AA battery (non-rechargeable), Rechargeable (Optional)"
+    },
+    "Sonel MRU-21": {
+      "2P,3P,4P Method": "2P,3P",
+      "3p + clamps Method": "NA",
+      "Ground resistivity measurements": "NA",
+      "Frequency of the measurement current": "125 Hz",
+      "Measurement current": "20mA",
+      "Measurements of continuity": "Yes",
+      "Memory": "YES",
+      "Battery": "AA battery (non-rechargeable), Rechargeable (Optional)"
+    },
+    "Fluke 1621": {
+      "2P,3P,4P Method": "2P, 3P",
+      "3p + clamps Method": "NA",
+      "Ground resistivity measurements": "NA",
+      "Frequency of the measurement current": "128 Hz",
+      "Measurement current": ">50mA",
+      "Measurements of continuity": "Yes",
+      "Memory": "NA",
+      "Battery": "One 9 volt alkaline (LR61)"
+    },
+    "Motwane DET 20": {
+      "2P,3P,4P Method": "2P, 3P",
+      "3p + clamps Method": "Yes",
+      "Ground resistivity measurements": "Yes",
+      "Frequency of the measurement current": "128 Hz",
+      "Measurement current": "10 mA",
+      "Measurements of continuity": "NA",
+      "Memory": "NA",
+      "Battery": "Rechargeable Battery"
+    },
+    "Motwane DET-20A": {
+      "2P,3P,4P Method": "3P",
+      "3p + clamps Method": "No",
+      "Ground resistivity measurements": "Yes",
+      "Frequency of the measurement current": "125Hz",
+      "Measurement current": "10 mA",
+      "Measurements of continuity": "NA",
+      "Memory": "1000 Reports",
+      "Battery": "6 X 1.5V AA Alkaline cells"
+    }
+  },
+  "features": [
+    "2P,3P,4P Method",
+    "3p + clamps Method",
+    "Ground resistivity measurements",
+    "Frequency of the measurement current",
+    "Measurement current",
+    "Measurements of continuity",
+    "Memory",
+    "Battery"
+  ]
+}

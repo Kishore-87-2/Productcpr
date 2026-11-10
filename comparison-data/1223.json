@@ -1,0 +1,76 @@
+{
+  "products": {
+    "Sonel MIC-5005": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "1.2mA, 3mA",
+      "Resistance Range": "15.0 TΩ",
+      "Floors and walls Resistance measurement": "Available",
+      "Standard": "EN 61557, EN 61326-1",
+      "Capacitance measurement range": "49.99 µF",
+      "Measurement of leakage current range": "9.99mA",
+      "IP": "IP67",
+      "Remote control by phone": "Available",
+      "Data transmission": "USB, Bluetooth"
+    },
+    "Sonel MIC-5010": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "1.2mA, 3mA",
+      "Resistance Range": "15.0 TΩ",
+      "Floors and walls Resistance measurement": "Available",
+      "Standard": "EN 61557, EN 61326-1",
+      "Capacitance measurement range": "49.99 µF",
+      "Measurement of leakage current range": "9.99mA",
+      "IP": "IP67",
+      "Remote control by phone": "Available",
+      "Data transmission": "USB, Bluetooth"
+    },
+    "Fluke 1550C": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "2 mA",
+      "Resistance Range": "> 2 TΩ",
+      "Floors and walls Resistance measurement": "NA",
+      "Standard": "Available",
+      "Capacitance measurement range": "20.00 µF",
+      "Measurement of leakage current range": "2mA",
+      "IP": "IP40",
+      "Remote control by phone": "NA",
+      "Data transmission": "USB"
+    },
+    "Megger MIT515": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "3 mA",
+      "Resistance Range": "10 TΩ",
+      "Floors and walls Resistance measurement": "NA",
+      "Standard": "NA",
+      "Capacitance measurement range": "10nF to 25µF",
+      "Measurement of leakage current range": "NA",
+      "IP": "IP65",
+      "Remote control by phone": "NA",
+      "Data transmission": "NA"
+    },
+    "Rishabh Insu 5Dt": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "1.2mA, 3mA",
+      "Resistance Range": "2 TΩ",
+      "Floors and walls Resistance measurement": "NA",
+      "Standard": "Available",
+      "Capacitance measurement range": "50µF",
+      "Measurement of leakage current range": "3mA",
+      "IP": "IP52",
+      "Remote control by phone": "NA",
+      "Data transmission": "USB, Bluetooth"
+    }
+  },
+  "features": [
+    "Measuring Voltage",
+    "Short Circuit Current",
+    "Resistance Range",
+    "Floors and walls Resistance measurement",
+    "Standard",
+    "Capacitance measurement range",
+    "Measurement of leakage current range",
+    "IP",
+    "Remote control by phone",
+    "Data transmission"
+  ]
+}

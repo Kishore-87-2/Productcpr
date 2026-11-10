@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Comparison</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -66,191 +66,33 @@
         }
     </style>
     <script src="timer.js?v=1min" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" defer></script>
+    <script src="comparison-sheet.js?v=1" data-sheet-id="1220" data-fallback="comparison-data/1220.json" defer></script>
 </head>
 <body>
-    <button class="export-btn" onclick="exportToPDF()">Export</button>
+    <button class="export-btn" data-comparison-action="export-current" disabled>Export</button>
 
     <h1>Product Comparison</h1>
 
     <label for="productSelect">Select Product:</label>
-    <select id="productSelect" onchange="updateCompetitorOptions()">
+    <select id="productSelect">
         <option value="Sonel MIC-2501">Sonel MIC-2501</option>
         <option value="Sonel MIC-2511">Sonel MIC-2511</option>
     </select>
 
     <label for="competitorSelect">Select Competitor 1:</label>
-    <select id="competitorSelect" onchange="loadComparisonTable()"></select>
+    <select id="competitorSelect"></select>
 
     <label for="competitorSelect2">Select Competitor 2:</label>
-    <select id="competitorSelect2" onchange="loadComparisonTable()">
+    <select id="competitorSelect2">
         <option value="None">None</option>
     </select>
 
-    <button class="compare-all-btn" onclick="compareAllProducts()">Compare All Products</button>
+    <button class="compare-all-btn" data-comparison-action="compare-all" disabled>Compare All Products</button>
 
     <table id="comparisonTable"></table>
 
-    <script>
-        const productComparisonData = {
-            "Sonel MIC-2501": {
-                "Brand": "Sonel",
-                "Model": "MIC-2501",
-                "Measuring Voltage": "2500V",
-                "Short Circuit Current": "1mA",
-                "Resistance Range": "1 TΩ",
-                "Floors and walls Resistance measurement": "Available",
-                "Standard": "EN 61557",
-                "DC and AC voltage measurement Range": "750V",
-                "Capacitance measurement range": "NA",
-                "Measurement of leakage current range": "Available",
-                "SPD": "NA",
-                "IP": "IP65"
-            },
-            "Sonel MIC-2511": {
-                "Brand": "Sonel",
-                "Model": "MIC-2511",
-                "Measuring Voltage": "2500V",
-                "Short Circuit Current": "2mA",
-                "Resistance Range": "2 TΩ",
-                "Floors and walls Resistance measurement": "Available",
-                "Standard": "EN 61557",
-                "DC and AC voltage measurement Range": "1500V",
-                "Capacitance measurement range": "9.99 µF",
-                "Measurement of leakage current range": "Available",
-                "SPD": "Available",
-                "IP": "IP65"
-            },
-            "Kyoritsu 3125 B": {
-                "Brand": "Kyoritsu",
-                "Model": "3125 B",
-                "Measuring Voltage": "2500V",
-                "Short Circuit Current": "1.5mA",
-                "Resistance Range": "100.0 GΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "NA",
-                "DC and AC voltage measurement Range": "600V",
-                "Capacitance measurement range": "NA",
-                "Measurement of leakage current range": "NA",
-                "SPD": "NA",
-                "IP": "NM"
-            },
-            "Megger MIT2500": {
-                "Brand": "Megger",
-                "Model": "MIT2500",
-                "Measuring Voltage": "2500V",
-                "Short Circuit Current": "2mA",
-                "Resistance Range": "200 GΩ",
-                "Floors and walls Resistance measurement": "NA",
-                "Standard": "EN 61557",
-                "DC and AC voltage measurement Range": "600V",
-                "Capacitance measurement range": "10 µF",
-                "Measurement of leakage current range": "Available",
-                "SPD": "NA",
-                "IP": "IP54"
-            }
-        };
-
-        function loadComparisonTable() {
-            const selectedProduct = document.getElementById("productSelect").value;
-            const selectedCompetitor = document.getElementById("competitorSelect").value;
-            const selectedCompetitor2 = document.getElementById("competitorSelect2").value;
-
-            let tableContent = `<tr><th>Feature</th><th>${productComparisonData[selectedProduct].Brand} ${productComparisonData[selectedProduct].Model}</th><th>${productComparisonData[selectedCompetitor].Brand} ${productComparisonData[selectedCompetitor].Model}</th>`;
-            
-            if (selectedCompetitor2 !== "None") {
-                tableContent += `<th>${productComparisonData[selectedCompetitor2].Brand} ${productComparisonData[selectedCompetitor2].Model}</th>`;
-            }
-            
-            tableContent += `</tr>`;
-
-            const features = [
-                "Brand",
-                "Model",
-                "Measuring Voltage",
-                "Short Circuit Current",
-                "Resistance Range",
-                "Floors and walls Resistance measurement",
-                "Standard",
-                "DC and AC voltage measurement Range",
-                "Capacitance measurement range",
-                "Measurement of leakage current range",
-                "SPD",
-                "IP"
-            ];
-
-            features.forEach(feature => {
-                if (feature === "Brand" || feature === "Model") return; // Skip as we've already shown them in headers
-                
-                tableContent += `<tr>
-                    <td>${feature}</td>
-                    <td>${productComparisonData[selectedProduct][feature] || "NA"}</td>
-                    <td>${productComparisonData[selectedCompetitor][feature] || "NA"}</td>`;
-                
-                if (selectedCompetitor2 !== "None") {
-                    tableContent += `<td>${productComparisonData[selectedCompetitor2][feature] || "NA"}</td>`;
-                }
-                
-                tableContent += `</tr>`;
-            });
-
-            document.getElementById("comparisonTable").innerHTML = tableContent;
-        }
-
-        function updateCompetitorOptions() {
-            const selectedProduct = document.getElementById("productSelect").value;
-            const competitorSelect = document.getElementById("competitorSelect");
-            const competitorSelect2 = document.getElementById("competitorSelect2");
-            const competitors = Object.keys(productComparisonData).filter(p => p !== selectedProduct);
-
-            competitorSelect.innerHTML = competitors.map(comp => `<option value="${comp}">${productComparisonData[comp].Brand} ${productComparisonData[comp].Model}</option>`).join("");
-            
-            // Keep the "None" option and add other competitors
-            competitorSelect2.innerHTML = '<option value="None">None</option>' + 
-                competitors.map(comp => `<option value="${comp}">${productComparisonData[comp].Brand} ${productComparisonData[comp].Model}</option>`).join("");
-
-            loadComparisonTable();
-        }
-
-        function compareAllProducts() {
-            const allProducts = Object.keys(productComparisonData);
-            let tableContent = `<tr><th>Feature</th>`;
-            allProducts.forEach(product => {
-                tableContent += `<th>${productComparisonData[product].Brand} ${productComparisonData[product].Model}</th>`;
-            });
-            tableContent += `</tr>`;
-
-            const firstProduct = allProducts[0];
-            for (let feature in productComparisonData[firstProduct]) {
-                if (feature === "Brand" || feature === "Model") continue; // Skip as we've already shown them in headers
-                
-                tableContent += `<tr><td>${feature}</td>`;
-                allProducts.forEach(product => {
-                    tableContent += `<td>${productComparisonData[product][feature]}</td>`;
-                });
-                tableContent += `</tr>`;
-            }
-
-            document.getElementById("comparisonTable").innerHTML = tableContent;
-        }
-
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-
-            html2canvas(document.getElementById("comparisonTable")).then(canvas => {
-                let pdf = new jsPDF("l", "mm", "a4");
-                let imgData = canvas.toDataURL("image/png");
-
-                let imgWidth = 280;
-                let imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-                pdf.text("Product Comparison", 14, 10);
-                pdf.addImage(imgData, "PNG", 10, 15, imgWidth, imgHeight);
-                pdf.save("product-comparison.pdf");
-            });
-        }
-
-        // Initial setup
-        updateCompetitorOptions();
-    </script>
+    
 </body>
 </html>

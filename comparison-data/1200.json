@@ -1,0 +1,52 @@
+{
+  "products": {
+    "Sonel CMP-100": {
+      "AC current Range": "100 A",
+      "AC current Resolution": "0.001 mA",
+      "AC current Accuracy": "1.5%",
+      "Jaw Size": "32 mm",
+      "Data Hold Indication": "Available",
+      "Auto Power Off": "Available"
+    },
+    "Sonel CMP-200": {
+      "AC current Range": "200 A",
+      "AC current Resolution": "0.1 mA",
+      "AC current Accuracy": "2.5%",
+      "Jaw Size": "30 mm",
+      "Data Hold Indication": "Available",
+      "Auto Power Off": "Available"
+    },
+    "Megger DCM300E": {
+      "AC current Range": "300 A",
+      "AC current Resolution": "0.01 mA",
+      "AC current Accuracy": "±1.2% rdg ±5 dgt",
+      "Jaw Size": "40 mm",
+      "Data Hold Indication": "Available",
+      "Auto Power Off": "Available"
+    },
+    "Fluke 368/368 FC": {
+      "AC current Range": "60 A",
+      "AC current Resolution": "0.001 mA",
+      "AC current Accuracy": "1%",
+      "Jaw Size": "40 mm",
+      "Data Hold Indication": "Available",
+      "Auto Power Off": "Available"
+    },
+    "Fluke 369/369 FC": {
+      "AC current Range": "60 A",
+      "AC current Resolution": "0.001 mA",
+      "AC current Accuracy": "1%",
+      "Jaw Size": "61 mm",
+      "Data Hold Indication": "Available",
+      "Auto Power Off": "Available"
+    }
+  },
+  "features": [
+    "AC current Range",
+    "AC current Resolution",
+    "AC current Accuracy",
+    "Jaw Size",
+    "Data Hold Indication",
+    "Auto Power Off"
+  ]
+}

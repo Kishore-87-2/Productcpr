@@ -1,0 +1,55 @@
+{
+  "products": {
+    "Sonel MPI-540-PV": {
+      "Display Screen": "Features a large 7-inch color TFT LCD touch screen (800x480 pixels) that can be operated with dielectric gloves,.",
+      "Battery Type": "Powered by a rechargeable Li-Ion battery (11.1 V 3.4 Ah) for extended operation,.",
+      "Power Quality": "Functions as an advanced 3-phase power quality recorder complying with class S of the EN 61000-4-30 standard,.",
+      "Harmonics": "Capable of measuring up to the 40th harmonic for voltage and current, as well as Total Harmonic Distortion (THD),.",
+      "Live Oscilloscope": "Includes a LIVE mode that displays real-time voltage and current waveforms (oscilloscope) and phasor graphs.",
+      "Fault Loop": "Can measure short-circuit loop impedance, including in RCD-secured networks without tripping the breaker,.",
+      "RCD Testing": "Performs comprehensive automated safety tests on Residual Current Devices (RCDs), including tripping time and current for multiple types,,.",
+      "Earth Resistance": "Supports advanced earth resistance tests including 3-pole, 4-pole, 3-pole + clamp, 2-clamp methods, and soil resistivity,.",
+      "Ingress Protection": "Features an IP51 protection rating, offering superior defense against dust and water ingress,.",
+      "Memory & Storage": "Offers practically unlimited storage capacity via a removable microSD card slot,.",
+      "Wireless Meter": "The external IRM-1 solar irradiance meter uses a LoRa interface, providing a significantly larger wireless range than standard Bluetooth.",
+      "Communication": "Built-in Wi-Fi, Bluetooth, and direct USB 2.0 connectivity for easy data transfer,.",
+      "Max Insulation": "Can measure high insulation resistance (RINS) values up to 9.99 GΩ (at 1000 V),.",
+      "Phase & Motor": "Can test 3-phase sequence indicators and check motor rotation direction.",
+      "Max Current": "Supports optional flexible clamps capable of measuring up to 3000 A AC."
+    },
+    "Fluke SMFT-1000": {
+      "Display Screen": "Uses a color screen navigated via physical push buttons, with no touch capability.",
+      "Battery Type": "Powered by 6 standard disposable AA alkaline batteries,.",
+      "Power Quality": "Measures AC/DC power and inverter efficiency, but lacks dedicated power quality logging features,.",
+      "Harmonics": "Does not support the measurement of harmonics or THD.",
+      "Live Oscilloscope": "Does not feature live waveform or phasor displays.",
+      "Fault Loop": "Does not offer fault loop impedance testing.",
+      "RCD Testing": "Does not include RCD parameter testing capabilities.",
+      "Earth Resistance": "Limited to basic protective conductor resistance (RLO) and continuity testing,.",
+      "Ingress Protection": "Has a lower IP40 protection rating.",
+      "Memory & Storage": "Relies entirely on built-in internal memory which can reach memory overload.",
+      "Wireless Meter": "The external IRR2-BT meter connects via standard Bluetooth, which is limited to a <50 m range,.",
+      "Communication": "Connects to PCs using an Infrared (IR) to USB adapter cable or Bluetooth,.",
+      "Max Insulation": "Insulation resistance (RINS) measurement tops out at 999 MΩ (at 1000 V).",
+      "Phase & Motor": "Does not have phase sequence or motor rotation testing functions.",
+      "Max Current": "The provided i100 clamp measures up to 100 A AC/DC, with no higher capacity flex clamps noted in the standard specifications,."
+    }
+  },
+  "features": [
+    "Display Screen",
+    "Battery Type",
+    "Power Quality",
+    "Harmonics",
+    "Live Oscilloscope",
+    "Fault Loop",
+    "RCD Testing",
+    "Earth Resistance",
+    "Ingress Protection",
+    "Memory & Storage",
+    "Wireless Meter",
+    "Communication",
+    "Max Insulation",
+    "Phase & Motor",
+    "Max Current"
+  ]
+}

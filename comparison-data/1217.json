@@ -1,0 +1,102 @@
+{
+  "products": {
+    "Sonel MIC-10K1": {
+      "Measuring Voltage": "10kV",
+      "Resistance Range": "40.0 TΩ",
+      "DC and AC voltage measurement Range": "1500 V",
+      "Capacitance Measurement Range": "49.99 µF",
+      "Measurement of Leakage Current Range": "9.99 mA",
+      "Short Circuit Current": "1.2mA, 3mA, 6mA",
+      "Burn Mode": "Available",
+      "IP": "IP 67",
+      "Remote Control by Phone": "Available",
+      "Data Transmission": "USB, Bluetooth",
+      "Floors and Walls Resistance Measurement": "Available",
+      "Standard": "EN 61557, EN 61326-1"
+    },
+    "Megger S1-1068": {
+      "Measuring Voltage": "10kV",
+      "Resistance Range": "35 TΩ",
+      "DC and AC voltage measurement Range": "30 V to 660 V",
+      "Capacitance Measurement Range": "10 nF to 25 µF",
+      "Measurement of Leakage Current Range": "6 mA",
+      "Short Circuit Current": "6 mA",
+      "Burn Mode": "NA",
+      "IP": "IP65",
+      "Remote Control by Phone": "Remote control via USB cable only",
+      "Data Transmission": "USB, Bluetooth",
+      "Floors and Walls Resistance Measurement": "NA",
+      "Standard": "NA"
+    },
+    "Megger MIT-1025": {
+      "Measuring Voltage": "10kV",
+      "Resistance Range": "20 TΩ",
+      "DC and AC voltage measurement Range": "30 V to 660 V",
+      "Capacitance Measurement Range": "10 nF to 50 µF",
+      "Measurement of Leakage Current Range": "6 mA",
+      "Short Circuit Current": "3 mA",
+      "Burn Mode": "NA",
+      "IP": "IP65",
+      "Remote Control by Phone": "Remote control via USB cable only",
+      "Data Transmission": "USB, Bluetooth",
+      "Floors and Walls Resistance Measurement": "NA",
+      "Standard": "NA"
+    },
+    "Fluke 1555": {
+      "Measuring Voltage": "10kV",
+      "Resistance Range": "2 TΩ",
+      "DC and AC voltage measurement Range": "NA",
+      "Capacitance Measurement Range": "20.00 µF",
+      "Measurement of Leakage Current Range": "2 mA",
+      "Short Circuit Current": "2 mA",
+      "Burn Mode": "NA",
+      "IP": "IP40",
+      "Remote Control by Phone": "NA",
+      "Data Transmission": "USB",
+      "Floors and Walls Resistance Measurement": "NA",
+      "Standard": "Available"
+    },
+    "Motwane 10K PI": {
+      "Measuring Voltage": "10kV",
+      "Resistance Range": "20 TΩ",
+      "DC and AC voltage measurement Range": "600V",
+      "Capacitance Measurement Range": "1 nF to 50 µF",
+      "Measurement of Leakage Current Range": "3 mA",
+      "Short Circuit Current": "3 mA",
+      "Burn Mode": "NA",
+      "IP": "IP54",
+      "Remote Control by Phone": "Remote control via USB cable only",
+      "Data Transmission": "USB, Bluetooth",
+      "Floors and Walls Resistance Measurement": "NA",
+      "Standard": "NA"
+    },
+    "Rishabh Insu-10Dx+": {
+      "Measuring Voltage": "10kV",
+      "Resistance Range": "20 TΩ",
+      "DC and AC voltage measurement Range": "600V",
+      "Capacitance Measurement Range": "1 nF to 50 µF",
+      "Measurement of Leakage Current Range": "6 mA",
+      "Short Circuit Current": "1.2mA, 3mA, 6mA",
+      "Burn Mode": "NA",
+      "IP": "IP67",
+      "Remote Control by Phone": "NA",
+      "Data Transmission": "USB, Bluetooth",
+      "Floors and Walls Resistance Measurement": "NA",
+      "Standard": "Available"
+    }
+  },
+  "features": [
+    "Measuring Voltage",
+    "Resistance Range",
+    "DC and AC voltage measurement Range",
+    "Capacitance Measurement Range",
+    "Measurement of Leakage Current Range",
+    "Short Circuit Current",
+    "Burn Mode",
+    "IP",
+    "Remote Control by Phone",
+    "Data Transmission",
+    "Floors and Walls Resistance Measurement",
+    "Standard"
+  ]
+}

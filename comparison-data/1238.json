@@ -1,0 +1,55 @@
+{
+  "products": {
+    "Sonel CMP-3000": {
+      "AC Current Range (Clamp/Flex)": "1000 A (clamp), 3000 A (flex probe included)",
+      "DC Current Range": "1000 A",
+      "AC Voltage Range": "1000 V",
+      "DC Voltage Range": "1000 V",
+      "Resistance Range": "50.00 MΩ",
+      "Frequency Range": "10 MHz",
+      "Capacitance Range": "5000 µF",
+      "Duty Cycle (%) Range": "Up to 95%",
+      "Temperature Measurement Range": "–100 °C to +1000 °C (K-type)",
+      "Continuity / Diode Test": "Available",
+      "Data Logging / Communication": "Bluetooth (Sonel Multimeter Mobile)",
+      "Inrush Current": "Available",
+      "Non-contact Voltage Detector": "Available",
+      "Safety Rating": "CAT IV 600 V / CAT III 1000 V",
+      "Flex Clamp Integration": "Included (F-16 flex clamp, 3000 A)"
+    },
+    "Fluke 376 FC": {
+      "AC Current Range (Clamp/Flex)": "999.9 A (clamp), 2500 A (with iFlex)",
+      "DC Current Range": "999.9 A",
+      "AC Voltage Range": "1000 V",
+      "DC Voltage Range": "1000 V",
+      "Resistance Range": "60.00 kΩ",
+      "Frequency Range": "500 Hz",
+      "Capacitance Range": "1000 µF",
+      "Duty Cycle (%) Range": "Not Available",
+      "Temperature Measurement Range": "Not Available",
+      "Continuity / Diode Test": "Available",
+      "Data Logging / Communication": "Bluetooth (Fluke Connect App only)",
+      "Inrush Current": "Available",
+      "Non-contact Voltage Detector": "Not Available",
+      "Safety Rating": "CAT IV 600 V / CAT III 1000 V",
+      "Flex Clamp Integration": "iFlex included (2500 A)"
+    }
+  },
+  "features": [
+    "AC Current Range (Clamp/Flex)",
+    "DC Current Range",
+    "AC Voltage Range",
+    "DC Voltage Range",
+    "Resistance Range",
+    "Frequency Range",
+    "Capacitance Range",
+    "Duty Cycle (%) Range",
+    "Temperature Measurement Range",
+    "Continuity / Diode Test",
+    "Data Logging / Communication",
+    "Inrush Current",
+    "Non-contact Voltage Detector",
+    "Safety Rating",
+    "Flex Clamp Integration"
+  ]
+}

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KT-525 vs Competitors</title>
     <!-- jsPDF + autoTable -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    
     <style>
         :root {
             --blue: #007bff;
@@ -235,6 +235,9 @@
         }
     </style>
     <script src="timer.js?v=1min" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" defer></script>
+    <script src="comparison-sheet.js?v=1" data-sheet-id="1232" data-fallback="comparison-data/1232.json" defer></script>
 </head>
 <body>
     <div class="container">
@@ -256,11 +259,11 @@
         </div>
 
         <div class="buttons">
-            <button id="compareSelectedBtn" class="tooltip" onclick="compareSelectedProducts()" data-tooltip="Compare selected products" disabled>Compare Selected</button>
-            <button class="tooltip" onclick="compareAllProducts()" data-tooltip="Compare all products">Compare All</button>
-            <button id="exportSelectedBtn" class="tooltip" onclick="exportSelectedToPDF()" data-tooltip="Export selected to PDF" disabled>Export Selected</button>
-            <button class="tooltip" onclick="exportAllToPDF()" data-tooltip="Export all to PDF (multi-page)">Export All</button>
-            <button class="tooltip" onclick="clearSelections()" data-tooltip="Reset all selections">Clear Selection</button>
+            <button id="compareSelectedBtn" class="tooltip" data-comparison-action="compare-selected" disabled>Compare Selected</button>
+            <button class="tooltip" data-comparison-action="compare-all" disabled>Compare All</button>
+            <button id="exportSelectedBtn" class="tooltip" data-comparison-action="export-selected" disabled>Export Selected</button>
+            <button class="tooltip" data-comparison-action="export-all" disabled>Export All</button>
+            <button class="tooltip" data-comparison-action="clear" disabled>Clear Selection</button>
         </div>
 
         <div id="loading" class="loading"></div>
@@ -269,285 +272,6 @@
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
-    <script>
-        const PRODUCTS = {
-            "KT-525": {
-                "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
-                "Infrared resolution": "384x288",
-                "Super resolution": "768x576",
-                "Detector type": "7.5 -14 um",
-                "NETD": " <45 mK",
-                "Frame rate": "30Hz",
-                "Field of view": "25°x19°",
-                "IFOV": "1.13mrad",
-                "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
-                "Digital zoom": "1.1x to 10x",
-                "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
-                "Accuracy": "±2°C or 2%",
-                "Digital camera": "8MP",
-                "Image mode": "IR, VIS, MIF, PIP",
-                "Image adjustment": "Level span mode: Automatic, Semi-automatic, Manual",
-                "Palettes": "15"
-            },
-            "Fluke TiS75+": {
-                "Display screen": "3.5\"Touchscreen LCD display",
-                "Infrared resolution": "384 x 288",
-                "Super resolution": "NA",
-                "Detector type": "8-14 um",
-                "NETD": "40 mk",
-                "Frame rate": "9 Hz or 27 Hz",
-                "Field of view": "42° x 30°",
-                "IFOV": "1.91 mRad",
-                "Focusing mode": "Manual focus",
-                "Digital zoom": "NA",
-                "Measurement range": "-20 °C to 550 °C",
-                "Accuracy": "±2 °C or 2 %",
-                "Digital camera": "5MP",
-                "Image mode": "IR, VIS",
-                "Image adjustment": "NA",
-                "Palettes": "6"
-            },
-            "Toshniwal TI7": {
-                "Display screen": "NA",
-                "Infrared resolution": "384 x 288",
-                "Super resolution": "NA",
-                "Detector type": "7.5-14um",
-                "NETD": "NA",
-                "Frame rate": "NA",
-                "Field of view": "NA",
-                "IFOV": "NA",
-                "Focusing mode": "Manual focus",
-                "Digital zoom": "NA",
-                "Measurement range": "Range -20°C- +650°C, Optional 1200°C",
-                "Accuracy": "±2 °C or 2 %",
-                "Digital camera": "NA",
-                "Image mode": "NA",
-                "Image adjustment": "Adjustment Auto/manual contrast, brightness adjust",
-                "Palettes": "11"
-            },
-            "Toshniwal TI8": {
-                "Display screen": "NA",
-                "Infrared resolution": "384 x 288",
-                "Super resolution": "NA",
-                "Detector type": "7.5to 14μm",
-                "NETD": "NA",
-                "Frame rate": "50Hz / 60Hz",
-                "Field of view": "NA",
-                "IFOV": "NA",
-                "Focusing mode": "Manual / Auto",
-                "Digital zoom": "2X, 4X",
-                "Measurement range": "-20°C to +650°C",
-                "Accuracy": "±2 °C or 2 %",
-                "Digital camera": "5 MP",
-                "Image mode": "NA",
-                "Image adjustment": "NA",
-                "Palettes": "NA"
-            },
-            "Toshniwal TI346A": {
-                "Display screen": "5-inch color touch screen",
-                "Infrared resolution": "384 x 288",
-                "Super resolution": "768 x 576",
-                "Detector type": "NA",
-                "NETD": "NA",
-                "Frame rate": "NA",
-                "Field of view": "25° x 19°",
-                "IFOV": "NA",
-                "Focusing mode": "NA",
-                "Digital zoom": "NA",
-                "Measurement range": "-20°C to 120°C ; 0°C to 650°C ,Optional 300°C to 1550°C",
-                "Accuracy": "NA",
-                "Digital camera": "13MP",
-                "Image mode": "NA",
-                "Image adjustment": "NA",
-                "Palettes": "NA"
-            },
-            "Thermeye384M": {
-                "Display screen": "3.5 LCD (640×480) touch screen",
-                "Infrared resolution": "384×288",
-                "Super resolution": "1280x1024",
-                "Detector type": "7.5to 14 um",
-                "NETD": "<35mK",
-                "Frame rate": "25Hz",
-                "Field of view": "24",
-                "IFOV": "1.98mrad",
-                "Focusing mode": "Manual focusing",
-                "Digital zoom": "NA",
-                "Measurement range": "20°C- +550°C",
-                "Accuracy": "±2°C or ±2%",
-                "Digital camera": "5 MP",
-                "Image mode": "NA",
-                "Image adjustment": "NA",
-                "Palettes": "NA"
-            }
-        };
-
-        const sonelProducts = ["KT-525"];
-
-        const dom = {
-            product: document.getElementById("product"),
-            comp1: document.getElementById("competitor1"),
-            comp2: document.getElementById("competitor2"),
-            btnCompare: document.getElementById("compareSelectedBtn"),
-            btnExport: document.getElementById("exportSelectedBtn"),
-            loading: document.getElementById("loading"),
-            error: document.getElementById("errorMessage"),
-            noti: document.getElementById("notification"),
-            result: document.getElementById("comparisonResult")
-        };
-
-        function init() {
-            sonelProducts.forEach(p => dom.product.add(new Option(p, p)));
-            Object.keys(PRODUCTS).forEach(p => {
-                dom.comp1.add(new Option(p, p));
-                dom.comp2.add(new Option(p, p));
-            });
-            dom.comp2.add(new Option("None", "None"), 0);
-            dom.comp2.value = "None";
-
-            [dom.product, dom.comp1, dom.comp2].forEach(s => s.addEventListener('change', () => { updateDropdowns(); validate(); }));
-            validate();
-        }
-
-        function updateDropdowns() {
-            const p = dom.product.value, c1 = dom.comp1.value, c2 = dom.comp2.value;
-            dom.product.innerHTML = ""; dom.comp1.innerHTML = ""; dom.comp2.innerHTML = "";
-
-            sonelProducts.forEach(x => { if (x !== c1 && x !== c2) dom.product.add(new Option(x, x)); });
-            Object.keys(PRODUCTS).forEach(x => {
-                if (x !== p && x !== c2) dom.comp1.add(new Option(x, x));
-                if (x !== p && x !== c1) dom.comp2.add(new Option(x, x));
-            });
-            dom.comp2.add(new Option("None", "None"), 0);
-            dom.product.value = p; dom.comp1.value = c1; dom.comp2.value = c2;
-        }
-
-        function clearSelections() {
-            dom.product.selectedIndex = 0;
-            dom.comp1.selectedIndex = 0;
-            dom.comp2.value = "None";
-            dom.result.innerHTML = ""; dom.error.textContent = "";
-            updateDropdowns(); validate();
-        }
-
-        function show(msg) { dom.noti.textContent = msg; dom.noti.style.display = "block"; setTimeout(() => dom.noti.style.display = "none", 3000); }
-        function loading(on) { dom.loading.style.display = on ? "block" : "none"; }
-        function error(msg) { dom.error.textContent = msg; loading(false); }
-
-        function validate() {
-            const ok = dom.product.value && dom.comp1.value;
-            dom.btnCompare.disabled = !ok;
-            dom.btnExport.disabled = !ok;
-            if (!ok) dom.result.innerHTML = "";
-        }
-
-        function getFeatures(products) {
-            const set = new Set();
-            products.forEach(p => Object.keys(PRODUCTS[p] || {}).forEach(f => set.add(f)));
-            return Array.from(set);
-        }
-
-        function compareSelectedProducts() {
-            loading(true);
-            const p = dom.product.value, c1 = dom.comp1.value, c2 = dom.comp2.value;
-            if (!p || !c1) return error("Select Sonel product and at least one competitor.");
-            if (c2 !== "None" && c1 === c2) return error("Select different competitors.");
-
-            const prods = c2 === "None" ? [p, c1] : [p, c1, c2];
-            const feats = getFeatures(prods);
-            let html = `<h3>Comparison: ${prods.join(" vs ")}</h3><table><tr><th>Feature</th>${prods.map(x => `<th>${x}</th>`).join("")}</tr>`;
-            feats.forEach(f => {
-                html += `<tr><td><strong>${f}</strong></td>${prods.map(x => `<td>${PRODUCTS[x][f] || 'N/A'}</td>`).join("")}</tr>`;
-            });
-            html += `</table>`;
-            dom.result.innerHTML = html;
-            loading(false);
-        }
-
-        function compareAllProducts() {
-            loading(true);
-            const all = Object.keys(PRODUCTS);
-            const feats = getFeatures(all);
-            let html = `<h3>All Products Comparison</h3><table><tr><th>Feature</th>${all.map(x => `<th>${x}</th>`).join("")}</tr>`;
-            feats.forEach(f => {
-                html += `<tr><td><strong>${f}</strong></td>${all.map(x => `<td>${PRODUCTS[x][f] || 'N/A'}</td>`).join("")}</tr>`;
-            });
-            html += `</table>`;
-            dom.result.innerHTML = html;
-            loading(false);
-        }
-
-        async function exportSelectedToPDF() {
-            loading(true);
-            const p = dom.product.value, c1 = dom.comp1.value, c2 = dom.comp2.value;
-            if (!p || !c1) return error("Select products for export.");
-            if (c2 !== "None" && c1 === c2) return error("Select different competitors.");
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
-            const prods = c2 === "None" ? [p, c1] : [p, c1, c2];
-            const feats = getFeatures(prods);
-
-            doc.setFontSize(18);
-            doc.setTextColor(0, 123, 255);
-            doc.text("KT-525 vs Competitors", 14, 15);
-
-            const headers = ["Feature", ...prods];
-            const rows = feats.map(f => [f, ...prods.map(x => PRODUCTS[x][f] || 'N/A')]);
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 25,
-                theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 4 },
-                headStyles: { fillColor: [0, 123, 255], textColor: 255 },
-                alternateRowStyles: { fillColor: [240, 248, 255] },
-                columnStyles: { 0: { fontStyle: 'bold' } }
-            });
-
-            doc.save(`KT525_vs_${prods.slice(1).join("_")}.pdf`);
-            loading(false);
-            show("Selected comparison exported!");
-        }
-
-        async function exportAllToPDF() {
-            loading(true);
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [297, 420] });
-            const all = Object.keys(PRODUCTS);
-            const feats = getFeatures(all);
-
-            doc.setFontSize(18);
-            doc.setTextColor(0, 123, 255);
-            doc.text("All 384x288 Thermal Cameras", 14, 15);
-
-            const headers = ["Feature", ...all];
-            const rows = feats.map(f => [f, ...all.map(x => PRODUCTS[x][f] || 'N/A')]);
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 25,
-                theme: 'grid',
-                styles: { fontSize: 7, cellPadding: 2.5 },
-                headStyles: { fillColor: [0, 123, 255], textColor: 255, fontSize: 8 },
-                alternateRowStyles: { fillColor: [240, 248, 255] },
-                columnStyles: { 0: { fontStyle: 'bold' } },
-                pageBreak: 'auto',
-                didDrawPage: data => {
-                    doc.setFontSize(10);
-                    doc.setTextColor(100);
-                    const pageCount = doc.internal.getNumberOfPages();
-                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, 14, doc.internal.pageSize.height - 10);
-                }
-            });
-
-            doc.save("All_384x288_Cameras.pdf");
-            loading(false);
-            show("All comparisons exported!");
-        }
-
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+    
 </body>
 </html>

@@ -1,0 +1,59 @@
+{
+  "products": {
+    "Sonel CMM-10": {
+      "AC Voltage": "600 V",
+      "DC Voltage": "600 V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "10.00 MHz",
+      "Capacity": "100.0 µF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "IP": "IP-67"
+    },
+    "Sonel CMM-11": {
+      "AC Voltage": "600 V",
+      "DC Voltage": "600 V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "99.99 kHz",
+      "Capacity": "4000 µF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "IP": "IP 67"
+    },
+    "Fluke 115": {
+      "AC Voltage": "600 V",
+      "DC Voltage": "600 V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "50.00 kHz",
+      "Capacity": "9999 μF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "IP": "IP42"
+    },
+    "Fluke 117": {
+      "AC Voltage": "600 V",
+      "DC Voltage": "600 V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "50.00 kHz",
+      "Capacity": "9999 μF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "IP": "IP42"
+    }
+  },
+  "features": [
+    "AC Voltage",
+    "DC Voltage",
+    "DC Current",
+    "AC Current",
+    "Resistance",
+    "Frequency",
+    "Capacity",
+    "Continuity / Diode Test",
+    "IP"
+  ]
+}

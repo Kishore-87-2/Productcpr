@@ -1,0 +1,74 @@
+{
+  "products": {
+    "Sonel MIC-5050": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "1.2mA, 3mA or 6mA",
+      "Resistance Range": "20.0 TΩ",
+      "Resolution": "NA",
+      "Accuracy": "NA",
+      "Floors and walls Resistance measurement": "Available",
+      "Standard": "EN 61557, EN 61326-1",
+      "DC and AC voltage measurement Range": "1500V",
+      "Capacitance measurement range": "49.99 µF",
+      "Measurement of leakage current range": "9.99mA",
+      "Burn mode": "Available",
+      "IP": "IP67"
+    },
+    "Megger S1-568": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "6mA",
+      "Resistance Range": "10 TΩ",
+      "Resolution": "NA",
+      "Accuracy": "NA",
+      "Floors and walls Resistance measurement": "NA",
+      "Standard": "NA",
+      "DC and AC voltage measurement Range": "660V",
+      "Capacitance measurement range": "10nF to 25µF",
+      "Measurement of leakage current range": "0.01nA to 6mA",
+      "Burn mode": "NA",
+      "IP": "IP65"
+    },
+    "Rishabh Rish Insu 5Dx+": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "1.2mA, 3mA or 6mA",
+      "Resistance Range": "10 TΩ",
+      "Resolution": "NA",
+      "Accuracy": "Available",
+      "Floors and walls Resistance measurement": "NA",
+      "Standard": "Available",
+      "DC and AC voltage measurement Range": "600V",
+      "Capacitance measurement range": "1nF to 50µF",
+      "Measurement of leakage current range": "0.01nA to 6mA",
+      "Burn mode": "NA",
+      "IP": "IP67"
+    },
+    "Motwane 5K PI": {
+      "Measuring Voltage": "5000V",
+      "Short Circuit Current": "5mA",
+      "Resistance Range": "10 TΩ",
+      "Resolution": "NA",
+      "Accuracy": "NA",
+      "Floors and walls Resistance measurement": "NA",
+      "Standard": "NA",
+      "DC and AC voltage measurement Range": "600V DC",
+      "Capacitance measurement range": "10nF to 50µF",
+      "Measurement of leakage current range": "up to 5mA",
+      "Burn mode": "NA",
+      "IP": "IP65"
+    }
+  },
+  "features": [
+    "Measuring Voltage",
+    "Short Circuit Current",
+    "Resistance Range",
+    "Resolution",
+    "Accuracy",
+    "Floors and walls Resistance measurement",
+    "Standard",
+    "DC and AC voltage measurement Range",
+    "Capacitance measurement range",
+    "Measurement of leakage current range",
+    "Burn mode",
+    "IP"
+  ]
+}

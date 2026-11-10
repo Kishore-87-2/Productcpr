@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Comparison Tool</title>
     <!-- Include jsPDF library for PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    
     <style>
         /* CSS Styling */
         body {
@@ -98,6 +98,9 @@
         }
     </style>
     <script src="timer.js?v=1min" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" defer></script>
+    <script src="comparison-sheet.js?v=1" data-sheet-id="1208" data-fallback="comparison-data/1208.json" defer></script>
 </head>
 <body>
     <div class="container">
@@ -145,313 +148,15 @@
         </div>
 
         <div class="buttons">
-            <button onclick="compareSelectedProducts()">Compare Selected</button>
-            <button onclick="compareAllProducts()">Compare All</button>
-            <button onclick="exportSelectedToPDF()">Export Selected to PDF</button>
-            <button onclick="exportAllToPDF()">Export All to PDF</button>
+            <button data-comparison-action="compare-selected" disabled>Compare Selected</button>
+            <button data-comparison-action="compare-all" disabled>Compare All</button>
+            <button data-comparison-action="export-selected" disabled>Export Selected to PDF</button>
+            <button data-comparison-action="export-all" disabled>Export All to PDF</button>
         </div>
 
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
-    <script>
-        // Product Data
-        const products = {
-            "Sonel MMR-620": {
-                "Range": "1999 Ω",
-                "Resolution": "1 µΩ",
-                "Test current": "10 Amps",
-                "Accuracy (Percentage)": "0.25",
-                "Input voltmeter impedance": "200 kΩ",
-                "Number of measurements with 10A current": "300",
-                "Maximum resistance of leads for 10A current": "0.1 Ω",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "NA",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "Available",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "CAT III 300 V",
-                "Ingress protection": "IP54",
-                "External voltage": "up to 440 V AC for 10 s",
-                "Memory": "990 Cells",
-                "Display": "TFT graphic",
-                "Interface": "RS-232",
-                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
-                "Weight": "1.7 kg"
-            },
-            "Sonel MMR-630": {
-                "Range": "1999 Ω",
-                "Resolution": "0.1 µΩ",
-                "Test current": "10 Amps",
-                "Accuracy (Percentage)": "0.25",
-                "Input voltmeter impedance": "200 kΩ",
-                "Number of measurements with 10A current": "300",
-                "Maximum resistance of leads for 10A current": "0.1 Ω",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "NA",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "Available",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "CAT III 300 V",
-                "Ingress protection": "IP54",
-                "External voltage": "up to 440 V AC for 10 s",
-                "Memory": "990 Cells",
-                "Display": "TFT graphic",
-                "Interface": "RS-232",
-                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
-                "Weight": "1.7 kg"
-            },
-            "Sonel MMR-640": {
-                "Range": "1999.9 Ω",
-                "Resolution": "0.1 µΩ",
-                "Test current": "10 Amps",
-                "Accuracy (Percentage)": "0.25",
-                "Input voltmeter impedance": "200 kΩ",
-                "Number of measurements with 10A current": "700….800",
-                "Maximum resistance of leads for 10A current": "0.1 Ω",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "NA",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "Available",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "CAT III 600 V",
-                "Ingress protection": "IP 67",
-                "External voltage": "up to 600 Vac for 10 s",
-                "Memory": "990 Cells",
-                "Display": "TFT graphic",
-                "Interface": "USB, LAN",
-                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
-                "Weight": "3.5kg"
-            },
-            "Sonel MMR-650": {
-                "Range": "1999.9 Ω",
-                "Resolution": "0.1 µΩ",
-                "Test current": "10 Amps",
-                "Accuracy (Percentage)": "0.25",
-                "Input voltmeter impedance": "200 kΩ",
-                "Number of measurements with 10A current": "700….800",
-                "Maximum resistance of leads for 10A current": "0.1 Ω",
-                "Auto temperature compensation function": "Available",
-                "Temperature coefficient": "Available",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "Available",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "CAT III 600 V",
-                "Ingress protection": "IP 67",
-                "External voltage": "up to 600 Vac for 10 s",
-                "Memory": "990 Cells",
-                "Display": "TFT graphic",
-                "Interface": "USB, LAN",
-                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
-                "Weight": "3.5kg"
-            },
-            "DLRO10HD": {
-                "Range": "2500 Ω",
-                "Resolution": "0.1 µΩ",
-                "Test current": "10 Amps",
-                "Accuracy (Percentage)": "0.2",
-                "Input voltmeter impedance": ">200 KΩ",
-                "Number of measurements with 10A current": "NA",
-                "Maximum resistance of leads for 10A current": "NA",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "Available",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "Available",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "CAT III 300 V",
-                "Ingress protection": "IP65",
-                "External voltage": "NA",
-                "Memory": "NA",
-                "Display": "LCD display",
-                "Interface": "NA",
-                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
-                "Weight": "6.7 kg"
-            },
-            "DLRO10HDX": {
-                "Range": "2500 Ω",
-                "Resolution": "0.1 µΩ",
-                "Test current": "10 Amps",
-                "Accuracy (Percentage)": "0.2",
-                "Input voltmeter impedance": ">200 KΩ",
-                "Number of measurements with 10A current": "NA",
-                "Maximum resistance of leads for 10A current": "NA",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "Available",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "Available",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "CAT III 300 V",
-                "Ingress protection": "IP65",
-                "External voltage": "NA",
-                "Memory": "220",
-                "Display": "LCD display",
-                "Interface": "USB",
-                "EMC requirements": "EN 61326-1 and EN 61326-2-2",
-                "Weight": "6.7 kg"
-            },
-            "LR-2045": {
-                "Range": "2000 Ω",
-                "Resolution": "0.1 µΩ",
-                "Test current": "1 Amps",
-                "Accuracy (Percentage)": "0.05",
-                "Input voltmeter impedance": "NA",
-                "Number of measurements with 10A current": "NA",
-                "Maximum resistance of leads for 10A current": "NA",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "Available",
-                "Measurement triggering": "NA",
-                "Limit setting": "NA",
-                "Flow of current": "Unidirectional & Bidirectional",
-                "Measurement category": "NA",
-                "Ingress protection": "NA",
-                "External voltage": "NA",
-                "Memory": "NA",
-                "Display": "LED",
-                "Interface": "NA",
-                "EMC requirements": "NA",
-                "Weight": "3.2Kg"
-            },
-            "LR2045-S": {
-                "Range": "2000Ω",
-                "Resolution": "1 µΩ",
-                "Test current": "1 Amps",
-                "Accuracy (Percentage)": "0.05",
-                "Input voltmeter impedance": "NA",
-                "Number of measurements with 10A current": "NA",
-                "Maximum resistance of leads for 10A current": "NA",
-                "Auto temperature compensation function": "NA",
-                "Temperature coefficient": "Available",
-                "Measurement triggering": "normal, automatic and continuous",
-                "Limit setting": "NA",
-                "Flow of current": "NA",
-                "Measurement category": "CAT III 600 V",
-                "Ingress protection": "NA",
-                "External voltage": "NA",
-                "Memory": "Available",
-                "Display": "4.3” Color TFT with backlit",
-                "Interface": "USB",
-                "EMC requirements": "EN 61326-1",
-                "Weight": "6.0kg"
-            }
-        };
-
-        // Function to compare selected products
-        function compareSelectedProducts() {
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
-
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>${product}</th>
-                        <th>${competitor1}</th>
-                        <th>${competitor2}</th>
-                    </tr>
-            `;
-
-            Object.keys(products[product]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        <td>${products[product][feature]}</td>
-                        <td>${products[competitor1][feature]}</td>
-                        <td>${products[competitor2][feature]}</td>
-                    </tr>
-                `;
-            });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
-        }
-
-        // Function to compare all products
-        function compareAllProducts() {
-            const resultDiv = document.getElementById("comparisonResult");
-            let tableHTML = `
-                <h3>Comparison Result:</h3>
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        ${Object.keys(products).map(product => `<th>${product}</th>`).join("")}
-                    </tr>
-            `;
-
-            Object.keys(products[Object.keys(products)[0]]).forEach(feature => {
-                tableHTML += `
-                    <tr>
-                        <td>${feature}</td>
-                        ${Object.keys(products).map(product => `<td>${products[product][feature]}</td>`).join("")}
-                    </tr>
-                `;
-            });
-
-            tableHTML += `</table>`;
-            resultDiv.innerHTML = tableHTML;
-        }
-
-        // Function to export selected comparison to PDF
-        function exportSelectedToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const product = document.getElementById("product").value;
-            const competitor1 = document.getElementById("competitor1").value;
-            const competitor2 = document.getElementById("competitor2").value;
-
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
-
-            // Add table to PDF
-            const headers = ["Feature", product, competitor1, competitor2];
-            const rows = Object.keys(products[product]).map(feature => {
-                return [feature, products[product][feature], products[competitor1][feature], products[competitor2][feature]];
-            });
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("Selected_Comparison.pdf");
-        }
-
-        // Function to export all comparison to PDF
-        function exportAllToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Set a compatible font (e.g., Helvetica)
-            doc.setFont("helvetica");
-
-            // Add table to PDF
-            const headers = ["Feature", ...Object.keys(products)];
-            const rows = Object.keys(products[Object.keys(products)[0]]).map(feature => {
-                return [feature, ...Object.keys(products).map(product => products[product][feature])];
-            });
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                theme: "grid",
-                styles: { fontSize: 10 },
-                headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
-                margin: { horizontal: 10 },
-                tableWidth: "auto"
-            });
-
-            doc.save("All_Comparison.pdf");
-        }
-    </script>
+    
 </body>
 </html>

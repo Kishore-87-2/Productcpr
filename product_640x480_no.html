@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KT 550 vs Competitors</title>
     <!-- jsPDF + autoTable -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    
     <style>
         :root {
             --blue: #007bff;
@@ -229,6 +229,9 @@
         }
     </style>
     <script src="timer.js?v=1min" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" defer></script>
+    <script src="comparison-sheet.js?v=1" data-sheet-id="1235" data-fallback="comparison-data/1235.json" defer></script>
 </head>
 <body>
     <div class="container">
@@ -250,11 +253,11 @@
         </div>
 
         <div class="buttons">
-            <button id="compareSelectedBtn" class="tooltip" data-tooltip="Compare selected products" disabled>Compare Selected</button>
-            <button id="compareAllBtn" class="tooltip" data-tooltip="Compare all 6 products">Compare All</button>
-            <button id="exportSelectedBtn" class="tooltip" data-tooltip="Export selected to PDF" disabled>Export Selected</button>
-            <button id="exportAllBtn" class="tooltip" data-tooltip="Export all to PDF (multi-page A3)">Export All</button>
-            <button id="clearBtn" class="tooltip" data-tooltip="Reset all selections">Clear Selection</button>
+            <button id="compareSelectedBtn" class="tooltip" data-comparison-action="compare-selected" disabled>Compare Selected</button>
+            <button id="compareAllBtn" class="tooltip" data-comparison-action="compare-all" disabled>Compare All</button>
+            <button id="exportSelectedBtn" class="tooltip" data-comparison-action="export-selected" disabled>Export Selected</button>
+            <button id="exportAllBtn" class="tooltip" data-comparison-action="export-all" disabled>Export All</button>
+            <button id="clearBtn" class="tooltip" data-comparison-action="clear" disabled>Clear Selection</button>
         </div>
 
         <div id="loading" class="loading"></div>
@@ -263,320 +266,6 @@
         <div id="comparisonResult" class="comparison-result"></div>
     </div>
 
-    <script>
-        // Product Data Module
-        const ProductData = (function() {
-            const products = {
-                "KT 550": {
-                    "Infrared resolution": "640x480",
-                    "Field of view": "25°x19°",
-                    "IFOV": "0.68mrad",
-                    "Measurement range": "-40°C to 150°C, 0°C to 650°C Optional 500°C to 2000°C",
-                    "Display screen": "4.3\", 800x480 pixel touchscreen LCD",
-                    "Super resolution": "1280x960",
-                    "Detector type": "VOx, 7.5to 14um",
-                    "NETD": "40 mK",
-                    "Min. object distance": "0.15m",
-                    "Focusing mode": "Manual / Automatic / Touch autofocus / Continuous autofocus",
-                    "Digital zoom": "1.1xt0 20x",
-                    "Accuracy": "±2°C or 2%",
-                    "Digital camera": "13MP",
-                    "Image mode": "IR, VIS, MIF, PIP"
-                },
-                "FLIR E96": {
-                    "Infrared resolution": "640x480",
-                    "Field of view": "24° × 18°",
-                    "IFOV": "1.66 mrad/pixel",
-                    "Measurement range": "-20°C to 650°C",
-                    "Display screen": "4 in.640 × 480 color LCD",
-                    "Super resolution": "1280x960",
-                    "Detector type": "VOx, 7.5to 14um",
-                    "NETD": "40 mK",
-                    "Min. object distance": "0.15 m",
-                    "Focusing mode": "Manual",
-                    "Digital zoom": "1–4× continuous",
-                    "Accuracy": "±2°C or 2%",
-                    "Digital camera": "5MP",
-                    "Image mode": "IR, VIS, MIF, PIP"
-                },
-                "Fluke Ti480 PRO": {
-                    "Infrared resolution": "640x480",
-                    "Field of view": "34°x24°",
-                    "IFOV": "0.93 mRad",
-                    "Measurement range": "-20°C to +1,000°C",
-                    "Display screen": "3.5 inch (landscape), 640 x 480 LCD",
-                    "Super resolution": "1280 x 960",
-                    "Detector type": "7.5 um to 14 um",
-                    "NETD": "50 mK",
-                    "Min. object distance": "0.15 m",
-                    "Focusing mode": "Auto and manual",
-                    "Digital zoom": "2x and 4x",
-                    "Accuracy": "±2°C or 2%",
-                    "Digital camera": "5MP",
-                    "Image mode": "IR, VIS, MIF, PIP"
-                },
-                "Fluke Ti401 PRO": {
-                    "Infrared resolution": "640x480",
-                    "Field of view": "34°x24°",
-                    "IFOV": "0.93 mRad",
-                    "Measurement range": "-20 °C to +650 °C",
-                    "Display screen": "3.5 inch (landscape), 640 x 480 LCD",
-                    "Super resolution": "NA",
-                    "Detector type": "7.5 um to 14 um",
-                    "NETD": " 75 mK",
-                    "Min. object distance": "0.15 m",
-                    "Focusing mode": "Auto and manual",
-                    "Digital zoom": "2x and 4x",
-                    "Accuracy": "±2°C or 2%",
-                    "Digital camera": "5MP",
-                    "Image mode": "IR, VIS, MIF, PIP"
-                },
-                "Toshniwal TI348A": {
-                    "Infrared resolution": "640 x 480",
-                    "Field of view": "25° x 19°",
-                    "IFOV": "NA",
-                    "Measurement range": "-20°C to 120°C; 0°C to 650°C; 300°C to 1550°C",
-                    "Display screen": "NA",
-                    "Super resolution": "1280 x 960",
-                    "Detector type": "NA",
-                    "NETD": "NA",
-                    "Min. object distance": "NA",
-                    "Focusing mode": "NA",
-                    "Digital zoom": "NA",
-                    "Accuracy": "NA",
-                    "Digital camera": "13MP",
-                    "Image mode": "NA"
-                },
-                "Fluke Ti 480u": {
-                    "Infrared resolution": "640 x 480",
-                    "Field of view": "25° x 19°",
-                    "IFOV": "0.68 mrad",
-                    "Measurement range": "-20°C to 1200 °C",
-                    "Display screen": "3.5\" LCD, 640 x 480",
-                    "Super resolution": "NA",
-                    "Detector type": "7.5 um to 14 um",
-                    "NETD": "50 mK",
-                    "Min. object distance": "0.1 m",
-                    "Focusing mode": "Manual / Auto",
-                    "Digital zoom": "1..4X",
-                    "Accuracy": "±2°C or ±2% of reading",
-                    "Digital camera": "13 MP",
-                    "Image mode": "IR / Visual / Infrafusion MIF / PiP"
-                }
-            };
-
-            const sonelProducts = ["KT 550"];
-
-            const getProductNames = () => Object.keys(products);
-            const getProductData = (name) => products[name] || {};
-            const getAllFeatures = () => {
-                const set = new Set();
-                Object.values(products).forEach(p => Object.keys(p).forEach(f => set.add(f)));
-                return Array.from(set);
-            };
-
-            return { getProductNames, getProductData, getAllFeatures, sonelProducts };
-        })();
-
-        // UI Controller
-        const UI = (function() {
-            const DOM = {
-                product: '#product',
-                comp1: '#competitor1',
-                comp2: '#competitor2',
-                btnCompare: '#compareSelectedBtn',
-                btnExport: '#exportSelectedBtn',
-                btnAll: '#compareAllBtn',
-                btnExportAll: '#exportAllBtn',
-                btnClear: '#clearBtn',
-                loading: '#loading',
-                error: '#errorMessage',
-                noti: '#notification',
-                result: '#comparisonResult'
-            };
-
-            const populate = () => {
-                const p = document.querySelector(DOM.product);
-                const c1 = document.querySelector(DOM.comp1);
-                const c2 = document.querySelector(DOM.comp2);
-
-                p.innerHTML = ""; c1.innerHTML = ""; c2.innerHTML = "";
-
-                ProductData.sonelProducts.forEach(x => p.add(new Option(x, x)));
-                ProductData.getProductNames().forEach(x => {
-                    c1.add(new Option(x, x));
-                    c2.add(new Option(x, x));
-                });
-                c2.add(new Option("None", "None"), 0);
-                c2.value = "None";
-            };
-
-            const getSelected = () => ({
-                product: document.querySelector(DOM.product).value,
-                comp1: document.querySelector(DOM.comp1).value,
-                comp2: document.querySelector(DOM.comp2).value
-            });
-
-            const display = (data) => {
-                const names = Object.keys(data);
-                const feats = ProductData.getAllFeatures();
-                let html = `<h3>Comparison: ${names.join(" vs ")}</h3><table><tr><th>Feature</th>${names.map(n => `<th>${n}</th>`).join("")}</tr>`;
-                feats.forEach(f => {
-                    html += `<tr><td><strong>${f}</strong></td>${names.map(n => `<td>${data[n][f] || 'N/A'}</td>`).join("")}</tr>`;
-                });
-                html += `</table>`;
-                document.querySelector(DOM.result).innerHTML = html;
-            };
-
-            return { DOM, populate, getSelected, display };
-        })();
-
-        // App Controller
-        const App = (function(PD, UI) {
-            const DOM = UI.DOM;
-
-            const init = () => {
-                UI.populate();
-                [DOM.product, DOM.comp1, DOM.comp2].forEach(s =>
-                    document.querySelector(s).addEventListener('change', () => { updateDropdowns(); validate(); })
-                );
-                document.querySelector(DOM.btnCompare).addEventListener('click', compareSelected);
-                document.querySelector(DOM.btnExport).addEventListener('click', exportSelected);
-                document.querySelector(DOM.btnAll).addEventListener('click', compareAll);
-                document.querySelector(DOM.btnExportAll).addEventListener('click', exportAll);
-                document.querySelector(DOM.btnClear).addEventListener('click', clear);
-                validate();
-            };
-
-            const updateDropdowns = () => {
-                const p = document.querySelector(DOM.product).value;
-                const c1 = document.querySelector(DOM.comp1).value;
-                const c2 = document.querySelector(DOM.comp2).value;
-
-                const pSel = document.querySelector(DOM.product);
-                const c1Sel = document.querySelector(DOM.comp1);
-                const c2Sel = document.querySelector(DOM.comp2);
-
-                pSel.innerHTML = ""; c1Sel.innerHTML = ""; c2Sel.innerHTML = "";
-
-                PD.sonelProducts.forEach(x => { if (x !== c1 && x !== c2) pSel.add(new Option(x, x)); });
-                PD.getProductNames().forEach(x => {
-                    if (x !== p && x !== c2) c1Sel.add(new Option(x, x));
-                    if (x !== p && x !== c1) c2Sel.add(new Option(x, x));
-                });
-                c2Sel.add(new Option("None", "None"), 0);
-                pSel.value = p; c1Sel.value = c1; c2Sel.value = c2;
-            };
-
-            const validate = () => {
-                const ok = document.querySelector(DOM.product).value && document.querySelector(DOM.comp1).value;
-                document.querySelector(DOM.btnCompare).disabled = !ok;
-                document.querySelector(DOM.btnExport).disabled = !ok;
-                if (!ok) document.querySelector(DOM.result).innerHTML = "";
-            };
-
-            const show = (msg) => {
-                const n = document.querySelector(DOM.noti);
-                n.textContent = msg; n.style.display = "block";
-                setTimeout(() => n.style.display = "none", 3000);
-            };
-
-            const loading = (on) => { document.querySelector(DOM.loading).style.display = on ? "block" : "none"; };
-            const err = (msg) => { document.querySelector(DOM.error).textContent = msg; loading(false); };
-
-            const compareSelected = () => {
-                loading(true);
-                const { product: p, comp1: c1, comp2: c2 } = UI.getSelected();
-                if (!p || !c1) return err("Select Sonel product and at least one competitor.");
-                if (c2 !== "None" && c1 === c2) return err("Select different competitors.");
-
-                const prods = c2 === "None" ? { [p]: PD.getProductData(p), [c1]: PD.getProductData(c1) } :
-                                             { [p]: PD.getProductData(p), [c1]: PD.getProductData(c1), [c2]: PD.getProductData(c2) };
-                UI.display(prods);
-                loading(false);
-            };
-
-            const compareAll = () => {
-                loading(true);
-                const data = {};
-                PD.getProductNames().forEach(n => data[n] = PD.getProductData(n));
-                UI.display(data);
-                loading(false);
-            };
-
-            const exportPDF = (data, file) => {
-                const { jsPDF } = window.jspdf;
-                const isAll = file.includes("All");
-                const doc = isAll ? new jsPDF({ orientation: 'landscape', unit: 'mm', format: [297, 420] }) : new jsPDF('l', 'mm', 'a4');
-                const names = Object.keys(data);
-                const feats = PD.getAllFeatures();
-
-                doc.setFontSize(isAll ? 18 : 16);
-                doc.setTextColor(0, 123, 255);
-                doc.text(isAll ? "All 640x480 Thermal Cameras" : "KT 550 vs Competitors", 14, 15);
-
-                const headers = ["Feature", ...names];
-                const rows = feats.map(f => [f, ...names.map(n => data[n][f] || 'N/A')]);
-
-                doc.autoTable({
-                    head: [headers],
-                    body: rows,
-                    startY: 25,
-                    theme: 'grid',
-                    styles: { fontSize: isAll ? 6.5 : 9, cellPadding: isAll ? 2 : 4 },
-                    headStyles: { fillColor: [0, 123, 255], textColor: 255, fontSize: isAll ? 7.5 : 10 },
-                    alternateRowStyles: { fillColor: [240, 248, 255] },
-                    columnStyles: { 0: { fontStyle: 'bold' } },
-                    pageBreak: 'auto',
-                    didDrawPage: d => {
-                        if (isAll) {
-                            doc.setFontSize(10);
-                            doc.setTextColor(100);
-                            doc.text(`Page ${d.pageNumber}`, 14, doc.internal.pageSize.height - 10);
-                        }
-                    }
-                });
-
-                doc.save(file);
-            };
-
-            const exportSelected = () => {
-                loading(true);
-                const { product: p, comp1: c1, comp2: c2 } = UI.getSelected();
-                if (!p || !c1) return err("Select products for export.");
-                if (c2 !== "None" && c1 === c2) return err("Select different competitors.");
-
-                const prods = c2 === "None" ? { [p]: PD.getProductData(p), [c1]: PD.getProductData(c1) } :
-                                             { [p]: PD.getProductData(p), [c1]: PD.getProductData(c1), [c2]: PD.getProductData(c2) };
-                exportPDF(prods, `KT550_vs_${Object.keys(prods).slice(1).join("_")}.pdf`);
-                loading(false);
-                show("Selected comparison exported!");
-            };
-
-            const exportAll = () => {
-                loading(true);
-                const data = {};
-                PD.getProductNames().forEach(n => data[n] = PD.getProductData(n));
-                exportPDF(data, "All_640x480_Cameras.pdf");
-                loading(false);
-                show("All comparisons exported!");
-            };
-
-            const clear = () => {
-                document.querySelector(DOM.product).selectedIndex = 0;
-                document.querySelector(DOM.comp1).selectedIndex = 0;
-                document.querySelector(DOM.comp2).value = "None";
-                document.querySelector(DOM.result).innerHTML = "";
-                document.querySelector(DOM.error).textContent = "";
-                updateDropdowns();
-                validate();
-            };
-
-            return { init, compareAll, exportAll, clear };
-        })(ProductData, UI);
-
-        // Start
-        document.addEventListener('DOMContentLoaded', App.init);
-    </script>
+    
 </body>
 </html>

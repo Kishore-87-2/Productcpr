@@ -1,0 +1,68 @@
+{
+  "products": {
+    "Sonel KT-560": {
+      "Display": "5”, 1280 x 720 high brightness, LCD touchscreen",
+      "Detector resolution": "384 x 288",
+      "Focus": "Manual / Auto",
+      "Visual camera resolution": "13 MPix",
+      "Lens (field of view/focal length)": "24.9° x 18.7°",
+      "IFOV": "1.13 mrad",
+      "Tele Lens": "11.2° x 8.4°",
+      "IFOV (Tele Lens)": "0.52 mrad",
+      "Wide Lens": "48.1° x 35.9°",
+      "IFOV (Wide Lens)": "2.19 mrad",
+      "Digital zoom": "1…10",
+      "Temperature range (Standard)": "Range 1: -40°C...150°C, Range 2: 100°C…800°C, Optional:700°C…2000°C",
+      "Image analysis modes": "12 points, 12 lines, 12 areas. Temperature indication: min, max, average. Isotherm. Temperature alarm. Smart stroke.",
+      "Palettes": "8"
+    },
+    "Flir T540": {
+      "Display": "4\", 640 × 480 pixel touchscreen LCD with auto-rotation",
+      "Detector resolution": "464 × 348",
+      "Focus": "Manual / Auto",
+      "Visual camera resolution": "5 Mp",
+      "Lens (field of view/focal length)": "24",
+      "IFOV": "NA",
+      "Tele Lens": "14",
+      "IFOV (Tele Lens)": "NA",
+      "Wide Lens": "42",
+      "IFOV (Wide Lens)": "NA",
+      "Digital zoom": "1…6 X",
+      "Temperature range (Standard)": "-20°C to 120°C, 0°C to 650°C, 300°C..1500°C",
+      "Image analysis modes": "3 ea. in live mode: No measurement, center spot, hot spot, cold spot, User Preset 1, User Preset 2",
+      "Palettes": "8"
+    },
+    "Flir T840": {
+      "Detector resolution": "464 × 348",
+      "Focus": "Manual / Auto",
+      "Visual camera resolution": "5 Mp",
+      "Lens (field of view/focal length)": "24",
+      "IFOV": "NA",
+      "Tele Lens": "14",
+      "IFOV (Tele Lens)": "NA",
+      "Wide Lens": "42",
+      "IFOV (Wide Lens)": "NA",
+      "Display": "4\", 640 × 480 pixel touchscreen LCD with auto-rotation",
+      "Digital zoom": "1…6 X",
+      "Temperature range (Standard)": "-20°C to 120°C, 0°C to 650°C, 300°C..1500°C",
+      "Image analysis modes": "No measurement, Center spot, Hot spot, Cold spot, User Preset 1, User Preset 2",
+      "Palettes": "7"
+    }
+  },
+  "features": [
+    "Display",
+    "Detector resolution",
+    "Focus",
+    "Visual camera resolution",
+    "Lens (field of view/focal length)",
+    "IFOV",
+    "Tele Lens",
+    "IFOV (Tele Lens)",
+    "Wide Lens",
+    "IFOV (Wide Lens)",
+    "Digital zoom",
+    "Temperature range (Standard)",
+    "Image analysis modes",
+    "Palettes"
+  ]
+}

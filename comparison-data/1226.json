@@ -1,0 +1,136 @@
+{
+  "products": {
+    "Sonel MRU-12": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "NA",
+      "Double Clamp Method": "NA",
+      "Accuracy": "3%",
+      "Frequency of the Measurement Current": "125 Hz",
+      "Measurement Current": ">20mA",
+      "Memory": "990",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-65"
+    },
+    "Sonel MRU-30": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "3%",
+      "Frequency of the Measurement Current": "125 Hz",
+      "Measurement Current": ">200mA",
+      "Memory": "990",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-54"
+    },
+    "Sonel MRU-120": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "125 Hz",
+      "Measurement Current": ">200mA",
+      "Memory": "990",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-54"
+    },
+    "Sonel MRU-120HD": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "125 Hz",
+      "Measurement Current": ">200mA",
+      "Memory": "990",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-65"
+    },
+    "Megger DET2/3": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "10 Hz to 200 Hz",
+      "Measurement Current": "50mA",
+      "Memory": "Yes",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-65"
+    },
+    "Megger DET4TC2": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "94, 105, 111, 128 Hz",
+      "Measurement Current": "4.5mA (0.45)",
+      "Memory": "NA",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-54"
+    },
+    "Megger DET4TC2R": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "94, 105, 111, 128 Hz",
+      "Measurement Current": "4.5mA (0.45)",
+      "Memory": "NA",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-54"
+    },
+    "Megger DET4TD2 & DET4TR2": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "NA",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "128 Hz",
+      "Measurement Current": "4.5mA (0.45)",
+      "Memory": "Yes",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-54"
+    },
+    "Fluke 1623-2": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "128 Hz",
+      "Measurement Current": ">50mA",
+      "Memory": "Yes",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-56"
+    },
+    "Fluke 1625-2": {
+      "3p Method": "Available",
+      "4p Method": "Available",
+      "3p + clamps Method": "Available",
+      "Double Clamp Method": "Available",
+      "Accuracy": "2%",
+      "Frequency of the Measurement Current": "94/105/111/128 Hz",
+      "Measurement Current": "250mA",
+      "Memory": "NA",
+      "Battery": "Rechargeable battery",
+      "IP": "IP-56"
+    }
+  },
+  "features": [
+    "3p Method",
+    "4p Method",
+    "3p + clamps Method",
+    "Double Clamp Method",
+    "Accuracy",
+    "Frequency of the Measurement Current",
+    "Measurement Current",
+    "Memory",
+    "Battery",
+    "IP"
+  ]
+}

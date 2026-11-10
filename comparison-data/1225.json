@@ -1,0 +1,56 @@
+{
+  "products": {
+    "Sonel MPI-535": {
+      "Short Circuit Loop Impedance ZS": "Range: 1999.9 ohm",
+      "Short Circuit Loop Impedance ZL-PE RCD": "Range: 0.01–1999 ohm, Resolution: 0.01 ohm",
+      "RCD Trigger and Response Time tA": "Range: 0–500 ms, Measuring current: 0.5x,1x,2x,5x",
+      "RCD Tripping Current I": "Range: 3 mA–1000 mA, Resolution: 0.1 mA, Accuracy: ±5%",
+      "Earth Resistance": "Type: 3P, 4P, 3P+Clamp, Double Clamp, Range: 0.00–1.99 kohm, Resolution: 0.01 ohm, Accuracy: 2P,3P=±2.0% ±5 digits, ART=±8.0% ±5 digits, Stakeless=±10.0% ±5 digits",
+      "Soil Resistivity": "Available",
+      "Insulation Resistance": "Range: 50 V, 100 V, 250 V, 500 V, 1000 V, Accuracy: ±3%, S.C. Current: <2 mA",
+      "Phase Sequence Indication": "Phase-To-Phase voltages",
+      "Memory": "50,000 results",
+      "Bluetooth": "Available",
+      "Measuring Category": "CAT IV 300 V"
+    },
+    "Sonel MPI-536": {
+      "Short Circuit Loop Impedance ZS": "Range: 1999.9 ohm",
+      "Short Circuit Loop Impedance ZL-PE RCD": "Range: 0.01–1999 ohm, Resolution: 0.01 ohm",
+      "RCD Trigger and Response Time tA": "Range: 0–500 ms, Measuring current: 0.5x,1x,2x,5x",
+      "RCD Tripping Current I": "Range: 3 mA–1000 mA, Resolution: 0.1 mA, Accuracy: ±5%",
+      "Earth Resistance": "Type: 3P, 4P, 3P+Clamp, Double Clamp, Range: 0.00–1.99 kohm, Resolution: 0.01 ohm, Accuracy: 2P,3P=±2.0% ±5 digits, ART=±8.0% ±5 digits, Stakeless=±10.0% ±5 digits",
+      "Soil Resistivity": "Available",
+      "Insulation Resistance": "Range: 50 V, 100 V, 250 V, 500 V, 1000 V, Accuracy: ±3%, S.C. Current: <2 mA",
+      "Phase Sequence Indication": "Phase-To-Phase voltages",
+      "Memory": "50,000 results",
+      "Bluetooth": "Available",
+      "Measuring Category": "CAT IV 300 V"
+    },
+    "Fluke 1672": {
+      "Short Circuit Loop Impedance ZS": "Range: 2000 ohm",
+      "Short Circuit Loop Impedance ZL-PE RCD": "Range: 2000 ohm, Resolution: 0.01 ohm",
+      "RCD Trigger and Response Time tA": "Range: 0–500 ms, Measuring current: 0.5x,1x,5x",
+      "RCD Tripping Current I": "Range: 1000 mA, Resolution: NA, Accuracy: NA",
+      "Earth Resistance": "NA",
+      "Soil Resistivity": "NA",
+      "Insulation Resistance": "Range: 50 V, 100 V, 250 V, 500 V, 1000 V, Accuracy: NA, S.C. Current: 1 mA",
+      "Phase Sequence Indication": "Phase-To-Phase voltages",
+      "Memory": "Available",
+      "Bluetooth": "NA",
+      "Measuring Category": "CAT IV 300 V"
+    }
+  },
+  "features": [
+    "Short Circuit Loop Impedance ZS",
+    "Short Circuit Loop Impedance ZL-PE RCD",
+    "RCD Trigger and Response Time tA",
+    "RCD Tripping Current I",
+    "Earth Resistance",
+    "Soil Resistivity",
+    "Insulation Resistance",
+    "Phase Sequence Indication",
+    "Memory",
+    "Bluetooth",
+    "Measuring Category"
+  ]
+}

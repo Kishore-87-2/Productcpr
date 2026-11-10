@@ -1,0 +1,64 @@
+{
+  "products": {
+    "Sonel CMM-60": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Frequency": "10 MHz",
+      "Capacity": "10 mF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Memory": "10 000 points",
+      "IP": "IP-67",
+      "Installation Category": "CAT IV 600 V"
+    },
+    "Fluke 87V": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Frequency": "200 kHz",
+      "Capacity": "9,999 µF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Memory": "NA",
+      "IP": "IP 67",
+      "Installation Category": "CAT IV 600 V"
+    },
+    "Fluke 179": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Frequency": "100 kHz",
+      "Capacity": "10,000 µF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Memory": "NA",
+      "IP": "NM",
+      "Installation Category": "CAT IV 600 V"
+    },
+    "RISHABH 6015": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Frequency": "100 kHz",
+      "Capacity": "10,000 µF",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Memory": "32000",
+      "IP": "IP-50",
+      "Installation Category": "CAT IV 600 V"
+    }
+  },
+  "features": [
+    "AC Voltage",
+    "DC Voltage",
+    "DC Current",
+    "AC Current",
+    "Frequency",
+    "Capacity",
+    "Continuity / Diode Test",
+    "Memory",
+    "IP",
+    "Installation Category"
+  ]
+}

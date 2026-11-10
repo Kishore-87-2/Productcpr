@@ -1,0 +1,108 @@
+{
+  "products": {
+    "Sonel IRM-1": {
+      "Device Class": "Advanced PV Tester",
+      "Environmental Protection": "IP65 (Dust & Water Tight)",
+      "Connectivity": "LoRa (Long Range) & USB",
+      "Memory / Datalogging": "5,000 records, 999 cache",
+      "Battery Type": "Rechargeable Li-Ion",
+      "Irradiance Range": "0 to 1400 W/m²",
+      "Temperature Measurement": "-20.0°C to 100.0°C",
+      "Inclination (Tilt) Sensor": "Yes (-90° to +90°)",
+      "Compass (Direction)": "Yes (0° to 360°)",
+      "Dimensions (mm)": "134 x 79 x 28",
+      "Weight": "~200 g"
+    },
+    "FLIR PV78": {
+      "Device Class": "Advanced PV Tester",
+      "Environmental Protection": "Not specified",
+      "Connectivity": "Bluetooth BLE (10m range)",
+      "Memory / Datalogging": "360 readings per file",
+      "Battery Type": "1x 9V Alkaline",
+      "Irradiance Range": "50 to 1400 W/m²",
+      "Temperature Measurement": "-30°C to 100°C (with probe)",
+      "Inclination (Tilt) Sensor": "Yes (-90° to 90°)",
+      "Compass (Direction)": "Yes (0° to 360°)",
+      "Dimensions (mm)": "240.5 x 67 x 38",
+      "Weight": "300 g"
+    },
+    "Fluke IRR1-SOL": {
+      "Device Class": "Advanced PV Tester",
+      "Environmental Protection": "IP40 (No water protection)",
+      "Connectivity": "None specified",
+      "Memory / Datalogging": "None specified",
+      "Battery Type": "4x AA Alkaline",
+      "Irradiance Range": "0 to 1400 W/m²",
+      "Temperature Measurement": "-30°C to 100°C (with probe)",
+      "Inclination (Tilt) Sensor": "Yes (-90° to +90°)",
+      "Compass (Direction)": "Yes (0° to 360°)",
+      "Dimensions (mm)": "150 x 80 x 35",
+      "Weight": "231 g"
+    },
+    "Metravi PRO IM-09": {
+      "Device Class": "Advanced PV Tester",
+      "Environmental Protection": "IP54 (Splash proof)",
+      "Connectivity": "None specified",
+      "Memory / Datalogging": "Data Hold only",
+      "Battery Type": "4x AA Alkaline",
+      "Irradiance Range": "0 to 1400 W/m²",
+      "Temperature Measurement": "-30°C to 100°C (with probe)",
+      "Inclination (Tilt) Sensor": "Yes (-90° to +90°)",
+      "Compass (Direction)": "Yes (0° to 360°)",
+      "Dimensions (mm)": "Not specified",
+      "Weight": "Not specified"
+    },
+    "Metravi 207": {
+      "Device Class": "Basic Light/Solar Meter",
+      "Environmental Protection": "Not specified",
+      "Connectivity": "None",
+      "Memory / Datalogging": "Data Hold only",
+      "Battery Type": "Not specified",
+      "Irradiance Range": "Up to 1999 W/m²",
+      "Temperature Measurement": "None",
+      "Inclination (Tilt) Sensor": "None",
+      "Compass (Direction)": "None",
+      "Dimensions (mm)": "162 x 63 x 28",
+      "Weight": "250 g"
+    },
+    "Megger PVM210": {
+      "Device Class": "Basic Light/Solar Meter",
+      "Environmental Protection": "Not specified",
+      "Connectivity": "None",
+      "Memory / Datalogging": "Data Hold only",
+      "Battery Type": "2x 1.5V AAA",
+      "Irradiance Range": "Up to 1999 W/m²",
+      "Temperature Measurement": "None",
+      "Inclination (Tilt) Sensor": "None",
+      "Compass (Direction)": "None",
+      "Dimensions (mm)": "Pocket size",
+      "Weight": "90 g"
+    },
+    "Sanpo SM206-SOLAR": {
+      "Device Class": "Basic Light/Solar Meter",
+      "Environmental Protection": "Not specified",
+      "Connectivity": "None",
+      "Memory / Datalogging": "None specified",
+      "Battery Type": "1x 9V",
+      "Irradiance Range": "0.1 to 1999.9 W/m²",
+      "Temperature Measurement": "None",
+      "Inclination (Tilt) Sensor": "None",
+      "Compass (Direction)": "None",
+      "Dimensions (mm)": "132 x 60 x 38",
+      "Weight": "150 g"
+    }
+  },
+  "features": [
+    "Device Class",
+    "Environmental Protection",
+    "Connectivity",
+    "Memory / Datalogging",
+    "Battery Type",
+    "Irradiance Range",
+    "Temperature Measurement",
+    "Inclination (Tilt) Sensor",
+    "Compass (Direction)",
+    "Dimensions (mm)",
+    "Weight"
+  ]
+}

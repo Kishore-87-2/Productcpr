@@ -1,0 +1,88 @@
+{
+  "products": {
+    "Sonel CMM-30": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "60.00 MΩ",
+      "Frequency": "9.999 kHz",
+      "Capacity": "6000 µF",
+      "Temperature": "-20…+760ºC",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Counting": "6000"
+    },
+    "Sonel CMM-40": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "100.00 MHz",
+      "Capacity": "40.000 mF",
+      "Temperature": "-50.0...+1200.0°C",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Counting": "40000"
+    },
+    "Fluke 17B+": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "100.00 KHz",
+      "Capacity": "1000 μF",
+      "Temperature": "50 °C- 400 °C",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Counting": "4000"
+    },
+    "Fluke 15B+": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "40.00 MΩ",
+      "Frequency": "100.00 KHz",
+      "Capacity": "1000 μF",
+      "Temperature": "-55.0 °C to 400.0 °C",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Counting": "4000"
+    },
+    "Rishmulti 15 S": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "30.00 MΩ",
+      "Frequency": "100.00 KHz",
+      "Capacity": "30 μF",
+      "Temperature": "-200 °C- 850 °C",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Counting": "3100"
+    },
+    "Rishmulti 616": {
+      "AC Voltage": "1000V",
+      "DC Voltage": "1000V",
+      "DC Current": "10A",
+      "AC Current": "10A",
+      "Resistance": "66.00 MΩ",
+      "Frequency": "10MHz",
+      "Capacity": "40.000 mF",
+      "Temperature": "0…1300°C",
+      "Continuity / Diode Test": "✓ / ✓",
+      "Counting": "6600"
+    }
+  },
+  "features": [
+    "AC Voltage",
+    "DC Voltage",
+    "DC Current",
+    "AC Current",
+    "Resistance",
+    "Frequency",
+    "Capacity",
+    "Temperature",
+    "Continuity / Diode Test",
+    "Counting"
+  ]
+}
