@@ -1,5 +1,102 @@
 (function () {
     'use strict';
+
+    const ui = document.createElement('style');
+    ui.id = 'comparison-ui-theme';
+    ui.textContent = `
+        :root { --comparison-primary: #1e3a5f; --comparison-accent: #2a9bc9; --comparison-bg: #f4f6f9; }
+        html { min-height: 100%; background: var(--comparison-bg); }
+        body {
+            display: block !important; min-height: 100vh; margin: 0 !important;
+            padding: 24px 16px !important; background: var(--comparison-bg) !important;
+            color: #333 !important; font-family: 'Segoe UI', Arial, sans-serif !important;
+            line-height: 1.5;
+        }
+        .container {
+            width: 100% !important; max-width: 1200px !important; margin: 0 auto !important;
+            padding: 0 !important; background: #fff !important; text-align: left !important;
+            border-radius: 16px !important; box-shadow: 0 10px 30px rgba(0,0,0,.10) !important;
+            overflow: hidden;
+        }
+        header {
+            position: relative; padding: 20px 25px !important; text-align: center !important;
+            color: #fff !important; background: linear-gradient(135deg,#4ec0e0,#2a9bc9) !important;
+        }
+        header h1, h1 {
+            margin: 0 !important; color: #fff !important; font-size: clamp(22px,3vw,30px) !important;
+            font-weight: 600 !important; line-height: 1.25;
+        }
+        .home-btn {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            padding: 9px 15px !important; border-radius: 8px !important;
+            background: #fff !important; color: var(--comparison-accent) !important;
+            font-weight: 600; text-decoration: none !important;
+        }
+        .controls, .dropdowns {
+            display: grid !important; grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+            gap: 16px !important; padding: 24px !important; margin: 0 !important;
+            background: #f8f9fa !important; border-bottom: 1px solid #e8edf2;
+        }
+        .select-group, .dropdowns > div { min-width: 0; }
+        label {
+            display: block; margin: 0 0 7px !important; color: #344054 !important;
+            font-size: 14px; font-weight: 600 !important;
+        }
+        select, input[type="text"], input[type="search"] {
+            width: 100%; min-height: 44px; padding: 10px 12px !important;
+            border: 1px solid #cbd5e1 !important; border-radius: 8px !important;
+            background: #fff; color: #1f2937; font: inherit; box-sizing: border-box;
+        }
+        select:focus, input:focus {
+            outline: 3px solid rgba(42,155,201,.18); border-color: var(--comparison-accent) !important;
+        }
+        .buttons {
+            display: flex !important; flex-wrap: wrap; gap: 10px !important;
+            justify-content: center !important; padding: 20px 24px !important;
+            margin: 0 !important; background: #fff !important;
+        }
+        button, button[data-comparison-action] {
+            min-height: 42px; padding: 10px 17px !important; margin: 0 !important;
+            border: 0 !important; border-radius: 8px !important;
+            background: var(--comparison-primary) !important; color: #fff !important;
+            font: 600 14px/1.3 'Segoe UI',Arial,sans-serif !important;
+            cursor: pointer; transition: background-color .15s ease, transform .15s ease;
+        }
+        button:hover:not(:disabled) { background: var(--comparison-accent) !important; transform: translateY(-1px); }
+        button:disabled { opacity: .55; cursor: not-allowed; }
+        #loading, #comparison-data-status {
+            padding: 14px 20px !important; margin: 0 !important; color: #475467 !important;
+            font: 14px/1.5 'Segoe UI',Arial,sans-serif !important; text-align: center;
+        }
+        .comparison-result, #tableContainer, #comparisonTable { width: 100%; overflow-x: auto; }
+        table {
+            width: 100% !important; border-collapse: collapse !important; margin: 0 !important;
+            background: #fff; font-size: 14px; text-align: left;
+        }
+        th, td {
+            padding: 12px 14px !important; border: 1px solid #e6eaf0 !important;
+            vertical-align: top; text-align: left !important; white-space: pre-line;
+        }
+        th { background: #eef4f8 !important; color: #1e3a5f !important; font-weight: 700 !important; }
+        tbody tr:nth-child(even) { background: #f8fafc; }
+        tbody tr:hover { background: #eef7fb !important; }
+        @media (max-width: 640px) {
+            body { padding: 12px 8px !important; }
+            .container { border-radius: 10px !important; }
+            header { padding: 62px 14px 18px !important; }
+            .home-btn { left: 12px; top: 12px; transform: none; padding: 7px 11px !important; }
+            .controls, .dropdowns { grid-template-columns: 1fr; padding: 16px !important; }
+            .buttons { padding: 16px !important; }
+            button, button[data-comparison-action] { flex: 1 1 145px; }
+            th, td { padding: 9px 10px !important; font-size: 13px; }
+        }
+        @media print {
+            body { padding: 0 !important; background: #fff !important; }
+            .container { max-width: none !important; box-shadow: none !important; }
+            .controls, .dropdowns, .buttons, .home-btn, #loading, #comparison-data-status { display: none !important; }
+        }
+    `;
+    document.head.appendChild(ui);
     const script = document.currentScript;
     const sheetId = script.dataset.sheetId;
     const fallbackUrl = new URL(script.dataset.fallback, script.src);
@@ -111,14 +208,27 @@
             for (let i = 0; i < models.length; i += 4) {
                 if (i) pdf.addPage();
                 const group = models.slice(i, i + 4);
-                pdf.setFontSize(14); pdf.text('Product Comparison', 12, 14);
+                const comparisonTitle = document.querySelector('h1')?.textContent.trim() ||
+                    document.title || 'Product Comparison';
                 pdf.autoTable({
                     head: [['Feature', ...group.map(pdfText)]],
                     body: data.features.map(f => [pdfText(f), ...group.map(n => pdfText(data.products[n][f]))]),
                     startY: 22, margin: { top: 12, right: 12, bottom: 12, left: 12 }, theme: 'grid',
-                    styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak' },
-                    headStyles: { fillColor: [30, 58, 95] }, columnStyles: { 0: { cellWidth: 65 } },
-                    showHead: 'everyPage'
+                    styles: { font: 'helvetica', fontSize: 9, cellPadding: 3, overflow: 'linebreak', lineColor: [220, 226, 232] },
+                    headStyles: { fillColor: [42, 155, 201], textColor: [255, 255, 255] },
+                    columnStyles: { 0: { cellWidth: 65, fontStyle: 'bold' } },
+                    showHead: 'everyPage',
+                    didDrawPage: function () {
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.setFontSize(14);
+                        pdf.setTextColor(30, 58, 95);
+                        pdf.text(comparisonTitle, 12, 14, { maxWidth: pdf.internal.pageSize.getWidth() - 24 });
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(100, 110, 120);
+                        pdf.text('Page ' + pdf.internal.getNumberOfPages(), pdf.internal.pageSize.getWidth() - 12,
+                            pdf.internal.pageSize.getHeight() - 7, { align: 'right' });
+                    }
                 });
             }
             pdf.save('Product_Comparison.pdf');
