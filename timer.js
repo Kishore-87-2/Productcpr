@@ -9,6 +9,24 @@
     if (window.location.pathname === home.pathname ||
         window.location.pathname === home.pathname.replace(/index\.html$/, '')) return;
 
+    // Bookmarks, typed URLs and links from other websites must start at home.
+    // Internal links and the index page's login redirect retain a same-site referrer.
+    var fromThisSite = false;
+    if (document.referrer) {
+        try {
+            var previousPage = new URL(document.referrer);
+            var sitePath = home.pathname.slice(0, home.pathname.lastIndexOf('/') + 1);
+            fromThisSite = previousPage.origin === home.origin &&
+                previousPage.pathname.indexOf(sitePath) === 0;
+        } catch (error) {
+            fromThisSite = false;
+        }
+    }
+    if (!fromThisSite) {
+        window.location.replace(home.href);
+        return;
+    }
+
     var deadline = Date.now() + 60 * 1000;
     var redirected = false;
     var interval;
