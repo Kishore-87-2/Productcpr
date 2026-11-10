@@ -9,7 +9,10 @@
     if (window.location.pathname === home.pathname ||
         window.location.pathname === home.pathname.replace(/index\.html$/, '')) return;
 
-    var deadline = Date.now() + 5 * 60 * 1000;
+    var configuredSeconds = Number(document.currentScript.getAttribute('data-timeout-seconds'));
+    var duration = Number.isFinite(configuredSeconds) && configuredSeconds > 0
+        ? configuredSeconds * 1000 : 5 * 60 * 1000;
+    var deadline = Date.now() + duration;
     var redirected = false;
     var interval;
     var badge;
