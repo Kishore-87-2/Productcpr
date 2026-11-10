@@ -1,44 +1,57 @@
-// Timer duration set to 10 seconds (10000 milliseconds) for testing
-const IDLE_TIMEOUT = 10000;
-let lastActivity = Date.now();
+// Each page gets five minutes, regardless of mouse or keyboard activity.
+(function () {
+    'use strict';
+    if (window.productPageTimerStarted) return;
+    window.productPageTimerStarted = true;
 
-// Store the last activity time in sessionStorage
-function updateLastActivity() {
-    lastActivity = Date.now();
-    sessionStorage.setItem('lastActivity', lastActivity);
-}
+    // Resolve against this script so GitHub Pages project paths are preserved.
+    var home = new URL('index.html', document.currentScript.src);
+    if (window.location.pathname === home.pathname ||
+        window.location.pathname === home.pathname.replace(/index\.html$/, '')) return;
 
-// Check if user has been inactive for too long
-function checkIdleTime() {
-    const currentTime = Date.now();
-    const lastActivityTime = parseInt(sessionStorage.getItem('lastActivity')) || lastActivity;
-    
-    if (currentTime - lastActivityTime > IDLE_TIMEOUT) {
-        // Redirect to login page
-        window.location.href = '/index.html';
-    }
-}
+    var deadline = Date.now() + 5 * 60 * 1000;
+    var redirected = false;
+    var interval;
+    var badge;
 
-// Reset timer on user activity
-function resetTimer() {
-    updateLastActivity();
-}
-
-// Initialize timer
-function initTimer() {
-    // Set initial last activity time if not already set
-    if (!sessionStorage.getItem('lastActivity')) {
-        sessionStorage.setItem('lastActivity', lastActivity);
+    function update() {
+        var seconds = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+        if (badge) {
+            badge.textContent = 'Return to home in ' +
+                String(Math.floor(seconds / 60)).padStart(2, '0') + ':' +
+                String(seconds % 60).padStart(2, '0');
+        }
+        if (seconds === 0 && !redirected) {
+            redirected = true;
+            window.clearInterval(interval);
+            window.location.replace(home.href);
+        }
     }
 
-    // Add event listeners for user activity
-    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
-        document.addEventListener(event, resetTimer);
-    });
+    function start() {
+        badge = document.createElement('div');
+        badge.id = 'product-page-timer';
+        badge.setAttribute('role', 'timer');
+        badge.setAttribute('aria-label', 'Time remaining before returning to the home page');
+        badge.style.cssText = 'position:fixed;bottom:12px;right:12px;z-index:2147483647;' +
+            'padding:8px 12px;border-radius:8px;background:#1e3a5f;color:#fff;' +
+            'font:14px/1.4 Arial,sans-serif;box-shadow:0 2px 8px #0003;pointer-events:none;';
+        document.body.appendChild(badge);
+        var style = document.createElement('style');
+        style.textContent = '@media print { #product-page-timer { display:none!important; } }';
+        document.head.appendChild(style);
+        interval = window.setInterval(update, 1000);
+        window.setTimeout(update, Math.max(0, deadline - Date.now()));
+        // Check elapsed wall-clock time after backgrounding or back/forward restoration.
+        document.addEventListener('visibilitychange', update);
+        window.addEventListener('pageshow', update);
+        window.addEventListener('focus', update);
+        update();
+    }
 
-    // Check idle time every 2 seconds for testing
-    setInterval(checkIdleTime, 100000);
-}
-
-// Start the timer when the page loads
-document.addEventListener('DOMContentLoaded', initTimer);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+    } else {
+        start();
+    }
+}());
