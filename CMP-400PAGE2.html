@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+    (function () {
+        var path = window.location.pathname;
+        if (path === '/' || /(?:^|\/)index\.html?$/i.test(path)) return;
+        var sameSite = false;
+        try {
+            sameSite = !!document.referrer && new URL(document.referrer).origin === window.location.origin;
+        } catch (error) {
+            sameSite = false;
+        }
+        if (!sameSite) {
+            window.__productDirectBlocked = true;
+            window.location.replace(new URL('index.html', window.location.href).href);
+        }
+    }());
+    </script>
+    <script src="timer.js?v=3min" defer></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Selection Page</title>
@@ -175,7 +193,7 @@
         
         // Redirect immediately when comparison button is clicked
         comparisonBtn.onclick = function() {
-            window.location.href = "CMP-403.html";
+            if (!window.__productDirectBlocked) window.location.href = "CMP-403.html";
         }
         
         // Open locking modal when locking button is clicked
